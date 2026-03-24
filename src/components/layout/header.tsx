@@ -9,7 +9,7 @@ import { BreadcrumbNav } from "./breadcrumb-nav";
 
 export function Header() {
   return (
-    <header className="flex h-[var(--header-height)] items-center gap-4 border-b bg-background px-4">
+    <header className="flex h-[var(--header-height)] items-center justify-between gap-4 border-b bg-background px-8">
       <MobileSidebar />
       <BreadcrumbNav />
       <div className="ml-auto flex items-center gap-2">
