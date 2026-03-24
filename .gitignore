@@ -91,3 +91,6 @@ worktrees/
 
 # demo
 .claude/skills/ai-multimodal/assets/demo-*.claude/session-state/*.tmp
+
+# claude kit
+plans
