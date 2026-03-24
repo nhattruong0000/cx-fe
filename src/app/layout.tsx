@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { QueryProvider } from "@/providers/query-provider";
-import { AuthProvider } from "@/providers/auth-provider";
+import { AuthHydration } from "@/providers/auth-hydration";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -26,10 +26,9 @@ export default function RootLayout({
     <html lang="vi" className={cn("font-sans", beVietnamPro.variable)}>
       <body>
         <QueryProvider>
-          <AuthProvider>
-            {children}
-            <Toaster />
-          </AuthProvider>
+          <AuthHydration />
+          {children}
+          <Toaster />
         </QueryProvider>
       </body>
     </html>

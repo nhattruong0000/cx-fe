@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuthStore } from "@/stores/auth-store";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("admin@cxapp.vn");
   const [password, setPassword] = useState("password");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const login = useAuthStore((s) => s.login);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -42,14 +42,14 @@ export function TierDistributionChart({ data, isLoading }: TierDistributionChart
             outerRadius={100}
             dataKey="value"
             nameKey="name"
-            label={({ name, percentage }) => `${name} ${percentage}%`}
+            label={(props: { name?: string; payload?: Record<string, unknown> }) => `${props.name ?? ""} ${props.payload?.percentage ?? 0}%`}
           >
             {chartData.map((entry) => (
               <Cell key={entry.name} fill={entry.color} />
             ))}
           </Pie>
           <Tooltip
-            formatter={(value: number) => formatNumber(value)}
+            formatter={(value) => formatNumber(Number(value))}
             contentStyle={{
               borderRadius: "8px",
               border: "1px solid var(--border)",

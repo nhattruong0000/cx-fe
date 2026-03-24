@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { LayoutDashboard, ClipboardList, MessageSquare, BarChart3, Route, PanelLeftClose, PanelLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { SidebarNavItem } from "./sidebar-nav-item";
-
-const SIDEBAR_KEY = "cx-sidebar-collapsed";
+import { useSidebarStore } from "@/stores/sidebar-store";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -17,22 +16,11 @@ const navItems = [
 ];
 
 export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const { collapsed, mounted, toggle, hydrate } = useSidebarStore();
 
   useEffect(() => {
-    const stored = localStorage.getItem(SIDEBAR_KEY);
-    if (stored === "true") setCollapsed(true);
-    setMounted(true);
-  }, []);
-
-  const toggle = useCallback(() => {
-    setCollapsed((prev) => {
-      const next = !prev;
-      localStorage.setItem(SIDEBAR_KEY, String(next));
-      return next;
-    });
-  }, []);
+    hydrate();
+  }, [hydrate]);
 
   if (!mounted) {
     return <aside className="hidden md:block w-64 border-r bg-sidebar" />;
