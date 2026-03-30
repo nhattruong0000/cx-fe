@@ -85,7 +85,7 @@ export default function ResetPasswordPage({
   if (tokenStatus === "expired") {
     return (
       <div className="space-y-4 text-center">
-        <h1 className="text-[28px] font-bold text-foreground">
+        <h1 className="text-3xl font-bold text-foreground">
           Link đã hết hạn
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -104,7 +104,7 @@ export default function ResetPasswordPage({
   if (tokenStatus === "invalid") {
     return (
       <div className="space-y-4 text-center">
-        <h1 className="text-[28px] font-bold text-foreground">
+        <h1 className="text-3xl font-bold text-foreground">
           Link không hợp lệ
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -124,7 +124,7 @@ export default function ResetPasswordPage({
     <div className="space-y-6">
       {/* Title */}
       <div className="space-y-2">
-        <h1 className="text-[28px] font-bold text-foreground">
+        <h1 className="text-3xl font-bold text-foreground">
           Đặt mật khẩu mới
         </h1>
         <p className="text-sm text-muted-foreground">

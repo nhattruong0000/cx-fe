@@ -66,7 +66,7 @@ function LoginForm() {
     <div className="space-y-6">
       {/* Title */}
       <div className="space-y-2">
-        <h1 className="text-[28px] font-bold text-foreground">Đăng nhập</h1>
+        <h1 className="text-3xl font-bold text-foreground">Đăng nhập</h1>
         <p className="text-sm text-muted-foreground">
           Nhập thông tin để truy cập hệ thống
         </p>

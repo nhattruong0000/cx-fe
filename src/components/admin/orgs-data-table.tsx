@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useOrganizations } from "@/hooks/use-admin-orgs";
 import { OrgStatusBadge, OrgRowActions } from "./orgs-table-columns";
 
@@ -97,20 +98,22 @@ export function OrgsDataTable() {
             Trang {data.page} / {data.totalPages} ({data.total} to chuc)
           </span>
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="rounded-md border px-3 py-1 disabled:opacity-50"
             >
               Truoc
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setPage((p) => Math.min(data.totalPages, p + 1))}
               disabled={page >= data.totalPages}
-              className="rounded-md border px-3 py-1 disabled:opacity-50"
             >
               Sau
-            </button>
+            </Button>
           </div>
         </div>
       )}

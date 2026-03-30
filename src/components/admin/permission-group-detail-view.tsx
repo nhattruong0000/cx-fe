@@ -8,8 +8,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -19,8 +17,8 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { PermissionCheckboxGrid } from "./permission-checkbox-grid";
 import { usePermissionGroups, useUpdateGroup } from "@/hooks/use-admin-groups";
-import { PERMISSION_CATEGORIES } from "@/types/admin";
 import type { PermissionGroup, CreateGroupData } from "@/types/admin";
 
 interface Props {
@@ -153,46 +151,11 @@ export function PermissionGroupDetailView({ groupId }: Props) {
           <CardTitle>Quyen han</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {Object.entries(PERMISSION_CATEGORIES).map(
-            ([category, categoryPerms]) => {
-              const allChecked = categoryPerms.every((p) =>
-                permissions.includes(p)
-              );
-              const someChecked =
-                !allChecked &&
-                categoryPerms.some((p) => permissions.includes(p));
-
-              return (
-                <div key={category}>
-                  <label className="flex items-center gap-2 cursor-pointer mb-2">
-                    <Checkbox
-                      checked={allChecked}
-                      indeterminate={someChecked}
-                      onCheckedChange={() => toggleCategory(categoryPerms)}
-                    />
-                    <span className="font-medium text-sm">{category}</span>
-                  </label>
-                  <div className="ml-6 grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
-                    {categoryPerms.map((perm) => (
-                      <label
-                        key={perm}
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
-                        <Checkbox
-                          checked={permissions.includes(perm)}
-                          onCheckedChange={() => togglePermission(perm)}
-                        />
-                        <span className="text-sm text-muted-foreground">
-                          {perm}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                  <Separator className="mt-3" />
-                </div>
-              );
-            }
-          )}
+          <PermissionCheckboxGrid
+            permissions={permissions}
+            onTogglePermission={togglePermission}
+            onToggleCategory={toggleCategory}
+          />
         </CardContent>
       </Card>
 

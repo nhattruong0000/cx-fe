@@ -106,7 +106,7 @@ export default function InvitePage({
   if (!invitation || invitation.status === "invalid") {
     return (
       <div className="space-y-2 text-center">
-        <h1 className="text-[28px] font-bold text-foreground">
+        <h1 className="text-3xl font-bold text-foreground">
           Lời mời không hợp lệ
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -119,7 +119,7 @@ export default function InvitePage({
   if (invitation.status === "expired") {
     return (
       <div className="space-y-2 text-center">
-        <h1 className="text-[28px] font-bold text-foreground">
+        <h1 className="text-3xl font-bold text-foreground">
           Lời mời đã hết hạn
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -133,7 +133,7 @@ export default function InvitePage({
     <div className="space-y-6">
       {/* Title */}
       <div className="space-y-2">
-        <h1 className="text-[28px] font-bold text-foreground">Chào mừng!</h1>
+        <h1 className="text-3xl font-bold text-foreground">Chào mừng!</h1>
         <p className="text-sm text-muted-foreground">
           Bạn được mời bởi {invitation.inviter_name}
           {invitation.organization_name &&

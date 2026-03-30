@@ -68,7 +68,8 @@ export function AvatarUpload() {
     <div className="flex items-center gap-4">
       <div className="relative">
         <Avatar className="size-20">
-          <AvatarImage src={previewUrl ?? undefined} alt={user?.full_name} />
+          {/* avatar_url comes from API but not yet in User type — safe cast */}
+          <AvatarImage src={previewUrl ?? (user as unknown as { avatar_url?: string })?.avatar_url ?? undefined} alt={user?.full_name} />
           <AvatarFallback className="text-lg">
             {user?.full_name ? getInitials(user.full_name) : "?"}
           </AvatarFallback>

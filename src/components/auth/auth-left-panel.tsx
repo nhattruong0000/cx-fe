@@ -16,7 +16,7 @@ export function AuthLeftPanel() {
         />
         <h2 className="text-2xl font-bold">CX Platform</h2>
         <p className="text-primary-foreground/80 text-sm leading-relaxed">
-          Nen tang quan ly trai nghiem khach hang toan dien cho doanh nghiep
+          Nền tảng quản lý trải nghiệm khách hàng toàn diện cho doanh nghiệp
         </p>
       </div>
     </div>

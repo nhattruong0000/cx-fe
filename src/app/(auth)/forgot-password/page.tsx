@@ -69,11 +69,11 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div className="space-y-6 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary-50">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
           <Mail className="h-7 w-7 text-primary" />
         </div>
         <div className="space-y-2">
-          <h1 className="text-[28px] font-bold text-foreground">
+          <h1 className="text-3xl font-bold text-foreground">
             Kiểm tra email
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
     <div className="space-y-6">
       {/* Title */}
       <div className="space-y-2">
-        <h1 className="text-[28px] font-bold text-foreground">
+        <h1 className="text-3xl font-bold text-foreground">
           Quên mật khẩu
         </h1>
         <p className="text-sm text-muted-foreground">

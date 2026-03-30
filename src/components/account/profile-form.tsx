@@ -39,6 +39,9 @@ export function ProfileForm() {
   const user = useAuthStore((s) => s.user)
   const fetchMe = useAuthStore((s) => s.fetchMe)
 
+  /* phone & timezone come from API but are not yet in the User type */
+  const userExt = user as unknown as { phone?: string; timezone?: string } | null
+
   const {
     register,
     handleSubmit,
@@ -49,8 +52,8 @@ export function ProfileForm() {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       full_name: user?.full_name ?? "",
-      phone: "",
-      timezone: "Asia/Ho_Chi_Minh",
+      phone: userExt?.phone ?? "",
+      timezone: userExt?.timezone || "Asia/Ho_Chi_Minh",
     },
   })
 
@@ -87,7 +90,7 @@ export function ProfileForm() {
         <Label htmlFor="full_name">Họ tên</Label>
         <Input id="full_name" {...register("full_name")} />
         {errors.full_name && (
-          <p className="text-xs text-error">{errors.full_name.message}</p>
+          <p className="text-sm text-destructive">{errors.full_name.message}</p>
         )}
       </div>
 

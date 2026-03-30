@@ -74,7 +74,7 @@ export function ChangePasswordForm() {
           </button>
         </div>
         {errors.current_password && (
-          <p className="text-xs text-error">{errors.current_password.message}</p>
+          <p className="text-sm text-destructive">{errors.current_password.message}</p>
         )}
       </div>
 
@@ -96,7 +96,7 @@ export function ChangePasswordForm() {
           </button>
         </div>
         {errors.new_password && (
-          <p className="text-xs text-error">{errors.new_password.message}</p>
+          <p className="text-sm text-destructive">{errors.new_password.message}</p>
         )}
       </div>
 
@@ -108,7 +108,7 @@ export function ChangePasswordForm() {
           {...register("confirm_password")}
         />
         {errors.confirm_password && (
-          <p className="text-xs text-error">{errors.confirm_password.message}</p>
+          <p className="text-sm text-destructive">{errors.confirm_password.message}</p>
         )}
       </div>
 

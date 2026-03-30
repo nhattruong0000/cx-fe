@@ -4,11 +4,9 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PermissionCheckboxGrid } from "./permission-checkbox-grid";
 import { useUpdateGroup } from "@/hooks/use-admin-groups";
-import { PERMISSION_CATEGORIES } from "@/types/admin";
 import type { PermissionGroup } from "@/types/admin";
 
 interface Props {
@@ -56,46 +54,11 @@ export function UserGroupPermissionsTab({ group }: Props) {
         <CardTitle>Quyen han</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {Object.entries(PERMISSION_CATEGORIES).map(
-          ([category, categoryPerms]) => {
-            const allChecked = categoryPerms.every((p) =>
-              permissions.includes(p)
-            );
-            const someChecked =
-              !allChecked &&
-              categoryPerms.some((p) => permissions.includes(p));
-
-            return (
-              <div key={category}>
-                <label className="flex items-center gap-2 cursor-pointer mb-2">
-                  <Checkbox
-                    checked={allChecked}
-                    indeterminate={someChecked}
-                    onCheckedChange={() => toggleCategory(categoryPerms)}
-                  />
-                  <span className="font-medium text-sm">{category}</span>
-                </label>
-                <div className="ml-6 grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
-                  {categoryPerms.map((perm) => (
-                    <label
-                      key={perm}
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <Checkbox
-                        checked={permissions.includes(perm)}
-                        onCheckedChange={() => togglePermission(perm)}
-                      />
-                      <span className="text-sm text-muted-foreground">
-                        {perm}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-                <Separator className="mt-3" />
-              </div>
-            );
-          }
-        )}
+        <PermissionCheckboxGrid
+          permissions={permissions}
+          onTogglePermission={togglePermission}
+          onToggleCategory={toggleCategory}
+        />
 
         <Button onClick={handleSave} disabled={updateGroup.isPending}>
           {updateGroup.isPending ? (

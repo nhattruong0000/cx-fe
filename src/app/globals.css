@@ -19,7 +19,7 @@
   --muted-foreground: 240 3.8% 46.1%;
   --accent: 240 4.8% 95.9%;
   --accent-foreground: 240 5.9% 10%;
-  --destructive: 0 88% 50%;
+  --destructive: 358 81.7% 50.8%;
   --destructive-foreground: 0 0% 98%;
   --border: 240 5.9% 90%;
   --input: 240 5.9% 90%;
@@ -27,14 +27,21 @@
   --radius: 0.625rem;
 
   /* Semantic status */
-  --success: 142 71% 45%;
+  --success: 142 76.2% 36.3%;
   --success-foreground: 0 0% 100%;
   --warning: 38 92% 50%;
   --warning-foreground: 0 0% 100%;
-  --info: 220 67% 46%;
+  --info: 221 83.2% 53.3%;
   --info-foreground: 0 0% 100%;
-  --error: 0 88% 50%;
+  --error: 0 72.2% 50.6%;
   --error-foreground: 0 0% 100%;
+
+  /* Light variant tokens */
+  --primary-light: 220 60% 95.1%;
+  --destructive-light: 0 85.7% 97.3%;
+  --info-light: 214 100% 96.9%;
+  --success-light: 138 76.5% 96.7%;
+  --warning-light: 48 100% 96.1%;
 
   /* Sidebar */
   --sidebar-background: 0 0% 98%;
@@ -76,14 +83,21 @@
   --ring: 220 70% 60%;
 
   /* Semantic status (dark) */
-  --success: 142 71% 45%;
+  --success: 142 76.2% 36.3%;
   --success-foreground: 0 0% 100%;
   --warning: 38 92% 50%;
   --warning-foreground: 0 0% 100%;
-  --info: 220 70% 60%;
+  --info: 221 83.2% 53.3%;
   --info-foreground: 0 0% 100%;
-  --error: 0 82% 60%;
+  --error: 0 72.2% 50.6%;
   --error-foreground: 0 0% 100%;
+
+  /* Light variant tokens (dark) */
+  --primary-light: 221 44.7% 18.4%;
+  --destructive-light: 0 55.3% 14.9%;
+  --info-light: 226 57% 21%;
+  --success-light: 144 50.9% 10.4%;
+  --warning-light: 39 80% 9.8%;
 
   /* Sidebar (dark) */
   --sidebar-background: 240 5.9% 10%;
@@ -150,7 +164,12 @@ body {
   --color-info-foreground: hsl(var(--info-foreground));
   --color-error: hsl(var(--error));
   --color-error-foreground: hsl(var(--error-foreground));
-  --radius-sm: calc(var(--radius) * 0.6);
+  --color-primary-light: hsl(var(--primary-light));
+  --color-destructive-light: hsl(var(--destructive-light));
+  --color-info-light: hsl(var(--info-light));
+  --color-success-light: hsl(var(--success-light));
+  --color-warning-light: hsl(var(--warning-light));
+  --radius-sm: calc(var(--radius) * 0.4);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) * 1.4);
   --radius-xl: calc(var(--radius) * 1.8);

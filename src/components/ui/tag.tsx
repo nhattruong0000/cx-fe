@@ -14,9 +14,9 @@ const tagVariants = cva(
         default:
           "bg-secondary text-secondary-foreground",
         primary:
-          "bg-primary/10 text-primary",
+          "bg-primary-light text-primary",
         destructive:
-          "bg-destructive/10 text-destructive",
+          "bg-destructive-light text-destructive",
       },
     },
     defaultVariants: {
