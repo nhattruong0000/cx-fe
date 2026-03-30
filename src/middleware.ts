@@ -12,14 +12,12 @@ export function middleware(request: NextRequest) {
   }
 
   const isAuthenticated = request.cookies.get("cx-auth")?.value === "true";
-  const userRole = request.cookies.get("cx-role")?.value;
   const isPublicPath = publicPaths.some((p) => pathname.startsWith(p));
 
   // Public paths: redirect to home if already logged in
   if (isPublicPath) {
     if (isAuthenticated && pathname === "/login") {
-      const redirectUrl = userRole === "customer" ? "/customer" : "/";
-      return NextResponse.redirect(new URL(redirectUrl, request.url));
+      return NextResponse.redirect(new URL("/", request.url));
     }
     return NextResponse.next();
   }
@@ -29,19 +27,6 @@ export function middleware(request: NextRequest) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
-  }
-
-  // Role-based route guard
-  if (pathname.startsWith("/customer") && userRole !== "customer") {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  if (
-    !pathname.startsWith("/customer") &&
-    userRole === "customer" &&
-    !isPublicPath
-  ) {
-    return NextResponse.redirect(new URL("/customer", request.url));
   }
 
   return NextResponse.next();

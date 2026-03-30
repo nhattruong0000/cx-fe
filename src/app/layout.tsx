@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { Be_Vietnam_Pro } from "next/font/google";
+import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { QueryProvider } from "@/providers/query-provider";
 import { AuthHydration } from "@/providers/auth-hydration";
-import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const beVietnamPro = Be_Vietnam_Pro({
-  subsets: ["latin", "vietnamese"],
+const inter = Inter({
+  subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-sans",
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -23,12 +22,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={cn("font-sans", beVietnamPro.variable)}>
+    <html lang="vi" className={cn("font-sans", inter.variable)}>
       <body>
         <QueryProvider>
           <AuthHydration />
           {children}
-          <Toaster />
         </QueryProvider>
       </body>
     </html>
