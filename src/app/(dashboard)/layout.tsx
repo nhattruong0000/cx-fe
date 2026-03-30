@@ -1,31 +1,35 @@
-"use client";
+"use client"
 
-import { useEffect } from "react";
-import { StaffSidebar } from "@/components/layout/staff-sidebar";
-import { StaffHeader } from "@/components/layout/staff-header";
-import { useSidebarStore } from "@/stores/sidebar-store";
+import { useState } from "react"
+import { SidebarShell } from "@/components/layout/sidebar-shell"
+import { Navbar } from "@/components/layout/navbar"
+import { SidebarMobileSheet } from "@/components/layout/sidebar-mobile-sheet"
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const hydrate = useSidebarStore((s) => s.hydrate);
-
-  useEffect(() => {
-    hydrate();
-  }, [hydrate]);
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar hidden on mobile, shown on lg+ */}
+      {/* Desktop sidebar */}
       <div className="hidden lg:block">
-        <StaffSidebar />
+        <SidebarShell />
       </div>
+
+      {/* Mobile sidebar sheet */}
+      <SidebarMobileSheet
+        open={mobileOpen}
+        onOpenChange={setMobileOpen}
+      />
+
+      {/* Main content area */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <StaffHeader />
+        <Navbar onMobileMenuToggle={() => setMobileOpen(true)} />
         <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
     </div>
-  );
+  )
 }
