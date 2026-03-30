@@ -3,164 +3,113 @@
 import Link from "next/link";
 import {
   ClipboardList,
-  MessageSquare,
+  Wrench,
   BarChart3,
-  Route,
-  Plus,
-  Mail,
-  TrendingUp,
+  Settings,
 } from "lucide-react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDashboardStats, useJourneyStats } from "@/hooks/use-analytics";
-import { useConversations } from "@/hooks/use-chat";
-import { useSurveys } from "@/hooks/use-surveys";
+import { useAuthStore } from "@/stores/auth-store";
+import { usePermissions } from "@/hooks/use-permissions";
+import { useDashboardSummary } from "@/hooks/use-analytics";
+import type { DashboardSummary } from "@/types/analytics";
+import type { LucideIcon } from "lucide-react";
 
-const modules = [
-  {
-    key: "surveys",
-    href: "/surveys",
-    icon: ClipboardList,
-    title: "Khao sat",
-    color: "text-blue-600 bg-blue-50",
-  },
-  {
-    key: "chat",
-    href: "/chat",
-    icon: MessageSquare,
-    title: "Chat",
-    color: "text-orange-600 bg-orange-50",
-  },
-  {
-    key: "analytics",
-    href: "/analytics",
-    icon: BarChart3,
-    title: "Phan tich",
-    color: "text-green-600 bg-green-50",
-  },
-  {
-    key: "journey",
-    href: "/journey",
-    icon: Route,
-    title: "Hanh trinh",
-    color: "text-purple-600 bg-purple-50",
-  },
-] as const;
-
-function StatSkeleton() {
-  return (
-    <Card>
-      <CardHeader>
-        <Skeleton className="h-5 w-24" />
-      </CardHeader>
-      <CardContent className="space-y-2">
-        <Skeleton className="h-4 w-32" />
-        <Skeleton className="h-4 w-20" />
-      </CardContent>
-    </Card>
-  );
+interface ModuleItem {
+  href: string;
+  icon: LucideIcon;
+  title: string;
+  color: string;
+  permissions: string[];
+  adminOnly?: boolean;
+  getStat: (d: DashboardSummary) => string;
 }
 
+const modules: ModuleItem[] = [
+  {
+    href: "/surveys",
+    icon: ClipboardList,
+    title: "Khảo sát",
+    color: "text-blue-600 bg-blue-50",
+    permissions: ["survey:create", "survey:edit", "survey:view_responses"],
+    getStat: (d) => `${d.surveys.active} đang hoạt động · ${d.surveys.responses} phản hồi`,
+  },
+  {
+    href: "/schedules",
+    icon: Wrench,
+    title: "Hỗ trợ KT",
+    color: "text-orange-600 bg-orange-50",
+    permissions: ["support:manage", "support:update", "support:view_all"],
+    getStat: (d) => `${d.support.pending} chờ xử lý · ${d.support.today} hôm nay`,
+  },
+  {
+    href: "/analytics",
+    icon: BarChart3,
+    title: "Phân tích",
+    color: "text-green-600 bg-green-50",
+    permissions: ["analytics:view"],
+    getStat: (d) => `NPS ${d.analytics.nps} · CSAT ${d.analytics.csat}`,
+  },
+  {
+    href: "/settings/users",
+    icon: Settings,
+    title: "Cài đặt",
+    color: "text-purple-600 bg-purple-50",
+    permissions: [],
+    adminOnly: true,
+    getStat: (d) => `${d.users.total} người dùng · ${d.users.groups} nhóm`,
+  },
+];
+
 export default function DashboardPage() {
-  const stats = useDashboardStats();
-  const journey = useJourneyStats();
-  const conversations = useConversations();
-  const surveys = useSurveys(1, 5);
+  const user = useAuthStore((s) => s.user);
+  const { canAny, role } = usePermissions();
+  const { data, isLoading } = useDashboardSummary();
 
-  const isLoading =
-    stats.isLoading || journey.isLoading || conversations.isLoading || surveys.isLoading;
-
-  function getStat(key: (typeof modules)[number]["key"]): string {
-    if (isLoading) return "...";
-    switch (key) {
-      case "surveys":
-        return `${surveys.data?.total ?? 0} khao sat`;
-      case "chat":
-        return `${conversations.data?.total ?? 0} hoi thoai`;
-      case "analytics":
-        return `NPS ${stats.data?.npsScore ?? "-"} | CSAT ${stats.data?.csatAverage ?? "-"}`;
-      case "journey":
-        return `${journey.data?.uniqueCustomers ?? 0} khach hang`;
-    }
-  }
-
-  function getSubStat(key: (typeof modules)[number]["key"]): string {
-    if (isLoading) return "";
-    switch (key) {
-      case "surveys":
-        return `Ti le phan hoi: ${stats.data?.responseRate ?? 0}%`;
-      case "chat":
-        return `${stats.data?.chatVolume ?? 0} tin nhan hom nay`;
-      case "analytics":
-        return `Ti le giai quyet: ${stats.data?.avgResolutionTime ?? 0}h`;
-      case "journey":
-        return `Ti le chuyen doi: ${journey.data?.conversionRate ?? 0}%`;
-    }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Tong quan</h1>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <StatSkeleton key={i} />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const visibleModules = modules.filter((m) => {
+    if (m.adminOnly && role !== "admin") return false;
+    return canAny(m.permissions);
+  });
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Tong quan</h1>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {modules.map((mod) => {
-          const Icon = mod.icon;
-          return (
-            <Link key={mod.key} href={mod.href} className="group">
-              <Card className="transition-shadow group-hover:shadow-md">
-                <CardHeader className="flex-row items-center gap-3">
-                  <div className={`rounded-lg p-2 ${mod.color}`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <CardTitle>{mod.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-lg font-semibold">{getStat(mod.key)}</p>
-                  <CardDescription>{getSubStat(mod.key)}</CardDescription>
-                </CardContent>
-              </Card>
-            </Link>
-          );
-        })}
-      </div>
-
       <div>
-        <h2 className="mb-3 text-lg font-semibold">Thao tac nhanh</h2>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/surveys/create" className={buttonVariants()}>
-            <Plus className="mr-2 h-4 w-4" />
-            Tao khao sat
-          </Link>
-          <Link href="/chat" className={buttonVariants({ variant: "outline" })}>
-            <Mail className="mr-2 h-4 w-4" />
-            Xem hop thu
-          </Link>
-          <Link href="/analytics" className={buttonVariants({ variant: "outline" })}>
-            <TrendingUp className="mr-2 h-4 w-4" />
-            Xem phan tich
-          </Link>
-        </div>
+        <h1 className="text-2xl font-bold">
+          Xin chào, {user?.full_name || ""}
+        </h1>
+        <p className="text-sm text-muted-foreground">Tổng quan hệ thống</p>
       </div>
+
+      {isLoading ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-28" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {visibleModules.map((mod) => {
+            const Icon = mod.icon;
+            return (
+              <Link key={mod.href} href={mod.href} className="group">
+                <Card className="transition-shadow group-hover:shadow-md">
+                  <CardHeader className="flex-row items-center gap-3 pb-2">
+                    <div className={`rounded-lg p-2 ${mod.color}`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <CardTitle className="text-base">{mod.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      {data ? mod.getStat(data) : "..."}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,117 +1,82 @@
-import type { PaginatedResponse } from "@/types/common";
-import type { Survey, SurveyResponse } from "@/types/survey";
-import type { Agent, Conversation } from "@/types/chat";
-import type { ChartDataPoint, DashboardStats, LoyaltyBalance, TierDistribution } from "@/types/analytics";
-import type { FunnelStage, JourneyEvent, JourneyStats } from "@/types/journey";
-import { mockSurveys, mockSurveyResponses } from "./mock-data/surveys";
-import { mockAgents, mockConversations } from "./mock-data/chat";
-import {
-  mockDashboardStats,
-  mockNpsTrend,
-  mockCsatTrend,
-  mockChatVolumeTrend,
-  mockLoyaltyBalances,
-  mockTierDistribution,
-} from "./mock-data/analytics";
-import { mockJourneyEvents, mockFunnelStages, mockJourneyStats } from "./mock-data/journey";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
-function delay(ms?: number): Promise<void> {
-  const time = ms ?? Math.floor(Math.random() * 300) + 200;
-  return new Promise((resolve) => setTimeout(resolve, time));
+interface RequestOptions extends RequestInit {
+  params?: Record<string, string>;
 }
 
-function paginate<T>(items: T[], page: number, pageSize: number): PaginatedResponse<T> {
-  const start = (page - 1) * pageSize;
-  const data = items.slice(start, start + pageSize);
-  return {
-    data,
-    total: items.length,
-    page,
-    pageSize,
-    totalPages: Math.ceil(items.length / pageSize),
+function getAuthToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('cx-token');
+}
+
+async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+  const { params, ...fetchOptions } = options;
+
+  let url = `${API_BASE_URL}${endpoint}`;
+  if (params) {
+    // Filter out undefined/null/empty values to prevent sending "undefined" strings
+    const filtered = Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v != null && v !== '')
+    );
+    if (Object.keys(filtered).length > 0) {
+      const searchParams = new URLSearchParams(filtered);
+      url += `?${searchParams.toString()}`;
+    }
+  }
+
+  const token = getAuthToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
   };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, {
+    ...fetchOptions,
+    headers,
+  });
+
+  if (response.status === 401) {
+    localStorage.removeItem('cx-token');
+    document.cookie = 'cx-auth=; path=/; max-age=0';
+    window.location.href = '/login';
+    throw new Error('Unauthorized');
+  }
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: 'Request failed' }));
+    const msg = error.message || error.error || (Array.isArray(error.errors) ? error.errors.join(', ') : null) || `HTTP ${response.status}`;
+    throw new Error(msg);
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  return response.json();
 }
 
-// --- Surveys ---
-
-export async function getSurveys(page = 1, pageSize = 10): Promise<PaginatedResponse<Survey>> {
-  await delay();
-  return paginate(mockSurveys, page, pageSize);
+/** Maps backend pagination shape to frontend PaginatedResponse fields */
+export function mapPagination(p: { current_page: number; total_pages: number; total_count: number }) {
+  return { page: p.current_page, totalPages: p.total_pages, total: p.total_count, pageSize: 25 };
 }
 
-export async function getSurveyById(id: string): Promise<Survey | undefined> {
-  await delay();
-  return mockSurveys.find((s) => s.id === id);
-}
+export const apiClient = {
+  get: <T>(endpoint: string, options?: RequestOptions) =>
+    request<T>(endpoint, { ...options, method: 'GET' }),
 
-export async function getSurveyResponses(surveyId: string, page = 1, pageSize = 10): Promise<PaginatedResponse<SurveyResponse>> {
-  await delay();
-  const filtered = mockSurveyResponses.filter((r) => r.surveyId === surveyId);
-  return paginate(filtered, page, pageSize);
-}
+  post: <T>(endpoint: string, body?: unknown, options?: RequestOptions) =>
+    request<T>(endpoint, { ...options, method: 'POST', body: JSON.stringify(body) }),
 
-// --- Chat ---
+  put: <T>(endpoint: string, body?: unknown, options?: RequestOptions) =>
+    request<T>(endpoint, { ...options, method: 'PUT', body: JSON.stringify(body) }),
 
-export async function getConversations(page = 1, pageSize = 10): Promise<PaginatedResponse<Conversation>> {
-  await delay();
-  return paginate(mockConversations, page, pageSize);
-}
+  patch: <T>(endpoint: string, body?: unknown, options?: RequestOptions) =>
+    request<T>(endpoint, { ...options, method: 'PATCH', body: JSON.stringify(body) }),
 
-export async function getConversationById(id: string): Promise<Conversation | undefined> {
-  await delay();
-  return mockConversations.find((c) => c.id === id);
-}
-
-export async function getAgents(): Promise<Agent[]> {
-  await delay();
-  return mockAgents;
-}
-
-// --- Analytics ---
-
-export async function getDashboardStats(): Promise<DashboardStats> {
-  await delay();
-  return mockDashboardStats;
-}
-
-export async function getNpsTrend(): Promise<ChartDataPoint[]> {
-  await delay();
-  return mockNpsTrend;
-}
-
-export async function getCsatTrend(): Promise<ChartDataPoint[]> {
-  await delay();
-  return mockCsatTrend;
-}
-
-export async function getChatVolumeTrend(): Promise<ChartDataPoint[]> {
-  await delay();
-  return mockChatVolumeTrend;
-}
-
-export async function getLoyaltyBalances(page = 1, pageSize = 10): Promise<PaginatedResponse<LoyaltyBalance>> {
-  await delay();
-  return paginate(mockLoyaltyBalances, page, pageSize);
-}
-
-export async function getTierDistribution(): Promise<TierDistribution[]> {
-  await delay();
-  return mockTierDistribution;
-}
-
-// --- Journey ---
-
-export async function getJourneyEvents(page = 1, pageSize = 10): Promise<PaginatedResponse<JourneyEvent>> {
-  await delay();
-  return paginate(mockJourneyEvents, page, pageSize);
-}
-
-export async function getFunnelStages(): Promise<FunnelStage[]> {
-  await delay();
-  return mockFunnelStages;
-}
-
-export async function getJourneyStats(): Promise<JourneyStats> {
-  await delay();
-  return mockJourneyStats;
-}
+  delete: <T>(endpoint: string, options?: RequestOptions) =>
+    request<T>(endpoint, { ...options, method: 'DELETE' }),
+};

@@ -1,32 +1,34 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowUp, ArrowDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface KpiStatCardProps {
-  label: string;
-  value: string | number;
-  change?: number;
-  suffix?: string;
+  title: string;
+  value: string;
+  trend?: number;
+  icon: React.ReactNode;
 }
 
-export function KpiStatCard({ label, value, change, suffix }: KpiStatCardProps) {
-  const isPositive = change !== undefined && change >= 0;
-
+export function KpiStatCard({ title, value, trend, icon }: KpiStatCardProps) {
   return (
     <Card>
-      <CardContent className="p-4">
-        <p className="text-sm text-muted-foreground">{label}</p>
-        <div className="mt-1 flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{value}</span>
-          {suffix && <span className="text-sm text-muted-foreground">{suffix}</span>}
-        </div>
-        {change !== undefined && (
-          <div className={cn("mt-1 flex items-center gap-1 text-xs font-medium", isPositive ? "text-green-600" : "text-red-600")}>
-            {isPositive ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
-            <span>{Math.abs(change)}%</span>
-          </div>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <span className="text-muted-foreground">{icon}</span>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+        {trend !== undefined && trend !== 0 && (
+          <p className={`mt-1 flex items-center text-xs ${trend > 0 ? "text-green-600" : "text-red-600"}`}>
+            {trend > 0 ? (
+              <TrendingUp className="mr-1 h-3 w-3" />
+            ) : (
+              <TrendingDown className="mr-1 h-3 w-3" />
+            )}
+            {trend > 0 ? "+" : ""}
+            {trend.toFixed(1)}
+          </p>
         )}
       </CardContent>
     </Card>

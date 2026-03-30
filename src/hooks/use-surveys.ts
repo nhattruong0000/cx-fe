@@ -1,44 +1,79 @@
-"use client";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { surveysApi } from '@/lib/api/surveys';
+import { customerSurveysApi } from '@/lib/api/customer-surveys';
+import type { CreateSurveyData, SubmitResponseData } from '@/types/survey';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  getSurveys,
-  getSurvey,
-  getResponses,
-  createSurvey,
-  type SurveyFilters,
-  type CreateSurveyInput,
-} from "@/lib/api/surveys";
-
-export function useSurveys(page = 1, pageSize = 20, filters?: SurveyFilters) {
+// Staff hooks
+export function useSurveys(params?: { page?: number; survey_type?: string; status?: string; q?: string }) {
   return useQuery({
-    queryKey: ["surveys", page, pageSize, filters],
-    queryFn: () => getSurveys(page, pageSize, filters),
+    queryKey: ['surveys', params],
+    queryFn: () => surveysApi.list(params),
   });
 }
 
-export function useSurvey(id: string) {
+export function useSurveyDetail(id: number) {
   return useQuery({
-    queryKey: ["survey", id],
-    queryFn: () => getSurvey(id),
-    enabled: !!id,
+    queryKey: ['survey', id],
+    queryFn: () => surveysApi.detail(id),
   });
 }
 
-export function useResponses(surveyId: string, page = 1, pageSize = 10) {
+export function useSurveyStats(id: number) {
   return useQuery({
-    queryKey: ["survey-responses", surveyId, page, pageSize],
-    queryFn: () => getResponses(surveyId, page, pageSize),
-    enabled: !!surveyId,
+    queryKey: ['survey-stats', id],
+    queryFn: () => surveysApi.stats(id),
+  });
+}
+
+export function useSurveyResponses(id: number, page = 1) {
+  return useQuery({
+    queryKey: ['survey-responses', id, page],
+    queryFn: () => surveysApi.responses(id, page),
   });
 }
 
 export function useCreateSurvey() {
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: CreateSurveyInput) => createSurvey(input),
+    mutationFn: (data: CreateSurveyData) => surveysApi.create(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['surveys'] }),
+  });
+}
+
+export function useCloseSurvey() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => surveysApi.close(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["surveys"] });
+      qc.invalidateQueries({ queryKey: ['surveys'] });
+      qc.invalidateQueries({ queryKey: ['survey'] });
+    },
+  });
+}
+
+// Customer hooks
+export function useCustomerSurveys() {
+  return useQuery({
+    queryKey: ['customer-surveys'],
+    queryFn: () => customerSurveysApi.list(),
+  });
+}
+
+export function useCustomerSurveyDetail(id: number) {
+  return useQuery({
+    queryKey: ['customer-survey', id],
+    queryFn: () => customerSurveysApi.detail(id),
+  });
+}
+
+export function useSubmitResponse() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: SubmitResponseData }) =>
+      customerSurveysApi.respond(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['customer-surveys'] });
+      qc.invalidateQueries({ queryKey: ['customer-survey'] });
     },
   });
 }

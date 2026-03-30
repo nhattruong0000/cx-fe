@@ -12,11 +12,18 @@ import {
 import { Fragment } from "react";
 
 const labelMap: Record<string, string> = {
-  "": "Dashboard",
+  "": "Trang chủ",
   surveys: "Khảo sát",
-  chat: "Chat",
+  create: "Tạo mới",
   analytics: "Phân tích",
-  journey: "Hành trình",
+  schedules: "Lịch hỗ trợ",
+  settings: "Cài đặt",
+  users: "Người dùng",
+  groups: "Nhóm quyền",
+  organizations: "Tổ chức",
+  profile: "Hồ sơ",
+  customer: "Khách hàng",
+  support: "Hỗ trợ",
 };
 
 export function BreadcrumbNav() {
@@ -29,7 +36,7 @@ export function BreadcrumbNav() {
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+          <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
         </BreadcrumbItem>
         {segments.map((segment, index) => {
           const href = "/" + segments.slice(0, index + 1).join("/");

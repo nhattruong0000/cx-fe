@@ -1,9 +1,14 @@
 "use client";
 
-import { useForm, useFieldArray } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,232 +19,244 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2 } from "lucide-react";
+import { OptionListEditor } from "@/components/surveys/option-list-editor";
+import { OrganizationSelector } from "@/components/surveys/organization-selector";
+import { SurveyPreviewPanel } from "@/components/surveys/survey-preview-panel";
 import { useCreateSurvey } from "@/hooks/use-surveys";
-import { useRouter } from "next/navigation";
-import type { SurveyType } from "@/types/survey";
+import type { QuestionType, SurveyType } from "@/types/survey";
 
-const questionSchema = z.object({
-  text: z.string().min(1, "Câu hỏi không được để trống"),
-  type: z.enum(["rating", "text", "multiple_choice", "single_choice"]),
-  required: z.boolean(),
+const surveySchema = z.object({
+  title: z.string().min(1, "Tiêu đề là bắt buộc"),
+  description: z.string().optional(),
 });
 
-const surveyFormSchema = z.object({
-  title: z.string().min(1, "Tiêu đề không được để trống"),
-  type: z.enum(["CSAT", "CES", "NPS"]),
-  description: z.string().min(1, "Mô tả không được để trống"),
-  triggerPoint: z.string().min(1, "Điểm kích hoạt không được để trống"),
-  questions: z.array(questionSchema).min(1, "Cần ít nhất 1 câu hỏi"),
-});
+type SurveyFormValues = z.infer<typeof surveySchema>;
 
-type SurveyFormValues = z.infer<typeof surveyFormSchema>;
+interface QuestionItem {
+  text: string;
+  question_type: QuestionType;
+  options: string[];
+  required: boolean;
+  position: number;
+}
 
 export function SurveyForm() {
   const router = useRouter();
-  const createSurvey = useCreateSurvey();
+  const createMut = useCreateSurvey();
+  const [surveyType, setSurveyType] = useState<string>("CSAT");
+  const [targetType, setTargetType] = useState<string>("all");
+  const [targetOrgIds, setTargetOrgIds] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<QuestionItem[]>([]);
+  const targetLabel: Record<string, string> = { all: "Tất cả", specific: "Chọn tổ chức" };
+  const questionTypeLabel: Record<string, string> = { rating: "Đánh giá", text: "Văn bản", single_choice: "Chọn 1", multiple_choice: "Chọn nhiều" };
 
   const {
     register,
     handleSubmit,
-    control,
-    setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SurveyFormValues>({
-    resolver: zodResolver(surveyFormSchema),
-    defaultValues: {
-      title: "",
-      type: "CSAT",
-      description: "",
-      triggerPoint: "",
-      questions: [{ text: "", type: "rating", required: true }],
-    },
+    resolver: zodResolver(surveySchema),
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "questions",
-  });
-
-  const onSubmit = async (data: SurveyFormValues) => {
-    await createSurvey.mutateAsync(data);
-    router.push("/surveys");
+  const addQuestion = () => {
+    setQuestions((prev) => [
+      ...prev,
+      {
+        text: "",
+        question_type: "rating",
+        options: [],
+        required: true,
+        position: prev.length + 1,
+      },
+    ]);
   };
 
+  const removeQuestion = (index: number) => {
+    setQuestions((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateQuestion = (index: number, field: keyof QuestionItem, value: unknown) => {
+    setQuestions((prev) =>
+      prev.map((q, i) => (i === index ? { ...q, [field]: value } : q))
+    );
+  };
+
+  const onSubmit = async (data: SurveyFormValues) => {
+    if (questions.length === 0) {
+      toast.error("Cần ít nhất 1 câu hỏi");
+      return;
+    }
+    try {
+      await createMut.mutateAsync({
+        title: data.title,
+        survey_type: surveyType as "CSAT" | "NPS" | "CES",
+        description: data.description || "",
+        target_type: targetType as "all" | "specific",
+        target_organization_ids: targetType === "specific" ? targetOrgIds : [],
+        questions,
+      });
+      toast.success("Tạo khảo sát thành công");
+      router.push("/surveys");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Tạo khảo sát thất bại");
+    }
+  };
+
+  const watchedTitle = watch("title", "");
+  const watchedDescription = watch("description", "");
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Thông tin khảo sát</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Tiêu đề</Label>
-            <Input id="title" {...register("title")} placeholder="Nhập tiêu đề khảo sát" />
-            {errors.title && (
-              <p className="text-sm text-destructive">{errors.title.message}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+    <div className="flex gap-6">
+      {/* Left: Form */}
+      <form onSubmit={handleSubmit(onSubmit)} className="min-w-0 flex-1 space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Thông tin khảo sát</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Loại khảo sát</Label>
-              <Select
-                value={watch("type")}
-                onValueChange={(v) => setValue("type", v as SurveyType)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CSAT">CSAT</SelectItem>
-                  <SelectItem value="CES">CES</SelectItem>
-                  <SelectItem value="NPS">NPS</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="triggerPoint">Điểm kích hoạt</Label>
-              <Input
-                id="triggerPoint"
-                {...register("triggerPoint")}
-                placeholder="VD: post_purchase"
-              />
-              {errors.triggerPoint && (
-                <p className="text-sm text-destructive">{errors.triggerPoint.message}</p>
+              <Label htmlFor="title">Tiêu đề</Label>
+              <Input id="title" {...register("title")} />
+              {errors.title && (
+                <p className="text-sm text-destructive">{errors.title.message}</p>
               )}
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Mô tả</Label>
-            <Textarea
-              id="description"
-              {...register("description")}
-              placeholder="Mô tả khảo sát"
-            />
-            {errors.description && (
-              <p className="text-sm text-destructive">{errors.description.message}</p>
+            <div className="space-y-2">
+              <Label htmlFor="desc">Mô tả</Label>
+              <Textarea id="desc" rows={3} {...register("description")} />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Loại khảo sát</Label>
+                <Select value={surveyType} onValueChange={(v) => { if (v) setSurveyType(v); }}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="CSAT">CSAT</SelectItem>
+                    <SelectItem value="NPS">NPS</SelectItem>
+                    <SelectItem value="CES">CES</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Đối tượng</Label>
+                <Select value={targetType} onValueChange={(v) => { if (v) setTargetType(v); }}>
+                  <SelectTrigger>
+                    <SelectValue>{targetLabel[targetType]}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả</SelectItem>
+                    <SelectItem value="specific">Chọn tổ chức</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {targetType === "specific" && (
+              <OrganizationSelector
+                selectedIds={targetOrgIds}
+                onChange={setTargetOrgIds}
+              />
             )}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Câu hỏi</CardTitle>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => append({ text: "", type: "rating", required: true })}
-          >
-            <Plus className="mr-1 h-4 w-4" />
-            Thêm câu hỏi
+        <Card>
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle>Câu hỏi ({questions.length})</CardTitle>
+            <Button type="button" variant="outline" size="sm" onClick={addQuestion}>
+              <Plus className="mr-1 h-4 w-4" />
+              Thêm câu hỏi
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {questions.length === 0 && (
+              <p className="py-4 text-center text-sm text-muted-foreground">
+                Chưa có câu hỏi. Nhấn &quot;Thêm câu hỏi&quot; để bắt đầu.
+              </p>
+            )}
+            {questions.map((q, idx) => (
+              <div key={idx} className="rounded-lg border p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 space-y-2">
+                    <Input
+                      placeholder={`Câu hỏi ${idx + 1}`}
+                      value={q.text}
+                      onChange={(e) => updateQuestion(idx, "text", e.target.value)}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeQuestion(idx)}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Select
+                    value={q.question_type}
+                    onValueChange={(v) => { if (v) updateQuestion(idx, "question_type", v); }}
+                  >
+                    <SelectTrigger className="w-[160px]">
+                      <SelectValue>{questionTypeLabel[q.question_type]}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rating">Đánh giá</SelectItem>
+                      <SelectItem value="text">Văn bản</SelectItem>
+                      <SelectItem value="single_choice">Chọn 1</SelectItem>
+                      <SelectItem value="multiple_choice">Chọn nhiều</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <label className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={q.required}
+                      onCheckedChange={(c) => updateQuestion(idx, "required", !!c)}
+                    />
+                    Bắt buộc
+                  </label>
+                </div>
+                {(q.question_type === "single_choice" || q.question_type === "multiple_choice") && (
+                  <OptionListEditor
+                    options={q.options}
+                    onChange={(opts) => updateQuestion(idx, "options", opts)}
+                  />
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end gap-3">
+          <Button type="button" variant="outline" onClick={() => router.back()}>
+            Hủy
           </Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {errors.questions?.root && (
-            <p className="text-sm text-destructive">{errors.questions.root.message}</p>
-          )}
-          {fields.map((field, index) => (
-            <SurveyQuestionField
-              key={field.id}
-              index={index}
-              register={register}
-              watch={watch}
-              setValue={setValue}
-              errors={errors}
-              onRemove={() => remove(index)}
-              canRemove={fields.length > 1}
-            />
-          ))}
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-end gap-3">
-        <Button type="button" variant="outline" onClick={() => router.push("/surveys")}>
-          Hủy
-        </Button>
-        <Button type="submit" disabled={createSurvey.isPending}>
-          {createSurvey.isPending ? "Đang tạo..." : "Tạo khảo sát"}
-        </Button>
-      </div>
-    </form>
-  );
-}
-
-interface QuestionFieldProps {
-  index: number;
-  register: ReturnType<typeof useForm<SurveyFormValues>>["register"];
-  watch: ReturnType<typeof useForm<SurveyFormValues>>["watch"];
-  setValue: ReturnType<typeof useForm<SurveyFormValues>>["setValue"];
-  errors: ReturnType<typeof useForm<SurveyFormValues>>["formState"]["errors"];
-  onRemove: () => void;
-  canRemove: boolean;
-}
-
-function SurveyQuestionField({
-  index,
-  register,
-  watch,
-  setValue,
-  errors,
-  onRemove,
-  canRemove,
-}: QuestionFieldProps) {
-  return (
-    <div className="rounded-lg border p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">Câu hỏi {index + 1}</span>
-        {canRemove && (
-          <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
-            <Trash2 className="h-4 w-4 text-destructive" />
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Đang tạo...
+              </>
+            ) : (
+              "Tạo khảo sát"
+            )}
           </Button>
-        )}
-      </div>
+        </div>
+      </form>
 
-      <Input
-        {...register(`questions.${index}.text`)}
-        placeholder="Nhập nội dung câu hỏi"
-      />
-      {errors.questions?.[index]?.text && (
-        <p className="text-sm text-destructive">
-          {errors.questions[index].text?.message}
-        </p>
-      )}
-
-      <div className="flex items-center gap-4">
-        <Select
-          value={watch(`questions.${index}.type`)}
-          onValueChange={(v) =>
-            setValue(`questions.${index}.type`, v as SurveyFormValues["questions"][number]["type"])
-          }
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="rating">Đánh giá</SelectItem>
-            <SelectItem value="text">Văn bản</SelectItem>
-            <SelectItem value="single_choice">Chọn một</SelectItem>
-            <SelectItem value="multiple_choice">Chọn nhiều</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <label className="flex items-center gap-2 text-sm">
-          <Checkbox
-            checked={watch(`questions.${index}.required`)}
-            onCheckedChange={(checked) =>
-              setValue(`questions.${index}.required`, checked === true)
-            }
-          />
-          Bắt buộc
-        </label>
+      {/* Right: Live preview */}
+      <div className="w-[440px] shrink-0">
+        <SurveyPreviewPanel
+          data={{
+            title: watchedTitle || "",
+            survey_type: surveyType as SurveyType,
+            description: watchedDescription,
+            questions: questions.map((q, i) => ({ ...q, id: i })),
+          }}
+        />
       </div>
     </div>
   );

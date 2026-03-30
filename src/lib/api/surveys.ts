@@ -1,95 +1,49 @@
-import type { PaginatedResponse } from "@/types/common";
-import type { Survey, SurveyResponse, SurveyType } from "@/types/survey";
-import {
-  getSurveys as fetchSurveys,
-  getSurveyById,
-  getSurveyResponses as fetchResponses,
-} from "./client";
-import { mockSurveys } from "./mock-data/surveys";
+import { apiClient, mapPagination } from './client';
+import type { PaginatedResponse } from '@/types/common';
+import type {
+  Survey,
+  SurveyDetail,
+  SurveyResponse,
+  SurveyStats,
+  CreateSurveyData,
+} from '@/types/survey';
 
-export interface SurveyFilters {
-  type?: SurveyType;
-  status?: "active" | "inactive";
-  search?: string;
-}
+export const surveysApi = {
+  list: async (params?: { page?: number; survey_type?: string; status?: string; q?: string }) => {
+    const res = await apiClient.get<{ surveys: Survey[]; pagination: { current_page: number; total_pages: number; total_count: number } }>('/api/v1/surveys', {
+      params: params as Record<string, string>,
+    });
+    return { data: res.surveys, ...mapPagination(res.pagination) } as PaginatedResponse<Survey>;
+  },
 
-export interface CreateSurveyInput {
-  title: string;
-  type: SurveyType;
-  description: string;
-  questions: { text: string; type: string; required: boolean; options?: string[] }[];
-  triggerPoint: string;
-}
+  detail: async (id: number) => {
+    const res = await apiClient.get<{ survey: SurveyDetail }>(`/api/v1/surveys/${id}`);
+    return res.survey;
+  },
 
-export async function getSurveys(
-  page = 1,
-  pageSize = 20,
-  filters?: SurveyFilters,
-): Promise<PaginatedResponse<Survey>> {
-  const result = await fetchSurveys(page, pageSize);
+  create: async (data: CreateSurveyData) => {
+    const res = await apiClient.post<{ survey: SurveyDetail }>('/api/v1/surveys', data);
+    return res.survey;
+  },
 
-  if (!filters) return result;
+  update: async (id: number, data: Partial<CreateSurveyData>) => {
+    const res = await apiClient.patch<{ survey: SurveyDetail }>(`/api/v1/surveys/${id}`, data);
+    return res.survey;
+  },
 
-  let filtered = [...mockSurveys];
+  close: (id: number) =>
+    apiClient.patch<void>(`/api/v1/surveys/${id}/close`),
 
-  if (filters.type) {
-    filtered = filtered.filter((s) => s.type === filters.type);
-  }
-  if (filters.status) {
-    filtered = filtered.filter((s) =>
-      filters.status === "active" ? s.active : !s.active,
-    );
-  }
-  if (filters.search) {
-    const q = filters.search.toLowerCase();
-    filtered = filtered.filter((s) => s.title.toLowerCase().includes(q));
-  }
+  delete: (id: number) =>
+    apiClient.delete<void>(`/api/v1/surveys/${id}`),
 
-  const start = (page - 1) * pageSize;
-  const data = filtered.slice(start, start + pageSize);
+  responses: async (id: number, page = 1) => {
+    const res = await apiClient.get<{ responses: SurveyResponse[]; pagination: { current_page: number; total_pages: number; total_count: number } }>(`/api/v1/surveys/${id}/responses`, {
+      params: { page: String(page) },
+    });
+    return { data: res.responses, ...mapPagination(res.pagination) } as PaginatedResponse<SurveyResponse>;
+  },
 
-  return {
-    data,
-    total: filtered.length,
-    page,
-    pageSize,
-    totalPages: Math.ceil(filtered.length / pageSize),
-  };
-}
-
-export async function getSurvey(id: string): Promise<Survey | undefined> {
-  return getSurveyById(id);
-}
-
-export async function getResponses(
-  surveyId: string,
-  page = 1,
-  pageSize = 10,
-): Promise<PaginatedResponse<SurveyResponse>> {
-  return fetchResponses(surveyId, page, pageSize);
-}
-
-export async function createSurvey(input: CreateSurveyInput): Promise<Survey> {
-  // Mock: simulate API delay + return created survey
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  const survey: Survey = {
-    id: `srv-${Date.now()}`,
-    type: input.type,
-    title: input.title,
-    description: input.description,
-    questions: input.questions.map((q, i) => ({
-      id: `q${i + 1}`,
-      text: q.text,
-      type: q.type as Survey["questions"][number]["type"],
-      required: q.required,
-      options: q.options,
-    })),
-    triggerPoint: input.triggerPoint,
-    active: true,
-    responseCount: 0,
-    averageScore: 0,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-  return survey;
-}
+  stats: (id: number) =>
+    apiClient.get<SurveyStats>(`/api/v1/surveys/${id}/stats`),
+};

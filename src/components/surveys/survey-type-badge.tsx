@@ -1,24 +1,15 @@
 "use client";
 
-import type { SurveyType } from "@/types/survey";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import type { SurveyType } from "@/types/survey";
 
-const typeStyles: Record<SurveyType, string> = {
-  CSAT: "bg-blue-100 text-blue-700 border-blue-200",
-  CES: "bg-green-100 text-green-700 border-green-200",
-  NPS: "bg-purple-100 text-purple-700 border-purple-200",
+const typeConfig: Record<SurveyType, { label: string; variant: "default" | "secondary" | "outline" }> = {
+  CSAT: { label: "CSAT", variant: "default" },
+  NPS: { label: "NPS", variant: "secondary" },
+  CES: { label: "CES", variant: "outline" },
 };
 
-interface SurveyTypeBadgeProps {
-  type: SurveyType;
-  className?: string;
-}
-
-export function SurveyTypeBadge({ type, className }: SurveyTypeBadgeProps) {
-  return (
-    <Badge variant="outline" className={cn(typeStyles[type], className)}>
-      {type}
-    </Badge>
-  );
+export function SurveyTypeBadge({ type }: { type: SurveyType }) {
+  const config = typeConfig[type];
+  return <Badge variant={config.variant}>{config.label}</Badge>;
 }

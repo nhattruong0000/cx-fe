@@ -1,75 +1,24 @@
-"use client";
+import { useQuery } from '@tanstack/react-query';
+import { analyticsApi } from '@/lib/api/analytics';
+import { dashboardApi } from '@/lib/api/dashboard';
 
-import { useQuery } from "@tanstack/react-query";
-import type { DateRange } from "@/types/common";
-import {
-  getDashboardStats,
-  getNpsTrend,
-  getCsatBreakdown,
-  getResponseRate,
-  getLoyaltyStats,
-  getTierDistribution,
-  getJourneyFunnel,
-  getJourneyDashboardStats,
-} from "@/lib/api/analytics";
-
-function dateRangeKey(dateRange?: DateRange) {
-  if (!dateRange) return "all";
-  return `${dateRange.from.toISOString()}-${dateRange.to.toISOString()}`;
-}
-
-export function useDashboardStats(dateRange?: DateRange) {
+export function useAnalyticsOverview(from?: string, to?: string) {
   return useQuery({
-    queryKey: ["dashboard-stats", dateRangeKey(dateRange)],
-    queryFn: getDashboardStats,
+    queryKey: ['analytics-overview', from, to],
+    queryFn: () => analyticsApi.overview({ from, to }),
   });
 }
 
-export function useNpsTrend(dateRange?: DateRange) {
+export function useDashboardSummary() {
   return useQuery({
-    queryKey: ["nps-trend", dateRangeKey(dateRange)],
-    queryFn: getNpsTrend,
+    queryKey: ['dashboard-summary'],
+    queryFn: () => dashboardApi.staffSummary(),
   });
 }
 
-export function useCsatBreakdown(dateRange?: DateRange) {
+export function useCustomerDashboard(organizationId?: string) {
   return useQuery({
-    queryKey: ["csat-breakdown", dateRangeKey(dateRange)],
-    queryFn: getCsatBreakdown,
-  });
-}
-
-export function useResponseRate(dateRange?: DateRange) {
-  return useQuery({
-    queryKey: ["response-rate", dateRangeKey(dateRange)],
-    queryFn: getResponseRate,
-  });
-}
-
-export function useLoyaltyStats(dateRange?: DateRange) {
-  return useQuery({
-    queryKey: ["loyalty-stats", dateRangeKey(dateRange)],
-    queryFn: getLoyaltyStats,
-  });
-}
-
-export function useTierDistribution(dateRange?: DateRange) {
-  return useQuery({
-    queryKey: ["tier-distribution", dateRangeKey(dateRange)],
-    queryFn: getTierDistribution,
-  });
-}
-
-export function useJourneyFunnel() {
-  return useQuery({
-    queryKey: ["journey-funnel"],
-    queryFn: getJourneyFunnel,
-  });
-}
-
-export function useJourneyStats() {
-  return useQuery({
-    queryKey: ["journey-stats"],
-    queryFn: getJourneyDashboardStats,
+    queryKey: ['customer-dashboard', organizationId],
+    queryFn: () => dashboardApi.customerDashboard(organizationId),
   });
 }

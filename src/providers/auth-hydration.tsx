@@ -2,12 +2,17 @@
 
 import { useEffect } from "react";
 import { useAuthStore } from "@/stores/auth-store";
+import { useSidebarStore } from "@/stores/sidebar-store";
 
-/** Hydrates auth state from localStorage on mount. Place in root layout. */
+/** Hydrates auth + sidebar state from localStorage on mount. Place in root layout. */
 export function AuthHydration() {
-  const hydrate = useAuthStore((s) => s.hydrate);
+  const hydrateAuth = useAuthStore((s) => s.hydrate);
+  const hydrateSidebar = useSidebarStore((s) => s.hydrate);
+
   useEffect(() => {
-    hydrate();
-  }, [hydrate]);
+    hydrateAuth();
+    hydrateSidebar();
+  }, [hydrateAuth, hydrateSidebar]);
+
   return null;
 }

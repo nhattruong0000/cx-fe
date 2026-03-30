@@ -21,13 +21,13 @@ export default function ErrorPage({
       <Card className="max-w-md w-full">
         <CardContent className="flex flex-col items-center gap-4 pt-6 text-center">
           <AlertCircle className="h-12 w-12 text-destructive" />
-          <h1 className="text-xl font-semibold">Da xay ra loi</h1>
+          <h1 className="text-xl font-semibold">Đã xảy ra lỗi</h1>
           <p className="text-sm text-muted-foreground">
-            {error.message || "Mot loi khong mong muon da xay ra. Vui long thu lai."}
+            {error.message || "Một lỗi không mong muốn đã xảy ra. Vui lòng thử lại."}
           </p>
         </CardContent>
         <CardFooter className="justify-center">
-          <Button onClick={reset}>Thu lai</Button>
+          <Button onClick={reset}>Thử lại</Button>
         </CardFooter>
       </Card>
     </div>
