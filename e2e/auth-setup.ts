@@ -55,7 +55,7 @@ async function setAuthState(page: Page, login: LoginResult) {
 
 /** Login as admin via API and inject auth state into page */
 export async function loginAsAdmin(page: Page) {
-  const login = await apiLogin('admin@sonnguyenauto.com', '123123123aA@');
+  const login = await apiLogin('admin@sonnguyenauto.com', '123123aA@');
   await setAuthState(page, login);
   return login;
 }
@@ -78,10 +78,11 @@ export async function loginViaUI(page: Page, email: string, password: string) {
   await hideNextJsDevOverlay(page);
 }
 
-/** Wait for dashboard to be visible after login */
+/** Wait for successful login redirect (admin → /users, customer → /profile) */
 export async function expectDashboard(page: Page) {
   await hideNextJsDevOverlay(page);
-  await expect(page.getByText('Tổng quan hệ thống')).toBeVisible({ timeout: 15_000 });
+  // Dashboard page redirects admin to /users and customer to /profile
+  await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 });
 }
 
 /** Navigate to a dashboard page as admin (API auth + goto) */
