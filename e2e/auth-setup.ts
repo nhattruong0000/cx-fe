@@ -55,7 +55,7 @@ async function setAuthState(page: Page, login: LoginResult) {
 
 /** Login as admin via API and inject auth state into page */
 export async function loginAsAdmin(page: Page) {
-  const login = await apiLogin('admin@sonnguyenauto.com', '123123aA@');
+  const login = await apiLogin('admin@sonnguyenauto.com', '123123123aA@');
   await setAuthState(page, login);
   return login;
 }
@@ -74,7 +74,6 @@ export async function loginViaUI(page: Page, email: string, password: string) {
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Mật khẩu').fill(password);
   await page.getByRole('button', { name: 'Đăng nhập' }).click();
-  // Wait for navigation to complete
   await page.waitForLoadState('networkidle');
   await hideNextJsDevOverlay(page);
 }
@@ -84,3 +83,12 @@ export async function expectDashboard(page: Page) {
   await hideNextJsDevOverlay(page);
   await expect(page.getByText('Tổng quan hệ thống')).toBeVisible({ timeout: 15_000 });
 }
+
+/** Navigate to a dashboard page as admin (API auth + goto) */
+export async function navigateAsAdmin(page: Page, path: string) {
+  await loginAsAdmin(page);
+  await page.goto(path, { waitUntil: 'domcontentloaded' });
+  await hideNextJsDevOverlay(page);
+}
+
+export { hideNextJsDevOverlay };
