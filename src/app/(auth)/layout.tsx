@@ -1,9 +1,11 @@
-import { AuthSplitLayout } from "@/components/auth/auth-split-layout";
-
 export default function AuthLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  return <AuthSplitLayout>{children}</AuthSplitLayout>;
+  return (
+    <div className="flex min-h-dvh">
+      {children}
+    </div>
+  )
 }
