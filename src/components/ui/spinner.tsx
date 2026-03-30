@@ -1,33 +1,28 @@
-import * as React from "react"
 import { Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-interface SpinnerProps extends React.ComponentProps<"div"> {
-  size?: "sm" | "default" | "lg"
+const sizeMap = {
+  sm: "size-4",
+  default: "size-6",
+  lg: "size-8",
+} as const
+
+type SpinnerSize = keyof typeof sizeMap
+
+interface SpinnerProps extends React.ComponentProps<"svg"> {
+  size?: SpinnerSize
 }
 
 function Spinner({ className, size = "default", ...props }: SpinnerProps) {
   return (
-    <div
+    <Loader2
       data-slot="spinner"
-      role="status"
-      aria-label="Loading"
-      className={cn("inline-flex items-center justify-center", className)}
+      className={cn("animate-spin text-primary", sizeMap[size], className)}
       {...props}
-    >
-      <Loader2
-        className={cn(
-          "animate-spin text-muted-foreground",
-          size === "sm" && "size-4",
-          size === "default" && "size-6",
-          size === "lg" && "size-8"
-        )}
-      />
-      <span className="sr-only">Loading...</span>
-    </div>
+    />
   )
 }
 
 export { Spinner }
-export type { SpinnerProps }
+export type { SpinnerSize }

@@ -1,83 +1,48 @@
 "use client"
 
-import { Progress as ProgressPrimitive } from "@base-ui/react/progress"
+import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+const strengthLabels = ["weak", "fair", "good", "strong"] as const
+type StrengthLevel = 0 | 1 | 2 | 3 | 4
+
+interface ProgressProps extends React.ComponentProps<"div"> {
+  /** Number of filled segments (0-4) */
+  value?: StrengthLevel
+  /** Show strength label below the bar */
+  showLabel?: boolean
+}
+
 function Progress({
   className,
-  children,
-  value,
+  value = 0,
+  showLabel = false,
   ...props
-}: ProgressPrimitive.Root.Props) {
-  return (
-    <ProgressPrimitive.Root
-      value={value}
-      data-slot="progress"
-      className={cn("flex flex-wrap gap-3", className)}
-      {...props}
-    >
-      {children}
-      <ProgressTrack>
-        <ProgressIndicator />
-      </ProgressTrack>
-    </ProgressPrimitive.Root>
-  )
-}
+}: ProgressProps) {
+  const label = value > 0 ? strengthLabels[value - 1] : undefined
 
-function ProgressTrack({ className, ...props }: ProgressPrimitive.Track.Props) {
   return (
-    <ProgressPrimitive.Track
-      className={cn(
-        "relative flex h-1 w-full items-center overflow-x-hidden rounded-full bg-muted",
-        className
+    <div data-slot="progress" className={cn("flex flex-col gap-1.5", className)} {...props}>
+      <div className="flex gap-1.5">
+        {Array.from({ length: 4 }, (_, i) => (
+          <div
+            key={i}
+            className={cn(
+              "h-1.5 flex-1 rounded-full transition-colors",
+              i < value ? "bg-primary" : "bg-border"
+            )}
+          />
+        ))}
+      </div>
+      {showLabel && label && (
+        <span className="text-xs capitalize text-muted-foreground">
+          {label}
+        </span>
       )}
-      data-slot="progress-track"
-      {...props}
-    />
+    </div>
   )
 }
 
-function ProgressIndicator({
-  className,
-  ...props
-}: ProgressPrimitive.Indicator.Props) {
-  return (
-    <ProgressPrimitive.Indicator
-      data-slot="progress-indicator"
-      className={cn("h-full bg-primary transition-all", className)}
-      {...props}
-    />
-  )
-}
-
-function ProgressLabel({ className, ...props }: ProgressPrimitive.Label.Props) {
-  return (
-    <ProgressPrimitive.Label
-      className={cn("text-sm font-medium", className)}
-      data-slot="progress-label"
-      {...props}
-    />
-  )
-}
-
-function ProgressValue({ className, ...props }: ProgressPrimitive.Value.Props) {
-  return (
-    <ProgressPrimitive.Value
-      className={cn(
-        "ml-auto text-sm text-muted-foreground tabular-nums",
-        className
-      )}
-      data-slot="progress-value"
-      {...props}
-    />
-  )
-}
-
-export {
-  Progress,
-  ProgressTrack,
-  ProgressIndicator,
-  ProgressLabel,
-  ProgressValue,
-}
+export { Progress }
+export type { StrengthLevel }
