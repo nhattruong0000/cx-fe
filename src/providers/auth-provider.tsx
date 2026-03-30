@@ -1,47 +1,34 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
-import type { User } from "@/types/common";
+import { useEffect, type ReactNode } from "react";
 import { useAuthStore } from "@/stores/auth-store";
-
-interface AuthContextValue {
-  user: User | null;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null);
+import { getMe } from "@/lib/api/auth";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const user = useAuthStore((s) => s.user);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const storeLogin = useAuthStore((s) => s.login);
-  const storeLogout = useAuthStore((s) => s.logout);
+  const { tokens, setUser, setTokens, setLoading, logout } = useAuthStore();
 
-  const login = useCallback(
-    async (email: string, password: string) => {
-      await storeLogin(email, password);
-    },
-    [storeLogin]
-  );
+  useEffect(() => {
+    async function validateSession() {
+      if (!tokens?.access_token) {
+        setLoading(false);
+        return;
+      }
 
-  const logout = useCallback(() => {
-    storeLogout();
-  }, [storeLogout]);
+      // Re-sync cookie on hydration (persist restores tokens but cookie is lost on reload)
+      setTokens(tokens);
 
-  const value = useMemo(
-    () => ({ user, isAuthenticated, login, logout }),
-    [user, isAuthenticated, login, logout]
-  );
+      try {
+        const user = await getMe();
+        setUser(user);
+      } catch {
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+    validateSession();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-export function useAuth(): AuthContextValue {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
-  return context;
+  return <>{children}</>;
 }

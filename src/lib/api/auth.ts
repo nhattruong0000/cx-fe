@@ -1,37 +1,70 @@
-import { apiClient } from './client';
-import type { User } from '@/types/common';
+import { apiClient } from "./client";
 import type {
-  AcceptInviteData,
-  InvitationValidation,
+  AcceptInviteRequest,
+  AcceptInviteResponse,
+  InvitationDetails,
   LoginResponse,
-  ResetPasswordData,
-  TokenValidation,
-} from '@/types/auth';
+  ResetPasswordRequest,
+  User,
+  ValidateTokenResponse,
+} from "@/types/auth";
 
-export const authApi = {
-  login: (email: string, password: string) =>
-    apiClient.post<LoginResponse>('/api/v1/auth/sessions', { email, password }),
+export function login(
+  email: string,
+  password: string
+): Promise<LoginResponse> {
+  return apiClient.post<LoginResponse>(
+    "/api/v1/auth/sessions",
+    { email, password }
+  );
+}
 
-  logout: () =>
-    apiClient.delete<void>('/api/v1/auth/sessions'),
+export function refreshToken(
+  refresh_token: string
+): Promise<{ tokens: { access_token: string; refresh_token: string } }> {
+  return apiClient.post("/api/v1/auth/sessions/refresh", {
+    refresh_token,
+  });
+}
 
-  getMe: async (): Promise<User> => {
-    const res = await apiClient.get<{ user: User }>('/api/v1/auth/me');
-    return res.user;
-  },
+export function forgotPassword(
+  email: string
+): Promise<{ message: string }> {
+  return apiClient.post("/api/v1/auth/passwords/forgot", { email });
+}
 
-  validateInvitation: (code: string) =>
-    apiClient.get<InvitationValidation>(`/api/v1/auth/invitations/${code}/validate`),
+export function validateResetToken(
+  token: string
+): Promise<ValidateTokenResponse> {
+  return apiClient.get<ValidateTokenResponse>(
+    `/api/v1/auth/passwords/validate/${token}`
+  );
+}
 
-  acceptInvitation: (code: string, data: AcceptInviteData) =>
-    apiClient.post<LoginResponse>(`/api/v1/auth/invitations/${code}/accept`, data),
+export function resetPassword(
+  data: ResetPasswordRequest
+): Promise<{ message: string }> {
+  return apiClient.post("/api/v1/auth/passwords/reset", data);
+}
 
-  forgotPassword: (email: string) =>
-    apiClient.post<void>('/api/v1/auth/passwords/forgot', { email }),
+export function validateInvitation(
+  code: string
+): Promise<InvitationDetails> {
+  return apiClient.get<InvitationDetails>(
+    `/api/v1/auth/invitations/${code}/validate`
+  );
+}
 
-  validateResetToken: (token: string) =>
-    apiClient.get<TokenValidation>(`/api/v1/auth/passwords/validate/${token}`),
+export function acceptInvitation(
+  code: string,
+  data: AcceptInviteRequest
+): Promise<AcceptInviteResponse> {
+  return apiClient.post<AcceptInviteResponse>(
+    `/api/v1/auth/invitations/${code}/accept`,
+    data
+  );
+}
 
-  resetPassword: (data: ResetPasswordData) =>
-    apiClient.post<void>('/api/v1/auth/passwords/reset', data),
-};
+export function getMe(): Promise<User> {
+  return apiClient.get<User>("/api/v1/auth/me");
+}

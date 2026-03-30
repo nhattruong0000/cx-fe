@@ -1,37 +1,54 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
-const publicPaths = ["/login", "/invite", "/forgot-password", "/reset-password"];
+const PUBLIC_ROUTES = [
+  "/login",
+  "/forgot-password",
+  "/reset-password",
+  "/invite",
+];
+
+function isPublicRoute(pathname: string): boolean {
+  return PUBLIC_ROUTES.some(
+    (route) =>
+      pathname === route || pathname.startsWith(`${route}/`)
+  );
+}
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow static assets
-  if (pathname.startsWith("/_next") || pathname.startsWith("/api")) {
+  // Skip static assets and API routes
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.includes(".")
+  ) {
     return NextResponse.next();
   }
 
-  const isAuthenticated = request.cookies.get("cx-auth")?.value === "true";
-  const isPublicPath = publicPaths.some((p) => pathname.startsWith(p));
+  const accessToken =
+    request.cookies.get("access_token")?.value ||
+    request.headers.get("authorization")?.replace("Bearer ", "");
 
-  // Public paths: redirect to home if already logged in
-  if (isPublicPath) {
-    if (isAuthenticated && pathname === "/login") {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-    return NextResponse.next();
-  }
+  const isPublic = isPublicRoute(pathname);
 
-  // Protected paths: redirect to login if not authenticated
-  if (!isAuthenticated) {
+  // Unauthenticated user on protected route → redirect to login
+  if (!accessToken && !isPublic) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // Authenticated user on public auth route → redirect to dashboard
+  if (accessToken && isPublic) {
+    return NextResponse.redirect(
+      new URL("/dashboard", request.url)
+    );
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|logo/).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

@@ -1,40 +1,57 @@
-import type { UserRole } from './common';
+export interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  role: string;
+  avatar_url: string | null;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
 
 export interface LoginResponse {
-  user: {
-    id: string;
-    email: string;
-    full_name: string;
-    role: UserRole;
-  };
-  tokens: {
-    access_token: string;
-    refresh_token: string;
-  };
+  user: User;
+  tokens: TokenPair;
 }
 
-export interface AcceptInviteData {
-  full_name: string;
-  password: string;
-  password_confirmation: string;
+export interface TokenPair {
+  access_token: string;
+  refresh_token: string;
 }
 
-export interface ResetPasswordData {
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
   token: string;
   password: string;
   password_confirmation: string;
 }
 
-export interface InvitationValidation {
-  email: string;
-  role: UserRole;
-  inviter_name: string;
-  organization_name?: string;
-  expires_at: string;
-  status: 'valid' | 'expired' | 'accepted' | 'invalid';
+export interface ValidateTokenResponse {
+  valid: boolean;
+  email?: string;
 }
 
-export interface TokenValidation {
-  valid: boolean;
-  status: 'valid' | 'expired' | 'invalid';
+export interface InvitationDetails {
+  email: string;
+  role: string;
+  inviter_name: string;
+  organization_name: string;
+  expires_at: string;
+  status: string;
+}
+
+export interface AcceptInviteRequest {
+  full_name: string;
+  password: string;
+  password_confirmation: string;
+}
+
+export interface AcceptInviteResponse {
+  user: User;
+  tokens: TokenPair;
 }
