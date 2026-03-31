@@ -1,0 +1,33 @@
+import {
+  LayoutDashboard,
+  Users,
+  Shield,
+  Lock,
+  Building2,
+  Settings,
+  UserPlus,
+  LifeBuoy,
+  ClipboardList,
+  Headset,
+  FileText,
+  User,
+  Bell,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
+/** Maps icon name strings (from nav config) to lucide-react components */
+export const sidebarIconMap: Record<string, LucideIcon> = {
+  "layout-dashboard": LayoutDashboard,
+  "users": Users,
+  "shield": Shield,
+  "lock": Lock,
+  "building-2": Building2,
+  "settings": Settings,
+  "user-plus": UserPlus,
+  "life-buoy": LifeBuoy,
+  "clipboard-list": ClipboardList,
+  "headset": Headset,
+  "file-text": FileText,
+  "user": User,
+  "bell": Bell,
+};
