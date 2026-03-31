@@ -8,6 +8,9 @@ const PUBLIC_ROUTES = [
 ];
 
 function isPublicRoute(pathname: string): boolean {
+  // /invite (admin invite page) is protected; /invite/[code] (accept invitation) is public
+  if (pathname === "/invite") return false;
+
   return PUBLIC_ROUTES.some(
     (route) =>
       pathname === route || pathname.startsWith(`${route}/`)
