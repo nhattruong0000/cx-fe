@@ -6,6 +6,10 @@ Dashboard quản trị Customer Experience (CX) cho doanh nghiệp e-commerce/re
 
 **Tech stack:** Next.js 15 (App Router, React 19) + shadcn/ui + Tailwind CSS v4 + TanStack Query + Recharts + React Hook Form + Zod. Mock API layer (Rails API đang build song song). Deploy Docker via Coolify trên VPS.
 
+## Status
+
+- **Role-Based Dashboard**: Complete (2026-03-31) — single `/dashboard` route, role-driven views for admin/staff/customer, Recharts 3 charts, sidebar layout
+
 ## 4 Module chính
 
 ### 1. Survey & Feedback (Khảo sát)
