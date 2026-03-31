@@ -31,6 +31,13 @@ const ADMIN_SECTIONS: NavSection[] = [
       { label: "Help Center", href: "/help", icon: "life-buoy" },
     ],
   },
+  {
+    label: "ACCOUNT",
+    items: [
+      { label: "Profile", href: "/profile", icon: "user" },
+      { label: "Security", href: "/security", icon: "shield" },
+    ],
+  },
 ];
 
 const STAFF_SECTIONS: NavSection[] = [
@@ -49,6 +56,13 @@ const STAFF_SECTIONS: NavSection[] = [
     items: [
       { label: "Invite User", href: "/invite", icon: "user-plus", disabled: true },
       { label: "Help Center", href: "/help", icon: "life-buoy", disabled: true },
+    ],
+  },
+  {
+    label: "ACCOUNT",
+    items: [
+      { label: "Profile", href: "/profile", icon: "user" },
+      { label: "Security", href: "/security", icon: "shield" },
     ],
   },
 ];
