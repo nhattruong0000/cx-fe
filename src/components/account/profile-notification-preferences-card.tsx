@@ -61,9 +61,9 @@ export function ProfileNotificationPreferencesCard() {
 
   return (
     <Card>
-      <CardHeader className="border-b">
-        <CardTitle>Notification Preferences</CardTitle>
-        <CardDescription>Choose how you want to be notified</CardDescription>
+      <CardHeader className="px-5 pt-4 pb-2">
+        <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">Notification Preferences</CardTitle>
+        <CardDescription className="text-[13px] leading-normal">Choose how you want to receive notifications.</CardDescription>
       </CardHeader>
 
       <CardContent className="pt-0 px-0">

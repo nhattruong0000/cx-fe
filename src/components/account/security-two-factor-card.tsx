@@ -1,10 +1,10 @@
 "use client";
 
+import { ShieldCheck, Smartphone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -34,34 +34,42 @@ export function SecurityTwoFactorCard() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Two-Factor Authentication</CardTitle>
-        <CardDescription>
-          Add an extra layer of security to your account with an authenticator app.
+      <CardHeader className="px-6 pt-4 pb-3 space-y-1.5">
+        <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">
+          Two-Factor Authentication
+        </CardTitle>
+        <CardDescription className="text-[13px] leading-normal">
+          Add an extra layer of security to your account by enabling two-factor authentication.
         </CardDescription>
-        <CardAction>
-          {isEnabled ? (
-            <Badge variant="success">Enabled</Badge>
-          ) : (
-            <Badge variant="destructive">Not Enabled</Badge>
-          )}
-        </CardAction>
       </CardHeader>
 
-      <CardContent>
-        <p className="text-sm text-[#71717A]">
-          {isEnabled
-            ? "Two-factor authentication is active. Your account is protected with a time-based one-time password (TOTP) from your authenticator app."
-            : "Protect your account by requiring a verification code from your authenticator app (e.g. Google Authenticator, Authy) each time you sign in."}
-        </p>
+      <CardContent className="px-6 pb-2">
+        {/* Status row */}
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-[#09090B]">Status</span>
+          {isEnabled ? (
+            <Badge variant="success" className="rounded-full">Enabled</Badge>
+          ) : (
+            <Badge variant="outline" className="rounded-full">Not Enabled</Badge>
+          )}
+        </div>
+
+        {/* Info section with smartphone icon */}
+        <div className="flex gap-2 mt-4">
+          <Smartphone className="h-4 w-4 shrink-0 text-[#71717A] mt-0.5" />
+          <p className="text-[13px] leading-normal text-[#71717A]">
+            Use an authenticator app like Google Authenticator or Authy to generate verification codes.
+          </p>
+        </div>
       </CardContent>
 
-      <CardFooter>
+      <CardFooter className="px-6 pt-3 pb-4 border-t border-[#E4E4E7] justify-end">
         <Button
-          variant={isEnabled ? "destructive" : "default"}
+          variant="outline"
           onClick={handleToggle}
           disabled={isPending || isError}
         >
+          <ShieldCheck className="h-4 w-4" />
           {isPending
             ? isEnabled
               ? "Disabling..."

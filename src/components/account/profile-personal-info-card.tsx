@@ -76,17 +76,17 @@ export function ProfilePersonalInfoCard() {
 
   return (
     <Card>
-      <CardHeader className="border-b">
-        <CardTitle>Personal Information</CardTitle>
-        <CardDescription>Update your name, email, and phone number</CardDescription>
+      <CardHeader className="px-5 pt-4 pb-2">
+        <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">Personal Information</CardTitle>
+        <CardDescription className="text-[13px] leading-normal">Update your personal details and contact information.</CardDescription>
       </CardHeader>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="pt-6 space-y-6">
+          <CardContent className="px-5 pt-1 pb-4 space-y-3">
             {/* Avatar + name/email display */}
             <div className="flex items-center gap-4">
-              <Avatar size="lg">
+              <Avatar size="lg" className="ring-2 ring-[#2556C5] ring-offset-2">
                 {user?.avatar_url && <AvatarImage src={user.avatar_url} alt={user.full_name} />}
                 <AvatarFallback>{user ? getInitials(user.full_name) : "?"}</AvatarFallback>
               </Avatar>
@@ -142,7 +142,7 @@ export function ProfilePersonalInfoCard() {
             />
           </CardContent>
 
-          <CardFooter className="border-t justify-end">
+          <CardFooter className="border-t border-[#E4E4E7] px-5 py-3 justify-end">
             <Button type="submit" disabled={updateProfile.isPending}>
               {updateProfile.isPending ? "Saving…" : "Save Changes"}
             </Button>

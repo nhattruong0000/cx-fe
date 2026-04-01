@@ -60,12 +60,12 @@ function SessionRow({
       className={[
         "flex items-start justify-between rounded-lg border p-3 gap-3",
         session.is_current
-          ? "border-l-4 border-l-[#16A34A] border-[#E4E4E7]"
+          ? "bg-[#F0FDF4] border-[#16A34A]"
           : "border-[#E4E4E7]",
       ].join(" ")}
     >
       <div className="flex items-start gap-3 min-w-0">
-        <DeviceIcon className="mt-0.5 size-4 shrink-0 text-[#71717A]" />
+        <DeviceIcon className="size-6 shrink-0 text-[#71717A]" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-sm font-medium text-[#09090B]">
@@ -115,14 +115,16 @@ export function SecurityActiveSessionsCard() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Active Sessions</CardTitle>
-        <CardDescription>
-          Manage devices currently signed in to your account.
+      <CardHeader className="px-6 pt-4 pb-3 space-y-1.5">
+        <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">
+          Active Sessions
+        </CardTitle>
+        <CardDescription className="text-[13px] leading-normal">
+          Manage your active login sessions across different devices.
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex flex-col gap-2">
+      <CardContent className="px-6 pb-2 flex flex-col gap-3">
         {sessions.map((session) => (
           <SessionRow
             key={session.id}
@@ -135,15 +137,14 @@ export function SecurityActiveSessionsCard() {
       </CardContent>
 
       {otherSessionCount > 0 && (
-        <CardFooter>
+        <CardFooter className="px-6 pt-3 pb-4 border-t border-[#E4E4E7] justify-end">
           <Button
-            variant="destructive"
+            variant="outline"
+            className="border-[#E81B22] text-[#E81B22] hover:bg-red-50"
             onClick={() => revokeAll.mutate()}
             disabled={revokeAll.isPending || isDemo}
           >
-            {revokeAll.isPending
-              ? "Signing out..."
-              : `Sign out of ${otherSessionCount} other ${otherSessionCount === 1 ? "device" : "devices"}`}
+            {revokeAll.isPending ? "Signing out..." : "Sign out of all other devices"}
           </Button>
         </CardFooter>
       )}

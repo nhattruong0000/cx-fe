@@ -17,7 +17,7 @@ const ADMIN_SECTIONS: NavSection[] = [
   {
     label: "ADMIN",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: "layout-dashboard" },
+      { label: "Dashboard", href: "/dashboard", icon: "house" },
       { label: "Users", href: "/users", icon: "users" },
       { label: "Permission Groups", href: "/permission-groups", icon: "lock" },
       { label: "Organizations", href: "/organizations", icon: "building-2" },
@@ -36,6 +36,7 @@ const ADMIN_SECTIONS: NavSection[] = [
     items: [
       { label: "Profile", href: "/profile", icon: "user" },
       { label: "Security", href: "/security", icon: "shield" },
+      { label: "Notifications", href: "/notifications", icon: "bell" },
     ],
   },
 ];
@@ -44,7 +45,7 @@ const STAFF_SECTIONS: NavSection[] = [
   {
     label: "NAVIGATION",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: "layout-dashboard" },
+      { label: "Dashboard", href: "/dashboard", icon: "house" },
       { label: "My Surveys", href: "/surveys", icon: "clipboard-list" },
       { label: "Support Requests", href: "/support", icon: "headset" },
       { label: "Reports", href: "/reports", icon: "file-text" },
@@ -63,6 +64,7 @@ const STAFF_SECTIONS: NavSection[] = [
     items: [
       { label: "Profile", href: "/profile", icon: "user" },
       { label: "Security", href: "/security", icon: "shield" },
+      { label: "Notifications", href: "/notifications", icon: "bell" },
     ],
   },
 ];
@@ -71,7 +73,7 @@ const CUSTOMER_SECTIONS: NavSection[] = [
   {
     label: "NAVIGATION",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: "layout-dashboard" },
+      { label: "Dashboard", href: "/dashboard", icon: "house" },
       { label: "My Surveys", href: "/surveys", icon: "clipboard-list" },
       { label: "Support", href: "/support", icon: "headset" },
       { label: "Settings", href: "/settings", icon: "settings" },

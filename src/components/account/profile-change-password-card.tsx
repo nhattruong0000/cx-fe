@@ -65,14 +65,14 @@ export function ProfileChangePasswordCard() {
 
   return (
     <Card>
-      <CardHeader className="border-b">
-        <CardTitle>Change Password</CardTitle>
-        <CardDescription>Update your account password</CardDescription>
+      <CardHeader className="px-5 pt-4 pb-2">
+        <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">Change Password</CardTitle>
+        <CardDescription className="text-[13px] leading-normal">Ensure your account stays secure by updating your password regularly.</CardDescription>
       </CardHeader>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="pt-6 space-y-4">
+          <CardContent className="px-5 pt-1 pb-4 space-y-3">
             {/* Current password — full width */}
             <FormField
               control={form.control}
@@ -119,7 +119,7 @@ export function ProfileChangePasswordCard() {
             </div>
           </CardContent>
 
-          <CardFooter className="border-t justify-end">
+          <CardFooter className="border-t border-[#E4E4E7] px-5 py-3 justify-end">
             <Button type="submit" disabled={changePassword.isPending}>
               {changePassword.isPending ? "Updating…" : "Update Password"}
             </Button>
