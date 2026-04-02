@@ -54,8 +54,8 @@ export const useAuthStore = create<AuthState & AuthActions>()(
     {
       name: "auth-storage",
       storage: createJSONStorage(() => sessionStorage),
-      /** Only persist tokens — user re-validated on mount via AuthProvider */
-      partialize: (state) => ({ tokens: state.tokens }),
+      /** Persist tokens + user for instant layout render; user re-validated on mount via AuthProvider */
+      partialize: (state) => ({ tokens: state.tokens, user: state.user }),
     }
   )
 );

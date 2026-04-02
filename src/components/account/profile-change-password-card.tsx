@@ -26,12 +26,12 @@ import { useChangePassword } from "@/hooks/use-profile";
 
 const schema = z
   .object({
-    current_password: z.string().min(1, "Current password is required"),
-    new_password: z.string().min(8, "Password must be at least 8 characters"),
-    new_password_confirmation: z.string().min(1, "Please confirm your new password"),
+    current_password: z.string().min(1, "Vui lòng nhập mật khẩu hiện tại"),
+    new_password: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
+    new_password_confirmation: z.string().min(1, "Vui lòng xác nhận mật khẩu mới"),
   })
   .refine((data) => data.new_password === data.new_password_confirmation, {
-    message: "Passwords do not match",
+    message: "Mật khẩu không khớp",
     path: ["new_password_confirmation"],
   });
 
@@ -52,12 +52,12 @@ export function ProfileChangePasswordCard() {
   function onSubmit(values: FormValues) {
     changePassword.mutate(values, {
       onSuccess: () => {
-        toast.success("Password updated successfully");
+        toast.success("Cập nhật mật khẩu thành công");
         form.reset();
       },
       onError: (err: unknown) => {
         const message =
-          (err as { message?: string })?.message ?? "Failed to update password";
+          (err as { message?: string })?.message ?? "Không thể cập nhật mật khẩu";
         toast.error(message);
       },
     });
@@ -66,8 +66,8 @@ export function ProfileChangePasswordCard() {
   return (
     <Card>
       <CardHeader className="px-5 pt-4 pb-2">
-        <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">Change Password</CardTitle>
-        <CardDescription className="text-[13px] leading-normal">Ensure your account stays secure by updating your password regularly.</CardDescription>
+        <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">Đổi mật khẩu</CardTitle>
+        <CardDescription className="text-[13px] leading-normal">Đảm bảo tài khoản được an toàn bằng cách đổi mật khẩu thường xuyên.</CardDescription>
       </CardHeader>
 
       <Form {...form}>
@@ -79,7 +79,7 @@ export function ProfileChangePasswordCard() {
               name="current_password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Current Password</FormLabel>
+                  <FormLabel>Mật khẩu hiện tại</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
@@ -95,7 +95,7 @@ export function ProfileChangePasswordCard() {
                 name="new_password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>New Password</FormLabel>
+                    <FormLabel>Mật khẩu mới</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
@@ -108,7 +108,7 @@ export function ProfileChangePasswordCard() {
                 name="new_password_confirmation"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm New Password</FormLabel>
+                    <FormLabel>Xác nhận mật khẩu</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
@@ -121,7 +121,7 @@ export function ProfileChangePasswordCard() {
 
           <CardFooter className="border-t border-[#E4E4E7] px-5 py-3 justify-end">
             <Button type="submit" disabled={changePassword.isPending}>
-              {changePassword.isPending ? "Updating…" : "Update Password"}
+              {changePassword.isPending ? "Đang cập nhật…" : "Cập nhật mật khẩu"}
             </Button>
           </CardFooter>
         </form>

@@ -9,9 +9,9 @@ export default function ProfilePage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-[-0.5px] text-[#09090B]">Profile Settings</h1>
+        <h1 className="text-2xl font-semibold tracking-[-0.5px] text-[#09090B]">Cài đặt hồ sơ</h1>
         <p className="text-sm text-[#71717A]">
-          Manage your personal information, password, and notification preferences.
+          Quản lý thông tin cá nhân, mật khẩu và tùy chọn thông báo.
         </p>
       </div>
 

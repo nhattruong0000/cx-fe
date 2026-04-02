@@ -2,18 +2,19 @@ import * as React from "react"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 
 interface PaginationProps {
   page: number
   pageSize: number
   total: number
   onPageChange: (page: number) => void
+  /** Label for the item type shown in "Showing X-Y of Z {itemLabel}" */
+  itemLabel?: string
   className?: string
 }
 
 // Simple prev/next pagination with "Showing X-Y of Z" label
-function Pagination({ page, pageSize, total, onPageChange, className }: PaginationProps) {
+function Pagination({ page, pageSize, total, onPageChange, itemLabel = "mục", className }: PaginationProps) {
   const start = total === 0 ? 0 : (page - 1) * pageSize + 1
   const end = Math.min(page * pageSize, total)
   const isFirstPage = page <= 1
@@ -23,39 +24,27 @@ function Pagination({ page, pageSize, total, onPageChange, className }: Paginati
     <div className={cn("flex items-center justify-between gap-4 py-3", className)}>
       {/* Count label */}
       <span className="text-sm text-[#71717A]">
-        Showing <span className="font-medium text-[#09090B]">{start}</span>
-        {"-"}
-        <span className="font-medium text-[#09090B]">{end}</span>
-        {" of "}
-        <span className="font-medium text-[#09090B]">{total}</span>
-        {" items"}
+        Hiển thị {start}-{end} / {total} {itemLabel}
       </span>
 
-      {/* Navigation buttons */}
+      {/* Navigation buttons — icon-only with border per design */}
       <div className="flex items-center gap-1">
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={() => onPageChange(page - 1)}
           disabled={isFirstPage}
           aria-label="Previous page"
-          className="text-[#71717A] hover:text-[#09090B] disabled:opacity-40"
+          className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#E4E4E7] text-[#71717A] hover:bg-[#F8FAFC] disabled:opacity-40"
         >
           <ChevronLeftIcon className="size-4" />
-          Previous
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="sm"
+        </button>
+        <button
           onClick={() => onPageChange(page + 1)}
           disabled={isLastPage}
           aria-label="Next page"
-          className="text-[#71717A] hover:text-[#09090B] disabled:opacity-40"
+          className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#E4E4E7] text-[#71717A] hover:bg-[#F8FAFC] disabled:opacity-40"
         >
-          Next
           <ChevronRightIcon className="size-4" />
-        </Button>
+        </button>
       </div>
     </div>
   )

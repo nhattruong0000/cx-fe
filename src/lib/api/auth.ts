@@ -65,6 +65,6 @@ export function acceptInvitation(
   );
 }
 
-export function getMe(): Promise<User> {
-  return apiClient.get<User>("/api/v1/auth/me");
+export function getMe(): Promise<{ user: User }> {
+  return apiClient.get<{ user: User }>("/api/v1/auth/me");
 }

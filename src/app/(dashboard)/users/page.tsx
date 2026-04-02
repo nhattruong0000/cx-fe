@@ -2,13 +2,18 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { UserPlusIcon } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 
 import { useRouter } from "next/navigation"
 import { useAdminUsers } from "@/hooks/use-admin-users"
 import { useAuthStore } from "@/stores/auth-store"
 import { UserManagementToolbar } from "@/components/admin/user-management-toolbar"
 import { UserManagementTable } from "@/components/admin/user-management-table"
+import { UserDetailDialog } from "@/components/admin/user-detail-dialog"
+import { EditRoleDialog } from "@/components/admin/edit-role-dialog"
+import { SuspendUserDialog } from "@/components/admin/suspend-user-dialog"
+import type { AdminUser } from "@/types/admin"
+import type { UserTableMeta } from "@/components/admin/user-management-columns"
 
 const PAGE_SIZE = 5
 
@@ -50,8 +55,8 @@ export default function UsersPage() {
 
   const params = {
     page,
-    page_size: PAGE_SIZE,
-    ...(deferredSearch ? { search: deferredSearch } : {}),
+    per_page: PAGE_SIZE,
+    ...(deferredSearch ? { q: deferredSearch } : {}),
     ...(role !== "all" ? { role } : {}),
     ...(status !== "all" ? { status } : {}),
   }
@@ -61,23 +66,36 @@ export default function UsersPage() {
   const users = data?.users ?? []
   const total = data?.total ?? 0
 
+  // Dialog state for user actions
+  const [dialogState, setDialogState] = React.useState<{
+    type: "view" | "editRole" | "suspend" | null
+    user: AdminUser | null
+  }>({ type: null, user: null })
+
+  const closeDialog = React.useCallback(() => setDialogState({ type: null, user: null }), [])
+
+  const tableMeta: UserTableMeta = React.useMemo(() => ({
+    onViewProfile: (user: AdminUser) => setDialogState({ type: "view", user }),
+    onEditRole: (user: AdminUser) => setDialogState({ type: "editRole", user }),
+    onSuspend: (user: AdminUser) => setDialogState({ type: "suspend", user }),
+  }), [])
+
   // Don't render admin content for non-admin users
   if (authUser && authUser.role !== "admin") return null
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6">
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#09090B]">User Management</h1>
-          <p className="mt-1 text-sm text-[#71717A]">Manage users, roles, and permissions.</p>
+          <h1 className="text-2xl font-semibold text-[#09090B]">Quản lý người dùng</h1>
         </div>
         <Link
           href="/invite"
-          className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-[10px] bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground whitespace-nowrap transition-all hover:bg-primary/90"
+          className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-[10px] bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground whitespace-nowrap transition-all hover:bg-primary/90 shadow-[0_2px_4px_#2556C520,0_8px_20px_#2556C525]"
         >
-          <UserPlusIcon className="size-4" />
-          Invite User
+          <PlusIcon className="size-4" />
+          Mời người dùng
         </Link>
       </div>
 
@@ -94,7 +112,7 @@ export default function UsersPage() {
       {/* Data table + pagination */}
       {isLoading ? (
         <div className="flex items-center justify-center py-16 text-sm text-[#71717A]">
-          Loading users...
+          Đang tải...
         </div>
       ) : (
         <UserManagementTable
@@ -103,8 +121,26 @@ export default function UsersPage() {
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
+          meta={tableMeta}
         />
       )}
+
+      {/* Action dialogs */}
+      <UserDetailDialog
+        userId={dialogState.user?.id ?? null}
+        open={dialogState.type === "view"}
+        onClose={closeDialog}
+      />
+      <EditRoleDialog
+        user={dialogState.type === "editRole" ? dialogState.user : null}
+        open={dialogState.type === "editRole"}
+        onClose={closeDialog}
+      />
+      <SuspendUserDialog
+        user={dialogState.type === "suspend" ? dialogState.user : null}
+        open={dialogState.type === "suspend"}
+        onClose={closeDialog}
+      />
     </div>
   )
 }

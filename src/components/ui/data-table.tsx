@@ -21,22 +21,27 @@ interface DataTableProps<TData> {
   onSearchChange?: (value: string) => void
   /** Optional filter slot (role/status dropdowns, etc.) */
   filterSlot?: React.ReactNode
+  /** Table meta passed to useReactTable — accessible in column cells via table.options.meta */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  meta?: Record<string, any>
   className?: string
 }
 
 function DataTable<TData>({
   columns,
   data,
-  searchPlaceholder = "Search...",
+  searchPlaceholder = "Tìm kiếm...",
   searchValue,
   onSearchChange,
   filterSlot,
+  meta,
   className,
 }: DataTableProps<TData>) {
   const table: ReactTable<TData> = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    meta,
   })
 
   return (
@@ -62,11 +67,11 @@ function DataTable<TData>({
         <table className="w-full border-collapse">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-[#E4E4E7] bg-[#F8FAFC]">
+              <tr key={headerGroup.id} className="border-b border-[#E4E4E7] bg-[#EBF0FA]">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#71717A]"
+                    className="px-4 py-3 text-left text-[13px] font-semibold text-[#71717A]"
                   >
                     {header.isPlaceholder
                       ? null
@@ -97,7 +102,7 @@ function DataTable<TData>({
                   colSpan={columns.length}
                   className="px-4 py-10 text-center text-sm text-[#71717A]"
                 >
-                  No results found.
+                  Không tìm thấy kết quả.
                 </td>
               </tr>
             )}

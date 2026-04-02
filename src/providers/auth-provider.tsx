@@ -9,17 +9,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function validateSession() {
-      if (!tokens?.access_token) {
+      // Wait for Zustand persist to hydrate tokens from sessionStorage
+      if (!useAuthStore.persist.hasHydrated()) {
+        await new Promise<void>((resolve) => {
+          useAuthStore.persist.onFinishHydration(() => resolve());
+        });
+      }
+
+      const hydratedTokens = useAuthStore.getState().tokens;
+      if (!hydratedTokens?.access_token) {
         setLoading(false);
         return;
       }
 
       // Re-sync cookie on hydration (persist restores tokens but cookie is lost on reload)
-      setTokens(tokens);
+      setTokens(hydratedTokens);
 
       try {
-        const user = await getMe();
-        setUser(user);
+        const res = await getMe();
+        setUser(res.user);
       } catch {
         logout();
       } finally {

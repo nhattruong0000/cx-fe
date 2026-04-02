@@ -36,21 +36,21 @@ export function SecurityTwoFactorCard() {
     <Card>
       <CardHeader className="px-6 pt-4 pb-3 space-y-1.5">
         <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">
-          Two-Factor Authentication
+          Xác thực hai yếu tố
         </CardTitle>
         <CardDescription className="text-[13px] leading-normal">
-          Add an extra layer of security to your account by enabling two-factor authentication.
+          Thêm lớp bảo mật cho tài khoản bằng cách bật xác thực hai yếu tố.
         </CardDescription>
       </CardHeader>
 
       <CardContent className="px-6 pb-2">
         {/* Status row */}
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-[#09090B]">Status</span>
+          <span className="text-sm font-medium text-[#09090B]">Trạng thái</span>
           {isEnabled ? (
-            <Badge variant="success" className="rounded-full">Enabled</Badge>
+            <Badge variant="success" className="rounded-full">Đã bật</Badge>
           ) : (
-            <Badge variant="outline" className="rounded-full">Not Enabled</Badge>
+            <Badge variant="outline" className="rounded-full">Chưa bật</Badge>
           )}
         </div>
 
@@ -58,7 +58,7 @@ export function SecurityTwoFactorCard() {
         <div className="flex gap-2 mt-4">
           <Smartphone className="h-4 w-4 shrink-0 text-[#71717A] mt-0.5" />
           <p className="text-[13px] leading-normal text-[#71717A]">
-            Use an authenticator app like Google Authenticator or Authy to generate verification codes.
+            Sử dụng ứng dụng xác thực như Google Authenticator hoặc Authy để tạo mã xác minh.
           </p>
         </div>
       </CardContent>
@@ -72,11 +72,11 @@ export function SecurityTwoFactorCard() {
           <ShieldCheck className="h-4 w-4" />
           {isPending
             ? isEnabled
-              ? "Disabling..."
-              : "Enabling..."
+              ? "Đang tắt..."
+              : "Đang bật..."
             : isEnabled
-              ? "Disable 2FA"
-              : "Enable 2FA"}
+              ? "Tắt 2FA"
+              : "Bật 2FA"}
         </Button>
       </CardFooter>
     </Card>

@@ -13,6 +13,9 @@ interface UserManagementTableProps {
   page: number
   pageSize: number
   onPageChange: (page: number) => void
+  /** Table meta for action handlers */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  meta?: Record<string, any>
 }
 
 export function UserManagementTable({
@@ -21,15 +24,17 @@ export function UserManagementTable({
   page,
   pageSize,
   onPageChange,
+  meta,
 }: UserManagementTableProps) {
   return (
     <div className="flex flex-col gap-2">
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={data} meta={meta} />
       <Pagination
         page={page}
         pageSize={pageSize}
         total={total}
         onPageChange={onPageChange}
+        itemLabel="người dùng"
       />
     </div>
   )

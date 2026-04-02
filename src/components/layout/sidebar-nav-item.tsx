@@ -32,9 +32,7 @@ export function SidebarNavItem({ label, href, icon, active, disabled, badge }: S
       {Icon && <Icon className={cn("h-5 w-5 shrink-0", !active && "text-[#64748B]")} />}
       <span>{label}</span>
       {badge && (
-        <span className="ml-auto rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-medium leading-none text-white">
-          {badge}
-        </span>
+        <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-[#EF4444]" />
       )}
     </Link>
   );

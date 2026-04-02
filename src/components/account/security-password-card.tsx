@@ -18,10 +18,10 @@ export function SecurityPasswordCard() {
     <Card>
       <CardHeader className="px-6 pt-4 pb-3 space-y-1.5">
         <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">
-          Password
+          Mật khẩu
         </CardTitle>
         <CardDescription className="text-[13px] leading-normal">
-          Last changed 30 days ago. We recommend changing your password regularly.
+          Đã đổi 30 ngày trước. Chúng tôi khuyến nghị đổi mật khẩu thường xuyên.
         </CardDescription>
       </CardHeader>
 
@@ -31,7 +31,7 @@ export function SecurityPasswordCard() {
           className={cn(buttonVariants({ variant: "outline" }))}
         >
           <Key className="h-4 w-4" />
-          Change Password
+          Đổi mật khẩu
         </Link>
       </CardFooter>
     </Card>

@@ -5,7 +5,6 @@ import {
   AreaChart, Area, BarChart, Bar,
   CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { ChartCard } from "@/components/dashboard/chart-card";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -35,7 +34,7 @@ export function StaffDashboard({ data }: StaffDashboardProps) {
 
   return (
     <div className="min-h-full">
-      <DashboardHeader title="Dashboard" breadcrumb={["Dashboard"]} />
+      <h1 className="mb-6 text-2xl font-semibold text-[#09090B]">Dashboard</h1>
 
       {/* Stats Row */}
       <div className="mb-6 grid grid-cols-4 gap-4">

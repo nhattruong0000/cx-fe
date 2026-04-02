@@ -39,6 +39,15 @@ const DEMO_SESSIONS: Session[] = [
     last_active: new Date(Date.now() - 3_600_000 * 2).toISOString(),
     is_current: false,
   },
+  {
+    id: "demo-3",
+    device: "Desktop",
+    browser: "Firefox",
+    os: "Windows",
+    ip_address: "172.16.0.25",
+    last_active: new Date(Date.now() - 86_400_000).toISOString(),
+    is_current: false,
+  },
 ];
 
 function SessionRow({
@@ -65,7 +74,7 @@ function SessionRow({
       ].join(" ")}
     >
       <div className="flex items-start gap-3 min-w-0">
-        <DeviceIcon className="size-6 shrink-0 text-[#71717A]" />
+        <DeviceIcon className="size-6 shrink-0 text-[#09090B]" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-sm font-medium text-[#09090B]">
@@ -73,7 +82,7 @@ function SessionRow({
             </span>
             {session.is_current && (
               <Badge variant="success" className="text-[11px] py-0.5 px-2">
-                Current
+                Hiện tại
               </Badge>
             )}
             {isDemo && (
@@ -82,23 +91,28 @@ function SessionRow({
               </Badge>
             )}
           </div>
-          <p className="text-xs text-[#71717A] mt-0.5">
-            {session.ip_address} · {formatRelativeTime(session.last_active)}
+          <p className="text-[13px] text-[#71717A] mt-0.5">
+            IP: {session.ip_address} · Hoạt động lần cuối: {formatRelativeTime(session.last_active)}
           </p>
         </div>
       </div>
 
-      {!session.is_current && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onRevoke(session.id)}
-          disabled={isRevoking}
-          className="shrink-0"
-        >
-          Revoke
-        </Button>
-      )}
+      <Button
+        variant="ghost"
+        onClick={() => {
+          if (session.is_current) {
+            if (window.confirm("Bạn sẽ bị đăng xuất khỏi phiên hiện tại. Tiếp tục?")) {
+              onRevoke(session.id);
+            }
+          } else {
+            onRevoke(session.id);
+          }
+        }}
+        disabled={isRevoking}
+        className="shrink-0 bg-[#F4F4F5] text-[#E81B22] hover:bg-[#F4F4F5]/80 hover:text-[#E81B22]"
+      >
+        Đăng xuất
+      </Button>
     </div>
   );
 }
@@ -117,10 +131,10 @@ export function SecurityActiveSessionsCard() {
     <Card>
       <CardHeader className="px-6 pt-4 pb-3 space-y-1.5">
         <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">
-          Active Sessions
+          Phiên hoạt động
         </CardTitle>
         <CardDescription className="text-[13px] leading-normal">
-          Manage your active login sessions across different devices.
+          Quản lý phiên đăng nhập trên các thiết bị khác nhau.
         </CardDescription>
       </CardHeader>
 
@@ -144,7 +158,7 @@ export function SecurityActiveSessionsCard() {
             onClick={() => revokeAll.mutate()}
             disabled={revokeAll.isPending || isDemo}
           >
-            {revokeAll.isPending ? "Signing out..." : "Sign out of all other devices"}
+            {revokeAll.isPending ? "Đang đăng xuất..." : "Đăng xuất khỏi tất cả thiết bị khác"}
           </Button>
         </CardFooter>
       )}

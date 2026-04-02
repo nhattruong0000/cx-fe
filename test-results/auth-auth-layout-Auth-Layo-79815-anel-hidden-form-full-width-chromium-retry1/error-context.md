@@ -1,0 +1,42 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - heading "Đăng nhập vào tài khoản" [level=2] [ref=e6]
+      - paragraph [ref=e7]: Nhập thông tin đăng nhập để truy cập hệ thống
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]: Địa chỉ email
+        - textbox "Địa chỉ email" [ref=e11]:
+          - /placeholder: name@company.com
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]: Mật khẩu
+          - link "Quên mật khẩu?" [ref=e15] [cursor=pointer]:
+            - /url: /forgot-password
+        - generic [ref=e16]:
+          - textbox "Mật khẩu" [ref=e17]:
+            - /placeholder: Nhập mật khẩu của bạn
+          - button "Show password" [ref=e18]:
+            - img [ref=e19]
+      - button "Đăng nhập" [ref=e24]
+    - generic [ref=e25]:
+      - separator
+      - generic [ref=e26]: hoặc
+      - separator
+    - generic [ref=e27]:
+      - button "Google" [disabled]:
+        - img
+        - text: Google
+      - button "Facebook" [disabled]:
+        - img
+        - text: Facebook
+    - generic [ref=e28]:
+      - img [ref=e29]
+      - generic [ref=e32]: Được bảo vệ bởi SonNguyen CX
+  - button "Open Next.js Dev Tools" [ref=e38] [cursor=pointer]:
+    - img [ref=e39]
+  - alert [ref=e42]
+```

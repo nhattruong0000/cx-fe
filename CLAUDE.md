@@ -12,6 +12,9 @@ Your role is to analyze user requirements, delegate tasks to appropriate sub-age
 - Development rules: `./.claude/rules/development-rules.md`
 - Orchestration protocols: `./.claude/rules/orchestration-protocol.md`
 - Documentation management: `./.claude/rules/documentation-management.md`
+- Design-to-code rules: `./.claude/rules/design-to-code-rules.md`
+- UI component QA rules: `./.claude/rules/ui-component-qa-rules.md`
+- Design system compliance: `./.claude/rules/design-system-compliance.md`
 - And other workflows: `./.claude/rules/*`
 
 **IMPORTANT:** Analyze the skills catalog and activate the skills that are needed for the task during the process.

@@ -1,6 +1,5 @@
 "use client";
 
-import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +14,7 @@ interface CustomerDashboardProps {
 export function CustomerDashboard({ data }: CustomerDashboardProps) {
   return (
     <div className="min-h-full">
-      <DashboardHeader title="Dashboard" breadcrumb={["Dashboard"]} />
+      <h1 className="mb-6 text-2xl font-semibold text-[#09090B]">Dashboard</h1>
 
       {/* Welcome */}
       <p className="mb-6 text-lg font-semibold">Welcome back, {data.user_name}</p>

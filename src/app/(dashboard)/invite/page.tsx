@@ -20,17 +20,16 @@ export default function InviteUserPage() {
   if (user && user.role !== "admin") return null;
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      {/* Page header */}
+    <div className="flex flex-col gap-6">
+      {/* Title row: icon + title */}
       <div className="flex items-center gap-3">
-        <UserPlus className="size-6 text-[#09090B]" />
-        <div>
-          <h1 className="text-xl font-semibold text-[#09090B]">Invite New User</h1>
-          <p className="text-sm text-[#71717A]">
-            Send an invitation email to add a new member to your organization.
-          </p>
-        </div>
+        <UserPlus className="size-6 text-[#2556C5]" />
+        <h1 className="text-2xl font-semibold text-[#09090B]">Mời người dùng mới</h1>
       </div>
+      {/* Subtitle */}
+      <p className="text-sm text-[#71717A]">
+        Gửi lời mời để thêm thành viên mới vào tổ chức của bạn.
+      </p>
 
       <InviteUserForm />
     </div>

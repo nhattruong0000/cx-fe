@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard,
+  House,
   Users,
   Shield,
   Lock,
@@ -17,7 +17,7 @@ import type { LucideIcon } from "lucide-react";
 
 /** Maps icon name strings (from nav config) to lucide-react components */
 export const sidebarIconMap: Record<string, LucideIcon> = {
-  "layout-dashboard": LayoutDashboard,
+  "house": House,
   "users": Users,
   "shield": Shield,
   "lock": Lock,

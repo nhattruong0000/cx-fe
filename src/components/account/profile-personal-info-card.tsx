@@ -24,12 +24,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { useProfile, useUpdateProfile } from "@/hooks/use-profile";
 import { useAuthStore } from "@/stores/auth-store";
 import { getInitials } from "@/lib/string-utils";
 
 const schema = z.object({
-  full_name: z.string().min(1, "Full name is required"),
+  full_name: z.string().min(1, "Vui lòng nhập họ và tên"),
   email: z.string().email(),
   phone: z.string().optional(),
 });
@@ -68,8 +69,8 @@ export function ProfilePersonalInfoCard() {
     updateProfile.mutate(
       { full_name: values.full_name, email: values.email, phone: values.phone },
       {
-        onSuccess: () => toast.success("Profile updated successfully"),
-        onError: () => toast.error("Failed to update profile"),
+        onSuccess: () => toast.success("Cập nhật hồ sơ thành công"),
+        onError: () => toast.error("Không thể cập nhật hồ sơ"),
       }
     );
   }
@@ -77,22 +78,24 @@ export function ProfilePersonalInfoCard() {
   return (
     <Card>
       <CardHeader className="px-5 pt-4 pb-2">
-        <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">Personal Information</CardTitle>
-        <CardDescription className="text-[13px] leading-normal">Update your personal details and contact information.</CardDescription>
+        <CardTitle className="text-[17px] font-semibold tracking-[-0.3px]">Thông tin cá nhân</CardTitle>
+        <CardDescription className="text-[13px] leading-normal">Cập nhật thông tin cá nhân và liên hệ của bạn.</CardDescription>
       </CardHeader>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="px-5 pt-1 pb-4 space-y-3">
-            {/* Avatar + name/email display */}
+            {/* Avatar + name/role display */}
             <div className="flex items-center gap-4">
-              <Avatar size="lg" className="ring-2 ring-[#2556C5] ring-offset-2">
+              <Avatar size="lg">
                 {user?.avatar_url && <AvatarImage src={user.avatar_url} alt={user.full_name} />}
                 <AvatarFallback>{user ? getInitials(user.full_name) : "?"}</AvatarFallback>
               </Avatar>
-              <div>
-                <p className="font-medium text-[#09090B]">{user?.full_name}</p>
-                <p className="text-sm text-[#71717A]">{user?.email}</p>
+              <div className="space-y-1">
+                <p className="text-[16px] font-semibold text-[#09090B]">{user?.full_name}</p>
+                <Badge className="rounded-full">
+                  {(user as { role?: string })?.role ?? "Admin"}
+                </Badge>
               </div>
             </div>
 
@@ -103,9 +106,9 @@ export function ProfilePersonalInfoCard() {
                 name="full_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>Họ và tên</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <Input placeholder="Nguyễn Văn A" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -116,7 +119,7 @@ export function ProfilePersonalInfoCard() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Địa chỉ email (chỉ đọc)</FormLabel>
                     <FormControl>
                       <Input type="email" disabled {...field} />
                     </FormControl>
@@ -126,25 +129,28 @@ export function ProfilePersonalInfoCard() {
               />
             </div>
 
-            {/* Phone (full width) */}
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone</FormLabel>
-                  <FormControl>
-                    <Input type="tel" placeholder="+1 (555) 000-0000" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Phone — inside 2-col grid with empty spacer to keep balance */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Số điện thoại</FormLabel>
+                    <FormControl>
+                      <Input type="tel" placeholder="+84 912 345 678" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div />
+            </div>
           </CardContent>
 
           <CardFooter className="border-t border-[#E4E4E7] px-5 py-3 justify-end">
             <Button type="submit" disabled={updateProfile.isPending}>
-              {updateProfile.isPending ? "Saving…" : "Save Changes"}
+              {updateProfile.isPending ? "Đang lưu…" : "Lưu thay đổi"}
             </Button>
           </CardFooter>
         </form>

@@ -1,0 +1,62 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e5]
+        - generic [ref=e7]: SonNguyen CX
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - heading "Chào mừng trở lại" [level=1] [ref=e10]
+          - paragraph [ref=e11]: Quản lý trải nghiệm khách hàng với phân tích mạnh mẽ và cộng tác liền mạch.
+        - list [ref=e12]:
+          - listitem [ref=e13]:
+            - img [ref=e15]
+            - generic [ref=e18]: Quản lý khảo sát
+          - listitem [ref=e19]:
+            - img [ref=e21]
+            - generic [ref=e23]: Phân tích khách hàng
+          - listitem [ref=e24]:
+            - img [ref=e26]
+            - generic [ref=e31]: Cộng tác nhóm
+      - paragraph [ref=e32]: © 2026 SonNguyen CX. Mọi quyền được bảo lưu.
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - heading "Đăng nhập vào tài khoản" [level=2] [ref=e36]
+        - paragraph [ref=e37]: Nhập thông tin đăng nhập để truy cập hệ thống
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]: Địa chỉ email
+          - textbox "Địa chỉ email" [ref=e41]:
+            - /placeholder: name@company.com
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - generic [ref=e44]: Mật khẩu
+            - link "Quên mật khẩu?" [ref=e45] [cursor=pointer]:
+              - /url: /forgot-password
+          - generic [ref=e46]:
+            - textbox "Mật khẩu" [ref=e47]:
+              - /placeholder: Nhập mật khẩu của bạn
+            - button "Show password" [ref=e48]:
+              - img [ref=e49]
+        - button "Đăng nhập" [ref=e54]
+      - generic [ref=e55]:
+        - separator
+        - generic [ref=e56]: hoặc
+        - separator
+      - generic [ref=e57]:
+        - button "Google" [disabled]:
+          - img
+          - text: Google
+        - button "Facebook" [disabled]:
+          - img
+          - text: Facebook
+      - generic [ref=e58]:
+        - img [ref=e59]
+        - generic [ref=e62]: Được bảo vệ bởi SonNguyen CX
+  - button "Open Next.js Dev Tools" [ref=e68] [cursor=pointer]:
+    - img [ref=e69]
+  - alert [ref=e72]
+```
