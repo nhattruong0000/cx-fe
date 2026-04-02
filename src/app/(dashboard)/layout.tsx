@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
+import { DashboardTopBar } from "@/components/layout/dashboard-top-bar";
 import { DashboardSkeleton } from "./dashboard/dashboard-skeleton";
 import { DashboardError } from "./dashboard/dashboard-error";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -35,7 +36,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
     // Auth done, no user — useEffect will redirect, show skeleton during transition
     return (
-      <div className="flex min-h-screen">
+      <div className="flex h-screen">
+        <div className="w-[260px] shrink-0 bg-[#F8FAFC]" />
         <div className="flex-1 bg-white p-8">
           <DashboardSkeleton />
         </div>
@@ -45,12 +47,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const role = user.role as UserRole;
 
-  // All roles: sidebar + content area
+  // All roles: sidebar full-height left + topbar inside main area
   return (
-    <div className="flex min-h-screen bg-[#F4F4F5]">
+    <div className="flex h-screen bg-[#F4F4F5]">
       <DashboardSidebar role={role} />
-      <div className="flex-1 bg-white">
-        <main className="p-8">
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <DashboardTopBar />
+        <main className="flex-1 overflow-y-auto bg-white p-8">
           <ErrorBoundary fallback={<DashboardError message="Something went wrong" />}>
             {children}
           </ErrorBoundary>

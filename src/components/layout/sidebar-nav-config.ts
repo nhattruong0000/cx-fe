@@ -15,7 +15,7 @@ export interface NavSection {
 
 const ADMIN_SECTIONS: NavSection[] = [
   {
-    label: "ADMIN",
+    label: "QUẢN TRỊ",
     items: [
       { label: "Dashboard", href: "/dashboard", icon: "house" },
       { label: "Users", href: "/users", icon: "users" },
@@ -25,14 +25,14 @@ const ADMIN_SECTIONS: NavSection[] = [
     ],
   },
   {
-    label: "QUICK ACTIONS",
+    label: "THAO TÁC NHANH",
     items: [
       { label: "Invite User", href: "/invite", icon: "user-plus", badge: "new" },
       { label: "Help Center", href: "/help", icon: "life-buoy" },
     ],
   },
   {
-    label: "ACCOUNT",
+    label: "TÀI KHOẢN",
     items: [
       { label: "Profile", href: "/profile", icon: "user" },
       { label: "Security", href: "/security", icon: "shield" },
@@ -43,7 +43,7 @@ const ADMIN_SECTIONS: NavSection[] = [
 
 const STAFF_SECTIONS: NavSection[] = [
   {
-    label: "NAVIGATION",
+    label: "ĐIỀU HƯỚNG",
     items: [
       { label: "Dashboard", href: "/dashboard", icon: "house" },
       { label: "My Surveys", href: "/surveys", icon: "clipboard-list" },
@@ -53,14 +53,14 @@ const STAFF_SECTIONS: NavSection[] = [
     ],
   },
   {
-    label: "QUICK ACTIONS",
+    label: "THAO TÁC NHANH",
     items: [
       { label: "Invite User", href: "/invite", icon: "user-plus", disabled: true },
       { label: "Help Center", href: "/help", icon: "life-buoy", disabled: true },
     ],
   },
   {
-    label: "ACCOUNT",
+    label: "TÀI KHOẢN",
     items: [
       { label: "Profile", href: "/profile", icon: "user" },
       { label: "Security", href: "/security", icon: "shield" },
@@ -71,7 +71,7 @@ const STAFF_SECTIONS: NavSection[] = [
 
 const CUSTOMER_SECTIONS: NavSection[] = [
   {
-    label: "NAVIGATION",
+    label: "ĐIỀU HƯỚNG",
     items: [
       { label: "Dashboard", href: "/dashboard", icon: "house" },
       { label: "My Surveys", href: "/surveys", icon: "clipboard-list" },
@@ -80,7 +80,7 @@ const CUSTOMER_SECTIONS: NavSection[] = [
     ],
   },
   {
-    label: "ACCOUNT",
+    label: "TÀI KHOẢN",
     items: [
       { label: "Profile", href: "/profile", icon: "user" },
       { label: "Security", href: "/security", icon: "shield", disabled: true },
