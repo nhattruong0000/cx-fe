@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+### Updated — 2026-04-02: Auth Pages Design Sync
+
+4 auth pages (login, forgot-password, reset-password, invite) aligned with design system v2 using Vietnamese localization.
+
+**UI Changes**
+- `auth-left-panel.tsx` — padding updated to 48px; `featureIcons` prop added for custom icon rendering
+- New component: `password-strength-segment-bar.tsx` — 4-segment strength indicator with Vietnamese labels
+
+**Localization** 
+- All 4 auth pages now display content in Vietnamese (error messages, placeholders, labels)
+- Zod validation messages updated to Vietnamese
+
+**Architecture decisions**
+- Import standardization: all Zod imports use `"zod"` (not `"zod/v4"`)
+- PasswordStrengthSegmentBar reusable across reset-password and reset-password form flows
+- E2E tests updated to match Vietnamese text expectations
+
 ### Added — 2026-03-31: Account & Admin Screens (Profile, Security, User Management, Invite)
 
 4 new pages implementing account settings and admin user management with 8 missing UI components.

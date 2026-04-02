@@ -1,6 +1,6 @@
 # Codebase Summary
 
-Last updated: 2026-03-31
+Last updated: 2026-04-02
 
 ## Tech Stack
 
@@ -73,6 +73,9 @@ src/
 - `stores/auth-store.ts`: Zustand store — user object, `role: UserRole`, JWT token
 - `middleware.ts`: Protects all `/(dashboard)/*` routes; redirects to `/login` if unauthenticated
 - `lib/api/auth.ts`: Login, logout, invite-accept, password reset calls
+- `components/auth/auth-left-panel.tsx`: Reusable auth page sidebar (48px padding, featureIcons support)
+- `components/auth/password-strength-segment-bar.tsx`: 4-segment password strength indicator
+- Auth pages (login, forgot-password, reset-password, invite): Vietnamese localization with Zod validation
 
 ### Dashboard (role-based)
 Single route `/dashboard`, role resolved client-side:
