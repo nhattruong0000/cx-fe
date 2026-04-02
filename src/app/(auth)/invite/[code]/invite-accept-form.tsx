@@ -26,13 +26,13 @@ import type { InvitationDetails } from "@/types/auth"
 
 const inviteSchema = z
   .object({
-    fullName: z.string().min(2, "Full name is required"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    fullName: z.string().min(2, "Vui lòng nhập họ và tên"),
+    password: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
     confirmPassword: z.string(),
-    terms: z.boolean().refine((v) => v, "You must accept the terms"),
+    terms: z.boolean().refine((v) => v, "Bạn phải đồng ý với điều khoản"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "Mật khẩu không khớp",
     path: ["confirmPassword"],
   })
 
@@ -75,7 +75,7 @@ export function InviteAcceptForm({ code, invite }: InviteAcceptFormProps) {
       const message =
         err && typeof err === "object" && "message" in err
           ? (err as { message: string }).message
-          : "Something went wrong. Please try again."
+          : "Đã xảy ra lỗi. Vui lòng thử lại."
       setApiError(message)
     }
   }
@@ -94,8 +94,8 @@ export function InviteAcceptForm({ code, invite }: InviteAcceptFormProps) {
           className="flex flex-col gap-4"
         >
           {/* Locked email field */}
-          <div className="grid gap-2">
-            <label className="text-sm font-medium">Email</label>
+          <div className="grid gap-1.5">
+            <label className="text-[13px] font-medium">Email</label>
             <div className="relative">
               <Input
                 value={invite.email}
@@ -111,9 +111,9 @@ export function InviteAcceptForm({ code, invite }: InviteAcceptFormProps) {
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Name</FormLabel>
+                <FormLabel className="text-[13px]">Họ và tên</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your full name" {...field} />
+                  <Input placeholder="Nhập họ và tên" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -125,12 +125,12 @@ export function InviteAcceptForm({ code, invite }: InviteAcceptFormProps) {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className="text-[13px]">Mật khẩu</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder="Create a password"
+                      placeholder="Tạo mật khẩu"
                       {...field}
                     />
                     <button
@@ -153,12 +153,12 @@ export function InviteAcceptForm({ code, invite }: InviteAcceptFormProps) {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel className="text-[13px]">Xác nhận mật khẩu</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
                       type={showConfirm ? "text" : "password"}
-                      placeholder="Confirm your password"
+                      placeholder="Xác nhận mật khẩu"
                       {...field}
                     />
                     <button
@@ -173,7 +173,7 @@ export function InviteAcceptForm({ code, invite }: InviteAcceptFormProps) {
                 </FormControl>
                 <FormMessage />
                 <p className="text-xs text-muted-foreground">
-                  Password must be at least 8 characters
+                  Mật khẩu phải có ít nhất 8 ký tự
                 </p>
               </FormItem>
             )}
@@ -191,14 +191,14 @@ export function InviteAcceptForm({ code, invite }: InviteAcceptFormProps) {
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <label className="text-sm leading-snug">
-                    I agree to the{" "}
+                  <label className="text-xs leading-snug text-muted-foreground">
+                    Tôi đồng ý với{" "}
                     <Link href="/terms" className="text-primary hover:underline">
-                      Terms of Service
+                      Điều khoản dịch vụ
                     </Link>{" "}
-                    and{" "}
+                    và{" "}
                     <Link href="/privacy" className="text-primary hover:underline">
-                      Privacy Policy
+                      Chính sách bảo mật
                     </Link>
                   </label>
                 </div>
@@ -215,7 +215,7 @@ export function InviteAcceptForm({ code, invite }: InviteAcceptFormProps) {
             {form.formState.isSubmitting ? (
               <Spinner size="sm" className="text-primary-foreground" />
             ) : null}
-            Create Account &amp; Join Team
+            Tạo tài khoản &amp; Tham gia nhóm
             <ArrowRight className="size-4" />
           </Button>
         </form>

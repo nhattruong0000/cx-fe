@@ -11,7 +11,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
-import { Progress } from "@/components/ui/progress"
+import { PasswordStrengthSegmentBar } from "@/components/auth/password-strength-segment-bar"
 import {
   Form,
   FormField,
@@ -25,11 +25,11 @@ import { getPasswordStrength } from "@/lib/password-strength"
 
 const resetSchema = z
   .object({
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "Mật khẩu không khớp",
     path: ["confirmPassword"],
   })
 
@@ -64,7 +64,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
       const message =
         err && typeof err === "object" && "message" in err
           ? (err as { message: string }).message
-          : "Something went wrong. Please try again."
+          : "Đã xảy ra lỗi. Vui lòng thử lại."
       setApiError(message)
     }
   }
@@ -73,9 +73,9 @@ export function ResetPasswordForm({ token }: { token: string }) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 text-center">
         <ShieldCheck className="size-12 text-primary" />
-        <h2 className="text-2xl font-bold">Password reset successful</h2>
+        <h2 className="text-2xl font-bold">Đặt lại mật khẩu thành công</h2>
         <p className="text-sm text-muted-foreground">
-          Redirecting to login...
+          Đang chuyển hướng đến trang đăng nhập...
         </p>
       </div>
     )
@@ -84,14 +84,14 @@ export function ResetPasswordForm({ token }: { token: string }) {
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <ShieldCheck className="size-7 text-primary" />
           <h1 className="text-[28px] font-bold leading-tight">
-            Create new password
+            Tạo mật khẩu mới
           </h1>
         </div>
         <p className="text-sm text-muted-foreground">
-          Your password must be at least 8 characters
+          Mật khẩu mới phải có ít nhất 8 ký tự.
         </p>
       </div>
 
@@ -108,12 +108,12 @@ export function ResetPasswordForm({ token }: { token: string }) {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>New Password</FormLabel>
+                <FormLabel>Mật khẩu mới</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder="Enter new password"
+                      placeholder="Nhập mật khẩu mới"
                       {...field}
                     />
                     <button
@@ -136,12 +136,12 @@ export function ResetPasswordForm({ token }: { token: string }) {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel>Xác nhận mật khẩu</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
                       type={showConfirm ? "text" : "password"}
-                      placeholder="Confirm new password"
+                      placeholder="Xác nhận mật khẩu mới"
                       {...field}
                     />
                     <button
@@ -159,7 +159,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
             )}
           />
 
-          <Progress value={strength} showLabel />
+          <PasswordStrengthSegmentBar strength={strength} />
 
           <Button
             type="submit"
@@ -171,7 +171,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
             ) : (
               <Lock className="size-4" />
             )}
-            Reset Password
+            Đặt lại mật khẩu
           </Button>
         </form>
       </Form>
@@ -182,7 +182,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-4" />
-          Back to login
+          Quay lại đăng nhập
         </Link>
       </div>
     </div>

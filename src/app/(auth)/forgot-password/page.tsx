@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod/v4"
+import { z } from "zod"
 import { useState } from "react"
 import Link from "next/link"
 import { ArrowLeft, Info, KeyRound, Loader2 } from "lucide-react"
@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label"
 import * as authApi from "@/lib/api/auth"
 
 const forgotSchema = z.object({
-  email: z.email("Invalid email address"),
+  email: z.string().email("Địa chỉ email không hợp lệ"),
 })
 
 type ForgotFormValues = z.infer<typeof forgotSchema>
@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
     } catch (err: unknown) {
       const message =
         (err as { message?: string })?.message ||
-        "Something went wrong. Please try again."
+        "Đã xảy ra lỗi. Vui lòng thử lại."
       setError("root", { message })
     }
   }
@@ -46,8 +46,8 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <AuthLeftPanel
-        headline="Reset your password"
-        description="Your account security is our top priority. We'll help you regain access safely."
+        headline="Đặt lại mật khẩu"
+        description="Bảo mật tài khoản là ưu tiên hàng đầu. Chúng tôi sẽ giúp bạn truy cập lại an toàn."
         centerIcon={
           <div className="flex size-[120px] items-center justify-center rounded-full bg-white/15">
             <KeyRound className="size-12" />
@@ -55,31 +55,31 @@ export default function ForgotPasswordPage() {
         }
       />
 
-      <div className="flex flex-1 items-center justify-center p-6 sm:p-10">
-        <div className="w-full max-w-[420px] space-y-6">
+      <div className="flex flex-1 items-center justify-center p-6 sm:px-20 sm:py-12">
+        <div className="w-full max-w-[400px] space-y-8">
           {/* Back link */}
           <Link
             href="/login"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="size-4" />
-            Back to login
+            Quay lại đăng nhập
           </Link>
 
           {/* Header */}
           <div>
             <h2 className="text-[30px] font-bold leading-tight tracking-tight">
-              Forgot password?
+              Quên mật khẩu?
             </h2>
-            <p className="mt-1.5 text-[15px] text-muted-foreground">
-              No worries, we&apos;ll send you reset instructions.
+            <p className="mt-1.5 text-[15px] leading-normal text-muted-foreground">
+              Nhập email của bạn và chúng tôi sẽ gửi liên kết đặt lại.
             </p>
           </div>
 
           {sent ? (
             <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-primary">
-              Check your email for a password reset link. If you don&apos;t see
-              it, check your spam folder.
+              Kiểm tra email của bạn để nhận liên kết đặt lại mật khẩu.
+              Nếu không thấy, hãy kiểm tra thư mục spam.
             </div>
           ) : (
             <form
@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
               )}
 
               <div className="space-y-1.5">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email">Địa chỉ email</Label>
                 <Input
                   id="email"
                   placeholder="you@example.com"
@@ -110,23 +110,23 @@ export default function ForgotPasswordPage() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full shadow-[0_2px_4px_rgba(37,86,197,0.12),0_8px_20px_rgba(37,86,197,0.15)]"
                 disabled={isSubmitting}
               >
                 {isSubmitting && (
                   <Loader2 className="size-4 animate-spin" />
                 )}
-                Send Reset Link
+                Gửi liên kết đặt lại
               </Button>
             </form>
           )}
 
           {/* Info box */}
-          <div className="flex gap-2.5 rounded-lg bg-[#EFF6FF] p-3.5">
+          <div className="flex gap-2.5 rounded-[10px] bg-[#EFF6FF] px-4 py-3">
             <Info className="mt-0.5 size-4 shrink-0 text-primary" />
             <p className="text-[13px] leading-relaxed text-muted-foreground">
-              If an account exists with this email, you&apos;ll receive a
-              password reset link within a few minutes.
+              Không tìm thấy email? Kiểm tra thư mục spam hoặc thử địa
+              chỉ email khác.
             </p>
           </div>
         </div>

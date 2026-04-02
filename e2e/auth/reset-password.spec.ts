@@ -20,53 +20,53 @@ test.describe("Reset Password Page", () => {
     await page.goto(`/reset-password/${FAKE_TOKEN}`)
     await expect(
       page
-        .getByText("Create new password")
-        .or(page.getByText("Invalid Reset Link")),
+        .getByText("Tạo mật khẩu mới")
+        .or(page.getByText("Liên kết đặt lại không hợp lệ")),
     ).toBeVisible({ timeout: 10_000 })
   })
 
   test("invalid token shows error state with request-new-link button", async ({ page }) => {
     await page.goto(`/reset-password/${FAKE_TOKEN}`)
-    await expect(page.getByText("Invalid Reset Link")).toBeVisible({
+    await expect(page.getByText("Liên kết đặt lại không hợp lệ")).toBeVisible({
       timeout: 10_000,
     })
-    await expect(page.getByRole("link", { name: "Request New Link" })).toBeVisible()
+    await expect(page.getByRole("link", { name: "Yêu cầu liên kết mới" })).toBeVisible()
   })
 
   test("password mismatch shows error", async ({ page }) => {
     await mockValidToken(page)
     await page.goto(`/reset-password/${FAKE_TOKEN}`)
-    await expect(page.getByText("Create new password")).toBeVisible({
+    await expect(page.getByText("Tạo mật khẩu mới")).toBeVisible({
       timeout: 10_000,
     })
 
-    await page.getByPlaceholder("Enter new password").fill("StrongPass1!")
-    await page.getByPlaceholder("Confirm new password").fill("DifferentPass2!")
-    await page.getByRole("button", { name: "Reset Password" }).click()
+    await page.getByPlaceholder("Nhập mật khẩu mới").fill("StrongPass1!")
+    await page.getByPlaceholder("Xác nhận mật khẩu mới").fill("DifferentPass2!")
+    await page.getByRole("button", { name: "Đặt lại mật khẩu" }).click()
 
-    await expect(page.getByText("Passwords do not match")).toBeVisible()
+    await expect(page.getByText("Mật khẩu không khớp")).toBeVisible()
   })
 
   test("weak password shows strength indicator", async ({ page }) => {
     await mockValidToken(page)
     await page.goto(`/reset-password/${FAKE_TOKEN}`)
-    await expect(page.getByText("Create new password")).toBeVisible({
+    await expect(page.getByText("Tạo mật khẩu mới")).toBeVisible({
       timeout: 10_000,
     })
 
     // Password with 8+ chars but only lowercase → score=1 (weak), shows label
-    await page.getByPlaceholder("Enter new password").fill("abcdefgh")
-    await expect(page.getByText("weak")).toBeVisible()
+    await page.getByPlaceholder("Nhập mật khẩu mới").fill("abcdefgh")
+    await expect(page.getByText("Yếu")).toBeVisible()
   })
 
   test("back to login link navigates to /login", async ({ page }) => {
     await mockValidToken(page)
     await page.goto(`/reset-password/${FAKE_TOKEN}`)
-    await expect(page.getByText("Create new password")).toBeVisible({
+    await expect(page.getByText("Tạo mật khẩu mới")).toBeVisible({
       timeout: 10_000,
     })
 
-    await page.getByText("Back to login").click()
+    await page.getByText("Quay lại đăng nhập").click()
     await expect(page).toHaveURL(/\/login/)
   })
 })

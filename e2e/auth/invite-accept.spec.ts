@@ -28,47 +28,47 @@ test.describe("Invite Accept Page", () => {
     // Either shows the form or an invalid-invitation error
     await expect(
       page
-        .getByText("Create your account")
-        .or(page.getByText("Invalid Invitation")),
+        .getByText("Tạo tài khoản")
+        .or(page.getByText("Lời mời không hợp lệ")),
     ).toBeVisible({ timeout: 10_000 })
   })
 
   test("terms checkbox required: submit without terms shows error", async ({ page }) => {
     await mockValidInvite(page)
     await page.goto(`/invite/${FAKE_CODE}`)
-    await expect(page.getByText("Create your account")).toBeVisible({
+    await expect(page.getByText("Tạo tài khoản")).toBeVisible({
       timeout: 10_000,
     })
 
     // Fill required fields except terms
-    await page.getByPlaceholder("Enter your full name").fill("Test User")
-    await page.getByPlaceholder("Create a password").fill("StrongPass1!")
-    await page.getByPlaceholder("Confirm your password").fill("StrongPass1!")
+    await page.getByPlaceholder("Nhập họ và tên").fill("Test User")
+    await page.getByPlaceholder("Tạo mật khẩu").fill("StrongPass1!")
+    await page.getByPlaceholder("Xác nhận mật khẩu").fill("StrongPass1!")
 
-    await page.getByRole("button", { name: /Create Account/ }).click()
-    await expect(page.getByText("You must accept the terms")).toBeVisible()
+    await page.getByRole("button", { name: /Tạo tài khoản/ }).click()
+    await expect(page.getByText("Bạn phải đồng ý với điều khoản")).toBeVisible()
   })
 
   test("password mismatch shows error", async ({ page }) => {
     await mockValidInvite(page)
     await page.goto(`/invite/${FAKE_CODE}`)
-    await expect(page.getByText("Create your account")).toBeVisible({
+    await expect(page.getByText("Tạo tài khoản")).toBeVisible({
       timeout: 10_000,
     })
 
-    await page.getByPlaceholder("Enter your full name").fill("Test User")
-    await page.getByPlaceholder("Create a password").fill("StrongPass1!")
-    await page.getByPlaceholder("Confirm your password").fill("Different2!")
+    await page.getByPlaceholder("Nhập họ và tên").fill("Test User")
+    await page.getByPlaceholder("Tạo mật khẩu").fill("StrongPass1!")
+    await page.getByPlaceholder("Xác nhận mật khẩu").fill("Different2!")
     await page.getByRole("checkbox").check()
 
-    await page.getByRole("button", { name: /Create Account/ }).click()
-    await expect(page.getByText("Passwords do not match")).toBeVisible()
+    await page.getByRole("button", { name: /Tạo tài khoản/ }).click()
+    await expect(page.getByText("Mật khẩu không khớp")).toBeVisible()
   })
 
   test("email field is disabled/locked", async ({ page }) => {
     await mockValidInvite(page)
     await page.goto(`/invite/${FAKE_CODE}`)
-    await expect(page.getByText("Create your account")).toBeVisible({
+    await expect(page.getByText("Tạo tài khoản")).toBeVisible({
       timeout: 10_000,
     })
 
@@ -81,11 +81,11 @@ test.describe("Invite Accept Page", () => {
   test("sign in link navigates to /login", async ({ page }) => {
     await mockValidInvite(page)
     await page.goto(`/invite/${FAKE_CODE}`)
-    await expect(page.getByText("Create your account")).toBeVisible({
+    await expect(page.getByText("Tạo tài khoản")).toBeVisible({
       timeout: 10_000,
     })
 
-    await page.getByRole("link", { name: "Sign in" }).click()
+    await page.getByRole("link", { name: "Đăng nhập" }).click()
     await expect(page).toHaveURL(/\/login/)
   })
 })

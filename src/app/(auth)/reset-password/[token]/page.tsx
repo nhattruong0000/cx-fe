@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
-import { KeyRound, ShieldAlert } from "lucide-react"
+import { ShieldAlert, ShieldCheck } from "lucide-react"
 import Link from "next/link"
 
 import { AuthLeftPanel } from "@/components/auth/auth-left-panel"
@@ -24,10 +24,10 @@ export default function ResetPasswordPage() {
         if (res.valid) {
           setTokenValid(true)
         } else {
-          setTokenError("This reset link is invalid or has expired.")
+          setTokenError("Liên kết đặt lại không hợp lệ hoặc đã hết hạn.")
         }
       } catch {
-        setTokenError("This reset link is invalid or has expired.")
+        setTokenError("Liên kết đặt lại không hợp lệ hoặc đã hết hạn.")
       } finally {
         setLoading(false)
       }
@@ -42,12 +42,12 @@ export default function ResetPasswordPage() {
   ) : tokenError || !tokenValid ? (
     <div className="mx-auto flex max-w-[420px] flex-col items-center gap-4 text-center">
       <ShieldAlert className="size-12 text-destructive" />
-      <h2 className="text-2xl font-bold">Invalid Reset Link</h2>
+      <h2 className="text-2xl font-bold">Liên kết đặt lại không hợp lệ</h2>
       <p className="text-sm text-muted-foreground">
-        {tokenError ?? "This reset link is invalid or has expired."}
+        {tokenError ?? "Liên kết đặt lại không hợp lệ hoặc đã hết hạn."}
       </p>
       <Link href="/forgot-password">
-        <Button variant="outline">Request New Link</Button>
+        <Button variant="outline">Yêu cầu liên kết mới</Button>
       </Link>
     </div>
   ) : (
@@ -59,11 +59,11 @@ export default function ResetPasswordPage() {
   return (
     <>
       <AuthLeftPanel
-        headline="Reset your password"
-        description="Your account security is our top priority. We'll help you regain access safely."
+        headline="Bảo mật tài khoản của bạn"
+        description="Tạo mật khẩu mạnh để bảo vệ tài khoản của bạn. Bảo mật của bạn là ưu tiên hàng đầu của chúng tôi."
         centerIcon={
           <div className="flex size-[120px] items-center justify-center rounded-full bg-white/[0.15]">
-            <KeyRound className="size-12" />
+            <ShieldCheck className="size-14" />
           </div>
         }
       />

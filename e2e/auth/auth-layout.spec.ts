@@ -6,7 +6,7 @@ test.describe("Auth Layout — Responsive", () => {
     await page.goto("/login")
     // AuthLeftPanel is visible at lg+ (1024px+)
     await expect(page.getByText("SonNguyen CX").first()).toBeVisible()
-    await expect(page.getByText("Welcome back")).toBeVisible()
+    await expect(page.getByText("Chào mừng trở lại")).toBeVisible()
   })
 
   test("mobile (375px): left panel hidden, form full-width", async ({ page }) => {
@@ -15,14 +15,14 @@ test.describe("Auth Layout — Responsive", () => {
     // Left panel hidden below lg breakpoint
     await expect(page.getByText("SonNguyen CX").first()).toBeHidden()
     // Login form should still be visible
-    await expect(page.getByText("Sign in to your account")).toBeVisible()
+    await expect(page.getByText("Đăng nhập vào tài khoản")).toBeVisible()
   })
 
   test("tablet (768px): left panel hidden", async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 })
     await page.goto("/login")
     await expect(page.getByText("SonNguyen CX").first()).toBeHidden()
-    await expect(page.getByText("Sign in to your account")).toBeVisible()
+    await expect(page.getByText("Đăng nhập vào tài khoản")).toBeVisible()
   })
 
   test('logo "SonNguyen CX" renders on left panel at desktop', async ({ page }) => {

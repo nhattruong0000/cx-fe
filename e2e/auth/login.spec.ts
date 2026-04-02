@@ -41,7 +41,7 @@ test.describe("Login Page", () => {
     await fillLoginForm(page, TEST_USER.email, "wrongpassword123")
     await submitLoginForm(page)
     await expect(
-      page.locator("text=Invalid credentials").or(page.locator(".text-destructive").first()),
+      page.locator("text=Thông tin đăng nhập không đúng").or(page.locator(".text-destructive").first()),
     ).toBeVisible({ timeout: 10_000 })
   })
 
@@ -52,14 +52,14 @@ test.describe("Login Page", () => {
   })
 
   test("invalid email format shows error", async ({ page }) => {
-    await page.getByLabel("Email address").fill("not-an-email")
-    await page.getByPlaceholder("Enter your password").fill("somepassword")
+    await page.getByLabel("Địa chỉ email").fill("not-an-email")
+    await page.getByPlaceholder("Nhập mật khẩu của bạn").fill("somepassword")
     await submitLoginForm(page)
-    await expect(page.getByText("Invalid email")).toBeVisible()
+    await expect(page.getByText("Địa chỉ email không hợp lệ")).toBeVisible()
   })
 
   test("forgot password link navigates to /forgot-password", async ({ page }) => {
-    await page.getByText("Forgot password?").click()
+    await page.getByText("Quên mật khẩu?").click()
     await expect(page).toHaveURL(/\/forgot-password/)
   })
 
@@ -69,7 +69,7 @@ test.describe("Login Page", () => {
   })
 
   test("password toggle switches input visibility", async ({ page }) => {
-    const passwordInput = page.getByPlaceholder("Enter your password")
+    const passwordInput = page.getByPlaceholder("Nhập mật khẩu của bạn")
     await expect(passwordInput).toHaveAttribute("type", "password")
 
     // Click the toggle button (aria-label based)

@@ -6,18 +6,18 @@ export async function fillLoginForm(
   email: string,
   password: string,
 ) {
-  await page.getByLabel("Email address").fill(email)
-  await page.getByPlaceholder("Enter your password").fill(password)
+  await page.getByLabel("Địa chỉ email").fill(email)
+  await page.getByPlaceholder("Nhập mật khẩu của bạn").fill(password)
 }
 
 /** Submit login form */
 export async function submitLoginForm(page: Page) {
-  await page.getByRole("button", { name: "Sign In" }).click()
+  await page.getByRole("button", { name: "Đăng nhập" }).click()
 }
 
 /** Fill forgot-password form */
 export async function fillForgotPasswordForm(page: Page, email: string) {
-  await page.getByLabel("Email address").fill(email)
+  await page.getByLabel("Địa chỉ email").fill(email)
 }
 
 /** Test credentials */
