@@ -1,6 +1,6 @@
 # System Architecture
 
-Last updated: 2026-03-31
+Last updated: 2026-04-03
 
 ## Overview
 
@@ -11,7 +11,9 @@ Next.js 15 App Router SPA with mock API layer. Rails API built in parallel; togg
 ```
 app/
 ├── (auth)/        # Public: /login, /forgot-password, /invite, /reset-password
-└── (dashboard)/   # Protected by middleware: /dashboard, future module routes
+└── (dashboard)/   # Protected by middleware: all routes below
+    ├── /dashboard          # Role-based dashboard entry
+    └── /notifications      # Notification center with tabs/filtering
 ```
 
 `middleware.ts` intercepts all `/(dashboard)/*` requests — checks JWT in auth store (localStorage), redirects to `/login` if absent.

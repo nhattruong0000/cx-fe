@@ -12,6 +12,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { NotificationPopup } from "@/components/layout/notification-popup";
+import { useNotifications } from "@/hooks/use-notifications";
 
 /** Maps pathname segments to breadcrumb labels */
 const BREADCRUMB_MAP: Record<string, string> = {
@@ -48,6 +51,8 @@ export function DashboardTopBar() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const [imgError, setImgError] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const { data: notifData } = useNotifications("all", 1);
 
   const initials = getUserInitials(user?.full_name);
   const showAvatar = user?.avatar_url && !imgError;
@@ -71,7 +76,27 @@ export function DashboardTopBar() {
         <span className="text-sm font-medium text-[#09090B]">{breadcrumb}</span>
       </div>
 
-      {/* User area */}
+      {/* User area: bell + avatar */}
+      <div className="flex items-center gap-3">
+        {/* Notification bell */}
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+          <PopoverTrigger className="relative flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors hover:bg-[#F1F5F9]">
+            <Bell className="h-5 w-5 text-[#71717A]" />
+            {(notifData?.unreadCount ?? 0) > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#E81B22] text-[10px] font-semibold text-white">
+                {notifData?.unreadCount}
+              </span>
+            )}
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            sideOffset={8}
+            className="w-auto rounded-[14px] p-0 shadow-[0_4px_8px_-1px_rgba(0,0,0,0.04),0_12px_24px_-2px_rgba(0,0,0,0.09)]"
+          >
+            <NotificationPopup onClose={() => setPopoverOpen(false)} />
+          </PopoverContent>
+        </Popover>
+
       <DropdownMenu>
         <DropdownMenuTrigger
           className="rounded-full outline-none transition-opacity hover:opacity-80"
@@ -103,11 +128,6 @@ export function DashboardTopBar() {
               <p className="truncate text-xs text-[#71717A]">{user?.email}</p>
             </div>
           </div>
-          <div className="px-3 pb-2">
-            <span className="inline-block rounded-full bg-[#EBF0FA] px-2 py-0.5 text-[11px] font-medium capitalize text-[#2556C5]">
-              {user?.role}
-            </span>
-          </div>
 
           <DropdownMenuSeparator />
 
@@ -134,6 +154,7 @@ export function DashboardTopBar() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      </div>
     </div>
   );
 }

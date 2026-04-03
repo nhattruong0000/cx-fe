@@ -1,6 +1,6 @@
 # Codebase Summary
 
-Last updated: 2026-04-02
+Last updated: 2026-04-03
 
 ## Tech Stack
 
@@ -22,13 +22,15 @@ src/
 │   ├── (auth)/              # Login, forgot-password, invite, reset-password
 │   ├── (dashboard)/         # Dashboard route group
 │   │   ├── layout.tsx       # Role-driven layout (sidebar vs header-only)
-│   │   └── dashboard/
-│   │       ├── page.tsx             # Route entry, resolves role → view
-│   │       ├── admin-dashboard.tsx  # Admin view
-│   │       ├── staff-dashboard.tsx  # Staff view
-│   │       ├── customer-dashboard.tsx
-│   │       ├── dashboard-skeleton.tsx
-│   │       └── dashboard-error.tsx
+│   │   ├── dashboard/
+│   │   │   ├── page.tsx             # Route entry, resolves role → view
+│   │   │   ├── admin-dashboard.tsx  # Admin view
+│   │   │   ├── staff-dashboard.tsx  # Staff view
+│   │   │   ├── customer-dashboard.tsx
+│   │   │   ├── dashboard-skeleton.tsx
+│   │   │   └── dashboard-error.tsx
+│   │   └── notifications/
+│   │       └── page.tsx (new: Notifications page with tabs, filters, pagination)
 │   ├── globals.css
 │   ├── layout.tsx           # Root layout
 │   └── page.tsx             # Home redirect
@@ -44,18 +46,27 @@ src/
 │   │   ├── dashboard-sidebar.tsx
 │   │   ├── sidebar-nav-config.ts
 │   │   ├── sidebar-nav-item.tsx
-│   │   └── sidebar-icon-map.ts
+│   │   ├── sidebar-icon-map.ts
+│   │   ├── dashboard-top-bar.tsx (modified: added bell icon + notification popover)
+│   │   └── notification-popup.tsx (new: popover content with recent notifications)
+│   ├── notifications/       # Notification-specific components
+│   │   ├── notification-list-item.tsx
+│   │   └── notification-page-content.tsx
 │   └── ui/                  # shadcn/ui primitives
+│       ├── popover.tsx (new: base-ui Popover wrapper)
 ├── hooks/
-│   └── use-dashboard-summary.ts  # TanStack Query wrapper
+│   ├── use-dashboard-summary.ts  # TanStack Query wrapper
+│   └── use-notifications.ts (new: notifications query + mutations)
 ├── lib/
 │   ├── api/
 │   │   ├── client.ts        # Fetch wrapper with auth headers
 │   │   ├── auth.ts          # Auth API calls
-│   │   └── dashboard.ts     # GET /api/v1/dashboard/summary
+│   │   ├── dashboard.ts     # GET /api/v1/dashboard/summary
+│   │   └── notifications.ts (new: GET /api/v1/notifications with mock data)
 │   ├── dashboard-chart-colors.ts
 │   ├── dashboard-icon-map.ts
 │   ├── dashboard-table-utils.ts
+│   ├── notification-icon-map.ts (new: NotificationType → icon/color mapping)
 │   ├── format-relative-time.ts
 │   ├── password-strength.ts
 │   └── utils.ts
@@ -64,7 +75,8 @@ src/
 ├── stores/
 │   └── auth-store.ts        # Zustand: user, role, token
 └── types/
-    └── dashboard.ts         # Discriminated union API types
+    ├── dashboard.ts         # Discriminated union API types
+    └── notification.ts (new: Notification, NotificationType, NotificationsResponse)
 ```
 
 ## Key Modules
