@@ -16,7 +16,10 @@ export interface Notification {
 
 export interface NotificationsResponse {
   notifications: Notification[]
+  /** Total count of ALL notifications (unfiltered) */
+  totalCount: number
   unreadCount: number
+  /** Total count of current filtered result set (for pagination) */
   total: number
   page: number
   pageSize: number

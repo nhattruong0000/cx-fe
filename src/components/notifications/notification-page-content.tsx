@@ -21,6 +21,7 @@ export function NotificationPageContent() {
   const markAllAsRead = useMarkAllAsRead()
 
   const notifications = data?.notifications ?? []
+  const totalCount = data?.totalCount ?? 0
   const unreadCount = data?.unreadCount ?? 0
   const total = data?.total ?? 0
   const pageSize = data?.pageSize ?? 12
@@ -50,10 +51,10 @@ export function NotificationPageContent() {
             const isActive = activeTab === tab.value
             const badgeCount =
               tab.value === "all"
-                ? total
+                ? totalCount
                 : tab.value === "unread"
                   ? unreadCount
-                  : total - unreadCount
+                  : totalCount - unreadCount
 
             return (
               <button

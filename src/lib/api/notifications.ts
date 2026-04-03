@@ -17,12 +17,14 @@ export async function getNotifications(
   })
   const data = await apiClient.get<{
     notifications: NotificationsResponse["notifications"]
+    total_count: number
     unread_count: number
     pagination: { total_count: number; current_page: number }
   }>(`/api/v1/notifications?${params}`)
 
   return {
     notifications: data.notifications,
+    totalCount: data.total_count,
     unreadCount: data.unread_count,
     total: data.pagination.total_count,
     page: data.pagination.current_page,
