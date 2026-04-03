@@ -67,7 +67,7 @@ export function ProfilePersonalInfoCard() {
 
   function onSubmit(values: FormValues) {
     updateProfile.mutate(
-      { full_name: values.full_name, email: values.email, phone: values.phone },
+      { full_name: values.full_name, phone: values.phone },
       {
         onSuccess: () => toast.success("Cập nhật hồ sơ thành công"),
         onError: () => toast.error("Không thể cập nhật hồ sơ"),
