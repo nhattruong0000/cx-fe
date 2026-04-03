@@ -13,7 +13,11 @@ app/
 ├── (auth)/        # Public: /login, /forgot-password, /invite, /reset-password
 └── (dashboard)/   # Protected by middleware: all routes below
     ├── /dashboard          # Role-based dashboard entry
-    └── /notifications      # Notification center with tabs/filtering
+    ├── /notifications      # Notification center with tabs/filtering (NEW)
+    ├── /profile            # User account settings
+    ├── /security           # Sessions & 2FA management
+    ├── /admin/users        # User management (admin only)
+    └── /admin/invite       # Invite new user (admin only)
 ```
 
 `middleware.ts` intercepts all `/(dashboard)/*` requests — checks JWT in auth store (localStorage), redirects to `/login` if absent.
@@ -110,8 +114,65 @@ No global client state beyond auth. Each page manages its own server state via T
 
 `src/types/dashboard.ts` defines a discriminated union `DashboardSummary` on the `role` field. TypeScript narrows to the correct shape inside each role-specific component after the `switch(data.role)` in `page.tsx`.
 
+## Real-Time Notifications (NEW)
+
+### WebSocket Integration
+
+```
+ActionCable Consumer (Singleton)
+  ├─ Auto-reconnect on token expiration
+  ├─ Subscription: NotificationsChannel
+  │   └─ Receives: Notification { id, title, body, read_at }
+  ├─ Disconnection: Triggers token refresh
+  └─ Lifecycle: Initialized on app mount if authenticated
+```
+
+### Frontend Notification Flow
+
+```
+useNotificationSubscription() hook
+  ├─ Connects to ActionCable @ app startup
+  ├─ Listens for 'notification_created' events
+  ├─ Updates React Query cache (notifications-list key)
+  └─ Shows toast for new unread notifications
+
+getDashboardSummary()
+  └─ Returns notification count for top bar bell icon
+
+useNotifications() hook
+  ├─ Query: GET /api/v1/notifications?page=1
+  ├─ Mutations: patch read, patch read_all
+  └─ TanStack Query with staleTime 30s, refetch on focus
+```
+
+### Notification Center UI
+
+```
+/notifications page
+  ├─ Tabs: All, Unread, Surveys, System, Preferences
+  ├─ Filters: Date range, event type
+  ├─ List: notification-list-item (title, body, timestamp, read checkbox)
+  ├─ Bulk actions: Mark all read, clear read
+  └─ Preferences card: Per-event toggles, weekly digest enable
+```
+
+### Components
+
+```
+src/components/
+├── layout/
+│   └── dashboard-top-bar.tsx (modified: bell icon + notification popover)
+│   └── notification-popup.tsx (new: recent notifications preview)
+├── notifications/
+│   ├── notification-list-item.tsx (new: single notification UI)
+│   └── notification-page-content.tsx (new: full notification center)
+└── ui/
+    └── popover.tsx (new: base-ui Popover wrapper)
+```
+
 ## Security
 
 - Route protection: `middleware.ts` blocks unauthenticated access to dashboard routes
 - Auth token stored in Zustand (in-memory); persistence strategy TBD when real auth ships
+- WebSocket JWT auth: ActionCable consumer passes token per connection; expires = automatic disconnect
 - All user-generated content passed through DOMPurify before render

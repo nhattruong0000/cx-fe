@@ -81,6 +81,42 @@ src/
 
 ## Key Modules
 
+### Notifications (Real-Time, WebSocket) - NEW
+
+```
+ActionCable Consumer Setup
+├── lib/action-cable-consumer.ts — Singleton instance with auto-reconnect
+├── hooks/use-notification-subscription.ts — Connect to NotificationsChannel
+└── Lifecycle: Auto-connect on app mount if authenticated
+
+Notification API & Hooks
+├── lib/api/notifications.ts — GET /api/v1/notifications, PATCH read
+├── hooks/use-notifications.ts — Query + mutations for notification list
+└── hooks/use-notification-subscription.ts — WebSocket real-time updates
+
+Notification Components
+├── components/layout/dashboard-top-bar.tsx (modified: bell icon + popover trigger)
+├── components/layout/notification-popup.tsx (new: recent notifications preview)
+├── components/notifications/notification-list-item.tsx (new: single item UI)
+└── components/notifications/notification-page-content.tsx (new: full center with tabs)
+
+Notification Preferences
+├── lib/api/notifications.ts — GET/PATCH /api/v1/notification_preferences/:user_id
+├── hooks/use-notifications.ts — includes useNotificationPreferences mutation
+└── Tab in /notifications page for user to toggle per-event-type preferences
+
+Types
+├── types/notification.ts — Notification, NotificationType, NotificationsResponse
+└── Exported from: Notification, NotificationPreference, NotificationEvent
+```
+
+### WebSocket (ActionCable) - NEW
+
+- `lib/action-cable-consumer.ts`: Singleton ActionCable instance with token refresh on 401
+- Auto-reconnect: Attempts 5x with exponential backoff (1s, 2s, 4s, 8s, 16s)
+- Token expiry: Client-side error handler triggers Zustand token refresh
+- Connection lifecycle: Auto-create on app mount, manual disconnect on logout
+
 ### Authentication
 - `stores/auth-store.ts`: Zustand store — user object, `role: UserRole`, JWT token
 - `middleware.ts`: Protects all `/(dashboard)/*` routes; redirects to `/login` if unauthenticated

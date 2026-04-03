@@ -2,6 +2,41 @@
 
 ## [Unreleased]
 
+### Added — 2026-04-03: Real-Time Notifications Fullstack (COMPLETE)
+
+Integrated real-time, event-driven notifications with WebSocket (ActionCable) backend connection, UI center with filtering, and notification preferences management.
+
+**Backend Changes (Rails 8)**
+- `Notification` model + `notifications` table (user_id, event_type, title, body, data, read_at)
+- `NotificationPreference` model + table (user_id, event_type, enabled, weekly_digest)
+- `NotificationsController` — GET index, PATCH read, PATCH read_all
+- `NotificationPreferencesController` — GET show, PATCH update
+- `NotificationsChannel` (ActionCable) — Real-time broadcast per user with JWT auth
+- `CreateNotificationsJob` — Event-driven async creation + broadcast
+- `CheckSatisfactionThresholdJob` — Hourly low satisfaction detection + notification
+- Pundit policies: `NotificationPolicy`, `NotificationPreferencePolicy`
+- Event triggers: survey_response, new_user, low_satisfaction, system
+
+**Frontend Changes (React/Next.js)**
+- `lib/action-cable-consumer.ts` (new) — Singleton ActionCable instance, auto-reconnect, token refresh
+- `hooks/use-notification-subscription.ts` (new) — WebSocket subscription to NotificationsChannel
+- `hooks/use-notifications.ts` (new) — Query + mutations (read, read_all, updatePreferences)
+- `lib/api/notifications.ts` (new) — GET /api/v1/notifications, PATCH endpoints
+- Components:
+  - `dashboard-top-bar.tsx` (modified) — Added bell icon + notification popover trigger
+  - `notification-popup.tsx` (new) — Popover: recent unread notifications, link to center
+  - `notification-list-item.tsx` (new) — Single notification card (title, body, timestamp, read checkbox)
+  - `notification-page-content.tsx` (new) — Full center with tabs (All, Unread, Surveys, System, Preferences)
+- `types/notification.ts` (new) — Notification, NotificationType, NotificationsResponse, NotificationPreference
+- `ui/popover.tsx` (new) — Base-ui Popover wrapper for reusable popovers
+
+**Architecture Decisions**
+- ActionCable: Singleton per session, JWT auth per connection, auto-reconnect on token refresh
+- Real-time: WebSocket + React Query for optimistic updates
+- API: REST for persistence, WebSocket for push notifications
+- Preferences: Per-event-type toggles + weekly digest flag stored server-side
+- Authorization: Pundit policies prevent cross-user notification access
+
 ### Updated — 2026-04-02: Auth Pages Design Sync
 
 4 auth pages (login, forgot-password, reset-password, invite) aligned with design system v2 using Vietnamese localization.
