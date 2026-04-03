@@ -18,7 +18,7 @@ interface AdminDashboardProps {
 export function AdminDashboard({ data }: AdminDashboardProps) {
   return (
     <div className="min-h-full">
-      <h1 className="mb-6 text-2xl font-semibold text-[#09090B]">Dashboard</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-[#09090B]">Bảng điều khiển</h1>
 
       {/* Stats Row */}
       <div className="mb-6 grid grid-cols-4 gap-4">
@@ -33,7 +33,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
 
       {/* Charts Row */}
       <div className="mb-6 grid grid-cols-2 gap-4">
-        <ChartCard title="Survey Responses (30 days)">
+        <ChartCard title="Phản hồi khảo sát (30 ngày)">
           <ResponsiveContainer width="100%" height={180}>
             <LineChart data={data.survey_responses_chart}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -45,7 +45,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Tickets by Category">
+        <ChartCard title="Phiếu theo danh mục">
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={data.tickets_by_category_chart}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -60,7 +60,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
 
       {/* Analytics Row */}
       <div className="grid grid-cols-[240px_1fr] gap-4">
-        <ChartCard title="User Roles">
+        <ChartCard title="Vai trò người dùng">
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie

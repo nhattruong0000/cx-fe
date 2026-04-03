@@ -20,7 +20,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { CUSTOMER_PERMISSIONS } from "@/constants/customer-permissions";
+import { ALL_CUSTOMER_PERMISSIONS } from "@/constants/customer-permissions";
 import { getAvatarColor, getInitials } from "@/lib/utils/avatar-helpers";
 
 const ROLE_OPTIONS = [
@@ -144,7 +144,7 @@ export function EditMemberDialog({ member, open, onClose }: EditMemberDialogProp
           <div className="flex flex-col gap-2">
             <label className="text-[13px] font-medium text-[#09090B]">Quyền hạn</label>
             <div className="flex flex-col gap-2">
-              {CUSTOMER_PERMISSIONS.map(({ key, label }) => {
+              {ALL_CUSTOMER_PERMISSIONS.map(({ key, label }) => {
                 const checked = permissions.includes(key);
                 return (
                   <label key={key} className="flex cursor-pointer items-center gap-2.5">

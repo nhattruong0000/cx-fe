@@ -18,27 +18,27 @@ import { useNotifications, useNotificationSubscription } from "@/hooks/use-notif
 
 /** Maps pathname segments to breadcrumb labels */
 const BREADCRUMB_MAP: Record<string, string> = {
-  dashboard: "Dashboard",
-  users: "Users",
+  dashboard: "Bảng điều khiển",
+  users: "Người dùng",
   profile: "Hồ sơ",
   security: "Bảo mật",
   notifications: "Thông báo",
-  invite: "Invite User",
-  "permission-groups": "Permission Groups",
-  organizations: "Organizations",
+  invite: "Mời người dùng",
+  "permission-groups": "Nhóm quyền hạn",
+  organizations: "Tổ chức",
   settings: "Cài đặt",
-  help: "Help Center",
+  help: "Trung tâm trợ giúp",
 };
 
 /** Maps pathname segments to their parent breadcrumb label */
 const PARENT_MAP: Record<string, string> = {
-  dashboard: "Admin",
-  users: "Admin",
-  "permission-groups": "Admin",
-  organizations: "Admin",
+  dashboard: "Quản trị",
+  users: "Quản trị",
+  "permission-groups": "Quản trị",
+  organizations: "Quản trị",
   settings: "Cài đặt",
-  invite: "Quick Actions",
-  help: "Quick Actions",
+  invite: "Thao tác nhanh",
+  help: "Thao tác nhanh",
   profile: "Cài đặt",
   security: "Cài đặt",
   notifications: "Cài đặt",
@@ -52,7 +52,7 @@ export function DashboardTopBar() {
   const logout = useAuthStore((s) => s.logout);
   const [imgError, setImgError] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const { data: notifData } = useNotifications("all", 1);
+  const { data: notifData } = useNotifications("all", 1, 3);
   useNotificationSubscription();
 
   const initials = getUserInitials(user?.full_name);
@@ -61,7 +61,7 @@ export function DashboardTopBar() {
   // Derive breadcrumb from pathname
   const segment = pathname.split("/").filter(Boolean).pop() ?? "dashboard";
   const breadcrumb = BREADCRUMB_MAP[segment] ?? segment;
-  const parent = PARENT_MAP[segment] ?? "Admin";
+  const parent = PARENT_MAP[segment] ?? "Quản trị";
 
   function handleLogout() {
     logout();

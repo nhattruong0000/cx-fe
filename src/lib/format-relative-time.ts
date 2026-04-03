@@ -10,7 +10,7 @@ const DIVISIONS: { amount: number; unit: Intl.RelativeTimeFormatUnit }[] = [
 
 /** Formats an ISO timestamp into a relative string like "2 hours ago" */
 export function formatRelativeTime(timestamp: string): string {
-  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  const rtf = new Intl.RelativeTimeFormat("vi", { numeric: "auto" });
   let seconds = (new Date(timestamp).getTime() - Date.now()) / 1000;
 
   for (const division of DIVISIONS) {

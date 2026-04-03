@@ -15,7 +15,11 @@ import { statusVariant, formatDate } from "@/lib/dashboard-table-utils";
 import { cn } from "@/lib/utils";
 import type { StaffDashboardSummary, SurveyRow } from "@/types/dashboard";
 
-const TABS = ["Surveys", "Tickets", "Reports"] as const;
+const TABS: { label: string; key: TabKey }[] = [
+  { label: "Khảo sát", key: "surveys" },
+  { label: "Phiếu", key: "tickets" },
+  { label: "Báo cáo", key: "reports" },
+];
 type TabKey = "surveys" | "tickets" | "reports";
 
 interface StaffDashboardProps {
@@ -34,7 +38,7 @@ export function StaffDashboard({ data }: StaffDashboardProps) {
 
   return (
     <div className="min-h-full">
-      <h1 className="mb-6 text-2xl font-semibold text-[#09090B]">Dashboard</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-[#09090B]">Bảng điều khiển</h1>
 
       {/* Stats Row */}
       <div className="mb-6 grid grid-cols-4 gap-4">
@@ -49,7 +53,7 @@ export function StaffDashboard({ data }: StaffDashboardProps) {
 
       {/* Charts Row */}
       <div className="mb-6 grid grid-cols-2 gap-4">
-        <ChartCard title="Response Trends">
+        <ChartCard title="Xu hướng phản hồi">
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={data.response_trends_chart}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -61,7 +65,7 @@ export function StaffDashboard({ data }: StaffDashboardProps) {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Tickets by Status">
+        <ChartCard title="Phiếu theo trạng thái">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={data.tickets_by_status_chart}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -77,35 +81,35 @@ export function StaffDashboard({ data }: StaffDashboardProps) {
       {/* Tabbed Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Active Surveys & Recent Tickets</CardTitle>
+          <CardTitle>Khảo sát hoạt động & Phiếu gần đây</CardTitle>
           <div className="flex gap-2">
             {TABS.map((tab) => (
               <button
-                key={tab}
+                key={tab.key}
                 type="button"
                 className={cn(
                   "rounded-md px-3 py-1 text-sm transition-colors",
-                  activeTab === tab.toLowerCase()
+                  activeTab === tab.key
                     ? "bg-primary text-white"
                     : "text-muted-foreground hover:bg-muted"
                 )}
-                onClick={() => setActiveTab(tab.toLowerCase() as TabKey)}
+                onClick={() => setActiveTab(tab.key)}
               >
-                {tab}
+                {tab.label}
               </button>
             ))}
           </div>
         </CardHeader>
         <CardContent>
           {currentRows.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">No data available</p>
+            <p className="py-6 text-center text-sm text-muted-foreground">Không có dữ liệu</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-muted-foreground">
-                  <th className="pb-2 font-medium">Name</th>
-                  <th className="pb-2 font-medium">Status</th>
-                  <th className="pb-2 font-medium">Created</th>
+                  <th className="pb-2 font-medium">Tên</th>
+                  <th className="pb-2 font-medium">Trạng thái</th>
+                  <th className="pb-2 font-medium">Ngày tạo</th>
                 </tr>
               </thead>
               <tbody>

@@ -21,6 +21,6 @@ export default function DashboardPage() {
     case "customer":
       return <CustomerDashboard data={data} />;
     default:
-      return <DashboardError message="Unknown role" />;
+      return <DashboardError message="Vai trò không xác định" />;
   }
 }

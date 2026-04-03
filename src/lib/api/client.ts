@@ -98,7 +98,7 @@ async function request<T>(
     const body = await res.json().catch(() => ({}));
     const error: ApiError = {
       status: res.status,
-      message: body.message || res.statusText,
+      message: body.message || body.error || res.statusText,
       errors: body.errors,
     };
     throw error;

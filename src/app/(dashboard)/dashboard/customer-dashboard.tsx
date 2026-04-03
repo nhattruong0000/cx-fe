@@ -14,28 +14,28 @@ interface CustomerDashboardProps {
 export function CustomerDashboard({ data }: CustomerDashboardProps) {
   return (
     <div className="min-h-full">
-      <h1 className="mb-6 text-2xl font-semibold text-[#09090B]">Dashboard</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-[#09090B]">Bảng điều khiển</h1>
 
       {/* Welcome */}
-      <p className="mb-6 text-lg font-semibold">Welcome back, {data.user_name}</p>
+      <p className="mb-6 text-lg font-semibold">Chào mừng trở lại, {data.user_name}</p>
 
       {/* Top Row: Org Info + Team Members */}
       <div className="mb-6 grid grid-cols-2 gap-6">
         {/* Organization Info */}
         <Card className="p-6">
-          <p className="text-sm text-muted-foreground">Organization</p>
+          <p className="text-sm text-muted-foreground">Tổ chức</p>
           <p className="mt-1 truncate text-xl font-bold">{data.organization.name}</p>
           <div className="mt-4 flex gap-6 text-sm">
             <div>
-              <span className="text-muted-foreground">Role</span>
+              <span className="text-muted-foreground">Vai trò</span>
               <p className="font-medium">{data.organization.role}</p>
             </div>
             <div>
-              <span className="text-muted-foreground">Members</span>
+              <span className="text-muted-foreground">Thành viên</span>
               <p className="font-medium">{data.organization.members_count}</p>
             </div>
             <div>
-              <span className="text-muted-foreground">Plan</span>
+              <span className="text-muted-foreground">Gói</span>
               <p className="font-medium">{data.organization.plan}</p>
             </div>
           </div>
@@ -44,11 +44,11 @@ export function CustomerDashboard({ data }: CustomerDashboardProps) {
         {/* Team Members */}
         <Card className="p-6">
           <div className="mb-4 flex items-center justify-between">
-            <p className="font-semibold">Team Members</p>
+            <p className="font-semibold">Thành viên nhóm</p>
             <Badge variant="secondary">{data.team_members.length}</Badge>
           </div>
           {data.team_members.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No team members</p>
+            <p className="text-sm text-muted-foreground">Không có thành viên</p>
           ) : (
             <div className="space-y-3">
               {data.team_members.map((member) => (
@@ -81,18 +81,18 @@ export function CustomerDashboard({ data }: CustomerDashboardProps) {
       {/* Survey Table */}
       <Card>
         <CardHeader>
-          <CardTitle>My Surveys</CardTitle>
+          <CardTitle>Khảo sát của tôi</CardTitle>
         </CardHeader>
         <CardContent>
           {data.surveys.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">No surveys available</p>
+            <p className="py-6 text-center text-sm text-muted-foreground">Không có khảo sát nào</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-muted-foreground">
-                  <th className="pb-2 font-medium">Survey Name</th>
-                  <th className="pb-2 font-medium">Status</th>
-                  <th className="pb-2 font-medium">Due Date</th>
+                  <th className="pb-2 font-medium">Tên khảo sát</th>
+                  <th className="pb-2 font-medium">Trạng thái</th>
+                  <th className="pb-2 font-medium">Ngày hết hạn</th>
                 </tr>
               </thead>
               <tbody>

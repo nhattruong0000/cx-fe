@@ -7,6 +7,12 @@ export const CUSTOMER_PERMISSIONS = [
   { key: "support:cancel", label: "Hủy yêu cầu hỗ trợ", category: "Hỗ trợ kỹ thuật" },
 ] as const;
 
+/** All customer permissions including management — for edit dialog */
+export const ALL_CUSTOMER_PERMISSIONS = [
+  ...CUSTOMER_PERMISSIONS,
+  { key: "org:manage_members", label: "Quản lý thành viên", category: "Quản lý" },
+] as const;
+
 export const PERMISSION_LABELS: Record<string, string> = {
   ...Object.fromEntries(CUSTOMER_PERMISSIONS.map((p) => [p.key, p.label])),
   "org:manage_members": "Quản lý thành viên",

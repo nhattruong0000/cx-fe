@@ -4,13 +4,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getMyOrganization,
   getOrgMembers,
-  addOrgMember,
+  inviteOrgMember,
   updateOrgMember,
   removeOrgMember,
+  getOrgInvitations,
+  resendOrgInvitation,
+  cancelOrgInvitation,
 } from "@/lib/api/customer-organization";
 import type {
   OrgMembersParams,
-  AddMemberRequest,
+  InviteMemberRequest,
   UpdateMemberRequest,
 } from "@/types/customer-organization";
 
@@ -32,13 +35,38 @@ export function useOrgMembers(params: OrgMembersParams = {}) {
   });
 }
 
-export function useAddOrgMember() {
+export function useInviteOrgMember() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: AddMemberRequest) => addOrgMember(data),
+    mutationFn: (data: InviteMemberRequest) => inviteOrgMember(data),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["org-invitations"] });
       queryClient.invalidateQueries({ queryKey: ["org-members"] });
       queryClient.invalidateQueries({ queryKey: ["my-organization"] });
+    },
+  });
+}
+
+export function useOrgInvitations() {
+  return useQuery({
+    queryKey: ["org-invitations"],
+    queryFn: getOrgInvitations,
+    staleTime: 30_000,
+  });
+}
+
+export function useResendOrgInvitation() {
+  return useMutation({
+    mutationFn: (invitationId: number) => resendOrgInvitation(invitationId),
+  });
+}
+
+export function useCancelOrgInvitation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (invitationId: number) => cancelOrgInvitation(invitationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["org-invitations"] });
     },
   });
 }

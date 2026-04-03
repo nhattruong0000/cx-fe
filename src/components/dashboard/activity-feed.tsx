@@ -12,11 +12,11 @@ export function ActivityFeed({ items }: ActivityFeedProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
+        <CardTitle>Hoạt động gần đây</CardTitle>
       </CardHeader>
       <CardContent className="space-y-1">
         {items.length === 0 && (
-          <p className="py-6 text-center text-sm text-muted-foreground">No recent activity</p>
+          <p className="py-6 text-center text-sm text-muted-foreground">Không có hoạt động gần đây</p>
         )}
         {items.map((item) => (
           <div key={item.id} className="flex items-center gap-3 py-2">

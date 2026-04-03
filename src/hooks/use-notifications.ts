@@ -14,11 +14,12 @@ const NOTIFICATIONS_KEY = "notifications"
 /** Fetch notifications with filter and pagination */
 export function useNotifications(
   filter: NotificationFilter = "all",
-  page = 1
+  page = 1,
+  pageSize = 12
 ) {
   return useQuery({
-    queryKey: [NOTIFICATIONS_KEY, filter, page],
-    queryFn: () => getNotifications(filter, page),
+    queryKey: [NOTIFICATIONS_KEY, filter, page, pageSize],
+    queryFn: () => getNotifications(filter, page, pageSize),
     staleTime: 60 * 1000,
   })
 }
@@ -39,6 +40,9 @@ export function useNotificationSubscription() {
           if (data.type === "new_notification") {
             queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_KEY] })
           }
+        },
+        disconnected() {
+          queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_KEY] })
         },
       }
     )

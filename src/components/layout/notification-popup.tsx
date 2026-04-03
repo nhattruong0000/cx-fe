@@ -1,56 +1,8 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useNotifications, useMarkAsRead } from "@/hooks/use-notifications"
-import { formatRelativeTime } from "@/lib/format-relative-time"
-import { NOTIFICATION_ICON_MAP, NOTIFICATION_STYLE_MAP } from "@/lib/notification-icon-map"
-import type { Notification } from "@/types/notification"
-
-function NotificationItem({
-  notification,
-  onMarkRead,
-}: {
-  notification: Notification
-  onMarkRead: (id: string) => void
-}) {
-  const Icon = NOTIFICATION_ICON_MAP[notification.type]
-  const style = NOTIFICATION_STYLE_MAP[notification.type]
-
-  return (
-    <button
-      type="button"
-      onClick={() => !notification.isRead && onMarkRead(notification.id)}
-      className={`flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-[#F8FAFC] ${
-        notification.isRead ? "" : "bg-[#F0F7FF]"
-      }`}
-    >
-      {/* Icon circle */}
-      <div
-        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${style.bg}`}
-      >
-        <Icon className={`h-[18px] w-[18px] ${style.icon}`} />
-      </div>
-
-      {/* Content */}
-      <div className="min-w-0 flex-1 space-y-1">
-        <p className="text-[13px] font-semibold text-[#09090B]">
-          {notification.title}
-        </p>
-        <p className="text-xs leading-snug text-[#71717A]">
-          {notification.description}
-        </p>
-        <p className="text-[11px] text-[#94A3B8]">
-          {formatRelativeTime(notification.timestamp)}
-        </p>
-      </div>
-
-      {/* Unread dot */}
-      {!notification.isRead && (
-        <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#2556C5]" />
-      )}
-    </button>
-  )
-}
+import { useNotifications, useMarkAsRead, useMarkAllAsRead } from "@/hooks/use-notifications"
+import { NotificationListItem } from "@/components/notifications/notification-list-item"
 
 interface NotificationPopupProps {
   onClose: () => void
@@ -59,10 +11,11 @@ interface NotificationPopupProps {
 /** Notification popup content — renders inside Popover */
 export function NotificationPopup({ onClose }: NotificationPopupProps) {
   const router = useRouter()
-  const { data, isLoading } = useNotifications("all", 1)
+  const { data, isLoading } = useNotifications("all", 1, 3)
   const markAsRead = useMarkAsRead()
+  const markAllAsRead = useMarkAllAsRead()
 
-  const notifications = data?.notifications.slice(0, 3) ?? []
+  const notifications = data?.notifications ?? []
   const unreadCount = data?.unreadCount ?? 0
 
   function handleViewAll() {
@@ -77,11 +30,23 @@ export function NotificationPopup({ onClose }: NotificationPopupProps) {
         <span className="text-base font-semibold text-[#09090B]">
           Thông báo
         </span>
-        {unreadCount > 0 && (
-          <span className="flex items-center justify-center rounded-full bg-[#E81B22] px-2 py-0.5 text-[11px] font-semibold text-white">
-            {unreadCount}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {unreadCount > 0 && (
+            <button
+              type="button"
+              onClick={() => markAllAsRead.mutate()}
+              disabled={markAllAsRead.isPending}
+              className="text-[12px] font-medium text-[#2556C5] transition-colors hover:text-[#1D4499] disabled:opacity-50"
+            >
+              Đọc tất cả
+            </button>
+          )}
+          {unreadCount > 0 && (
+            <span className="flex items-center justify-center rounded-full bg-[#E81B22] px-2 py-0.5 text-[11px] font-semibold text-white">
+              {unreadCount}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Separator */}
@@ -100,7 +65,8 @@ export function NotificationPopup({ onClose }: NotificationPopupProps) {
         ) : (
           notifications.map((n, i) => (
             <div key={n.id}>
-              <NotificationItem
+              <NotificationListItem
+                variant="popup"
                 notification={n}
                 onMarkRead={(id) => markAsRead.mutate(id)}
               />

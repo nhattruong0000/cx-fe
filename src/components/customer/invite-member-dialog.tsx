@@ -1,13 +1,14 @@
 "use client";
 
-/** Dialog for inviting a new member to the organization */
+/** Dialog for inviting a new member to the organization via email */
 
 import { useState } from "react";
 import { SendHorizonalIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 
-import { useAddOrgMember } from "@/hooks/use-customer-organization";
+import { useInviteOrgMember } from "@/hooks/use-customer-organization";
+import { CUSTOMER_PERMISSIONS } from "@/constants/customer-permissions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup } from "@/components/ui/radio-group";
@@ -20,12 +21,14 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { CUSTOMER_PERMISSIONS } from "@/constants/customer-permissions";
 
 const ROLE_OPTIONS = [
   { value: "member" as const, label: "Thành viên" },
   { value: "owner" as const, label: "Chủ sở hữu" },
 ];
+
+/** Default permissions for new members (excludes org:manage_members) */
+const DEFAULT_MEMBER_PERMS = CUSTOMER_PERMISSIONS.map((p) => p.key);
 
 interface InviteMemberDialogProps {
   open: boolean;
@@ -35,10 +38,10 @@ interface InviteMemberDialogProps {
 export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"owner" | "member">("member");
-  const [permissions, setPermissions] = useState<string[]>([]);
+  const [permissions, setPermissions] = useState<string[]>([...DEFAULT_MEMBER_PERMS]);
   const [emailError, setEmailError] = useState("");
 
-  const { mutate: addMember, isPending } = useAddOrgMember();
+  const { mutate: inviteMember, isPending } = useInviteOrgMember();
 
   function togglePermission(key: string) {
     setPermissions((prev) =>
@@ -49,13 +52,12 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
   function handleClose() {
     setEmail("");
     setRole("member");
-    setPermissions([]);
+    setPermissions([...DEFAULT_MEMBER_PERMS]);
     setEmailError("");
     onClose();
   }
 
   function handleSubmit() {
-    // Validate email
     if (!email.trim()) {
       setEmailError("Vui lòng nhập email");
       return;
@@ -66,7 +68,7 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
     }
     setEmailError("");
 
-    addMember(
+    inviteMember(
       { email: email.trim(), org_role: role, permissions },
       {
         onSuccess: () => {
@@ -86,26 +88,24 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent className="sm:max-w-[480px] rounded-[14px] p-0 gap-0" showCloseButton={false}>
-        {/* Header */}
         <DialogHeader className="px-6 py-5 border-b border-[#E4E4E7] gap-1">
           <DialogTitle className="text-base font-semibold text-[#09090B]">
             Mời thành viên
           </DialogTitle>
           <DialogDescription className="text-[13px] text-[#71717A]">
-            Nhập email và cấu hình vai trò, quyền hạn cho thành viên mới.
+            Gửi lời mời tham gia tổ chức qua email.
           </DialogDescription>
         </DialogHeader>
 
-        {/* Body */}
         <div className="flex flex-col gap-5 p-6">
-          {/* Email input */}
+          {/* Email */}
           <div className="flex flex-col gap-1.5">
             <label className="text-[13px] font-medium text-[#09090B]">
               Địa chỉ email <span className="text-[#E81B22]">*</span>
             </label>
             <Input
               type="email"
-              placeholder="colleague@company.com"
+              placeholder="email@example.com"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
               className={cn(emailError && "border-[#E81B22]")}
@@ -113,9 +113,9 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
             {emailError && <p className="text-[12px] text-[#E81B22]">{emailError}</p>}
           </div>
 
-          {/* Role selection */}
+          {/* Role */}
           <div className="flex flex-col gap-2">
-            <label className="text-[13px] font-medium text-[#09090B]">Vai trò</label>
+            <label className="text-[13px] font-medium text-[#09090B]">Vai trò trong tổ chức</label>
             <RadioGroup
               value={role}
               onValueChange={(v) => setRole(v as "owner" | "member")}
@@ -147,6 +147,7 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
           {/* Permissions */}
           <div className="flex flex-col gap-2">
             <label className="text-[13px] font-medium text-[#09090B]">Quyền hạn</label>
+            <p className="text-[12px] text-[#71717A]">Chọn quyền cho thành viên được mời.</p>
             <div className="flex flex-col gap-2">
               {CUSTOMER_PERMISSIONS.map(({ key, label }) => {
                 const checked = permissions.includes(key);
@@ -156,9 +157,7 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
                       onClick={() => togglePermission(key)}
                       className={cn(
                         "flex size-4 shrink-0 items-center justify-center rounded border transition-colors",
-                        checked
-                          ? "border-[#2556C5] bg-[#2556C5]"
-                          : "border-[#E4E4E7] bg-white"
+                        checked ? "border-[#2556C5] bg-[#2556C5]" : "border-[#E4E4E7] bg-white"
                       )}
                     >
                       {checked && (
@@ -167,10 +166,7 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
                         </svg>
                       )}
                     </span>
-                    <span
-                      className="text-[13px] text-[#3F3F46]"
-                      onClick={() => togglePermission(key)}
-                    >
+                    <span className="text-[13px] text-[#3F3F46]" onClick={() => togglePermission(key)}>
                       {label}
                     </span>
                   </label>
@@ -180,7 +176,6 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
           </div>
         </div>
 
-        {/* Footer */}
         <DialogFooter className="px-6 py-4 border-t border-[#E4E4E7] bg-transparent flex-row justify-end gap-3 -mx-0 -mb-0 rounded-b-[14px]">
           <Button variant="outline" onClick={handleClose} disabled={isPending}>
             Hủy

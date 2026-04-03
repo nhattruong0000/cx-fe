@@ -5,9 +5,11 @@ import type {
   MyOrganizationResponse,
   OrgMembersResponse,
   OrgMembersParams,
-  AddMemberRequest,
+  InviteMemberRequest,
   UpdateMemberRequest,
   OrgMember,
+  OrgInvitation,
+  OrgInvitationsResponse,
 } from "@/types/customer-organization";
 
 const BASE = "/api/v1/customer/my-organization";
@@ -27,10 +29,26 @@ export async function getOrgMembers(
   return apiClient.get<OrgMembersResponse>(`${BASE}/members${qs ? `?${qs}` : ""}`);
 }
 
-export function addOrgMember(
-  data: AddMemberRequest
-): Promise<{ member: OrgMember }> {
-  return apiClient.post<{ member: OrgMember }>(`${BASE}/members`, data);
+export function inviteOrgMember(
+  data: InviteMemberRequest
+): Promise<{ invitation: OrgInvitation }> {
+  return apiClient.post<{ invitation: OrgInvitation }>(`${BASE}/invite`, data);
+}
+
+export async function getOrgInvitations(): Promise<OrgInvitationsResponse> {
+  return apiClient.get<OrgInvitationsResponse>(`${BASE}/invitations`);
+}
+
+export function resendOrgInvitation(
+  invitationId: number
+): Promise<{ message: string }> {
+  return apiClient.post<{ message: string }>(`${BASE}/invitations/${invitationId}/resend`);
+}
+
+export function cancelOrgInvitation(
+  invitationId: number
+): Promise<{ message: string }> {
+  return apiClient.delete<{ message: string }>(`${BASE}/invitations/${invitationId}`);
 }
 
 export function updateOrgMember(

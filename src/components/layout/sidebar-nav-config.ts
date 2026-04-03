@@ -17,26 +17,26 @@ const ADMIN_SECTIONS: NavSection[] = [
   {
     label: "QUẢN TRỊ",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: "house" },
-      { label: "Users", href: "/users", icon: "users" },
-      { label: "Permission Groups", href: "/permission-groups", icon: "lock" },
-      { label: "Organizations", href: "/organizations", icon: "building-2" },
-      { label: "Settings", href: "/settings", icon: "settings" },
+      { label: "Bảng điều khiển", href: "/dashboard", icon: "house" },
+      { label: "Người dùng", href: "/users", icon: "users" },
+      { label: "Nhóm quyền hạn", href: "/permission-groups", icon: "lock" },
+      { label: "Tổ chức", href: "/organizations", icon: "building-2" },
+      { label: "Cài đặt", href: "/settings", icon: "settings" },
     ],
   },
   {
     label: "THAO TÁC NHANH",
     items: [
-      { label: "Invite User", href: "/invite", icon: "user-plus", badge: "new" },
-      { label: "Help Center", href: "/help", icon: "life-buoy" },
+      { label: "Mời người dùng", href: "/invite", icon: "user-plus", badge: "mới" },
+      { label: "Trung tâm trợ giúp", href: "/help", icon: "life-buoy" },
     ],
   },
   {
     label: "TÀI KHOẢN",
     items: [
-      { label: "Profile", href: "/profile", icon: "user" },
-      { label: "Security", href: "/security", icon: "shield" },
-      { label: "Notifications", href: "/notifications", icon: "bell" },
+      { label: "Hồ sơ", href: "/profile", icon: "user" },
+      { label: "Bảo mật", href: "/security", icon: "shield" },
+      { label: "Thông báo", href: "/notifications", icon: "bell" },
     ],
   },
 ];
@@ -45,26 +45,26 @@ const STAFF_SECTIONS: NavSection[] = [
   {
     label: "ĐIỀU HƯỚNG",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: "house" },
-      { label: "My Surveys", href: "/surveys", icon: "clipboard-list" },
-      { label: "Support Requests", href: "/support", icon: "headset" },
-      { label: "Reports", href: "/reports", icon: "file-text" },
-      { label: "Settings", href: "/settings", icon: "settings", disabled: true },
+      { label: "Bảng điều khiển", href: "/dashboard", icon: "house" },
+      { label: "Khảo sát của tôi", href: "/surveys", icon: "clipboard-list" },
+      { label: "Yêu cầu hỗ trợ", href: "/support", icon: "headset" },
+      { label: "Báo cáo", href: "/reports", icon: "file-text" },
+      { label: "Cài đặt", href: "/settings", icon: "settings", disabled: true },
     ],
   },
   {
     label: "THAO TÁC NHANH",
     items: [
-      { label: "Invite User", href: "/invite", icon: "user-plus", disabled: true },
-      { label: "Help Center", href: "/help", icon: "life-buoy", disabled: true },
+      { label: "Mời người dùng", href: "/invite", icon: "user-plus", disabled: true },
+      { label: "Trung tâm trợ giúp", href: "/help", icon: "life-buoy", disabled: true },
     ],
   },
   {
     label: "TÀI KHOẢN",
     items: [
-      { label: "Profile", href: "/profile", icon: "user" },
-      { label: "Security", href: "/security", icon: "shield" },
-      { label: "Notifications", href: "/notifications", icon: "bell" },
+      { label: "Hồ sơ", href: "/profile", icon: "user" },
+      { label: "Bảo mật", href: "/security", icon: "shield" },
+      { label: "Thông báo", href: "/notifications", icon: "bell" },
     ],
   },
 ];
@@ -73,19 +73,19 @@ const CUSTOMER_SECTIONS: NavSection[] = [
   {
     label: "ĐIỀU HƯỚNG",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: "house" },
-      { label: "My Surveys", href: "/surveys", icon: "clipboard-list" },
-      { label: "Support", href: "/support", icon: "headset" },
-      { label: "Settings", href: "/settings", icon: "settings" },
+      { label: "Bảng điều khiển", href: "/dashboard", icon: "house" },
+      { label: "Khảo sát của tôi", href: "/surveys", icon: "clipboard-list" },
+      { label: "Hỗ trợ", href: "/support", icon: "headset" },
+      { label: "Cài đặt", href: "/settings", icon: "settings" },
     ],
   },
   {
     label: "TÀI KHOẢN",
     items: [
-      { label: "Profile", href: "/profile", icon: "user" },
+      { label: "Hồ sơ", href: "/profile", icon: "user" },
       { label: "Tổ chức", href: "/my-organization", icon: "building-2" },
-      { label: "Security", href: "/security", icon: "shield", disabled: true },
-      { label: "Notifications", href: "/notifications", icon: "bell", disabled: true },
+      { label: "Bảo mật", href: "/security", icon: "shield", disabled: true },
+      { label: "Thông báo", href: "/notifications", icon: "bell", disabled: true },
     ],
   },
 ];

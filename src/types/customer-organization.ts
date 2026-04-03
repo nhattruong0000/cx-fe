@@ -45,7 +45,7 @@ export interface OrgMembersParams {
   q?: string;
 }
 
-export interface AddMemberRequest {
+export interface InviteMemberRequest {
   email: string;
   org_role: "owner" | "member";
   permissions: string[];
@@ -54,4 +54,16 @@ export interface AddMemberRequest {
 export interface UpdateMemberRequest {
   org_role?: "owner" | "member";
   permissions?: string[];
+}
+
+export interface OrgInvitation {
+  id: number;
+  email: string;
+  org_role: "owner" | "member";
+  created_at: string;
+  expires_at: string;
+}
+
+export interface OrgInvitationsResponse {
+  invitations: OrgInvitation[];
 }
