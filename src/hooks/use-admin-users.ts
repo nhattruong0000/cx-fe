@@ -3,8 +3,17 @@ import {
   getAdminUsers,
   inviteUser,
   getAdminGroups,
+  getAdminOrganizations,
+  createPermissionGroup,
+  updatePermissionGroup,
+  deletePermissionGroup,
 } from "@/lib/api/admin-users";
-import type { AdminUsersParams, InviteUserRequest } from "@/types/admin";
+import type {
+  AdminUsersParams,
+  InviteUserRequest,
+  CreateGroupRequest,
+  UpdateGroupRequest,
+} from "@/types/admin";
 
 export function useAdminUsers(params: AdminUsersParams = {}) {
   return useQuery({
@@ -25,11 +34,51 @@ export function useInviteUser() {
   });
 }
 
+export function useAdminOrganizations() {
+  return useQuery({
+    queryKey: ["admin-organizations"],
+    queryFn: getAdminOrganizations,
+    staleTime: 300_000,
+    retry: 2,
+  });
+}
+
 export function useAdminGroups() {
   return useQuery({
     queryKey: ["admin-groups"],
     queryFn: getAdminGroups,
     staleTime: 300_000,
     retry: 2,
+  });
+}
+
+export function useCreateGroup() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreateGroupRequest) => createPermissionGroup(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-groups"] });
+    },
+  });
+}
+
+export function useUpdateGroup() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: UpdateGroupRequest }) =>
+      updatePermissionGroup(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-groups"] });
+    },
+  });
+}
+
+export function useDeleteGroup() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => deletePermissionGroup(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-groups"] });
+    },
   });
 }

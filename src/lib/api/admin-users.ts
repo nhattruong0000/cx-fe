@@ -5,6 +5,11 @@ import type {
   AdminUsersParams,
   InviteUserRequest,
   AdminGroupsResponse,
+  AdminGroup,
+  AdminOrganization,
+  AdminOrganizationsResponse,
+  CreateGroupRequest,
+  UpdateGroupRequest,
 } from "@/types/admin";
 
 export async function getAdminUsers(
@@ -37,9 +42,43 @@ export function inviteUser(
   return apiClient.post<{ message: string }>("/api/v1/admin/invitations", data);
 }
 
+export async function getAdminOrganizations(): Promise<AdminOrganizationsResponse> {
+  const raw = await apiClient.get<{ organizations: AdminOrganization[] }>(
+    "/api/v1/admin/organizations?per_page=50"
+  );
+  return { organizations: raw.organizations };
+}
+
 export async function getAdminGroups(): Promise<AdminGroupsResponse> {
   const raw = await apiClient.get<{ permission_groups: AdminGroupsResponse["groups"] }>(
     "/api/v1/admin/permission-groups"
   );
   return { groups: raw.permission_groups };
+}
+
+export async function createPermissionGroup(
+  data: CreateGroupRequest
+): Promise<{ permission_group: AdminGroup }> {
+  return apiClient.post<{ permission_group: AdminGroup }>(
+    "/api/v1/admin/permission-groups",
+    data
+  );
+}
+
+export async function updatePermissionGroup(
+  id: number,
+  data: UpdateGroupRequest
+): Promise<{ permission_group: AdminGroup }> {
+  return apiClient.patch<{ permission_group: AdminGroup }>(
+    `/api/v1/admin/permission-groups/${id}`,
+    data
+  );
+}
+
+export async function deletePermissionGroup(
+  id: number
+): Promise<{ message: string }> {
+  return apiClient.delete<{ message: string }>(
+    `/api/v1/admin/permission-groups/${id}`
+  );
 }
