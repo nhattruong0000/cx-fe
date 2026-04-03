@@ -7,13 +7,17 @@ export function InviteInfoCard({ invite }: { invite: InvitationDetails }) {
         <span className="text-[13px] text-muted-foreground">Được mời bởi</span>
         <span className="text-[13px] font-semibold">{invite.inviter_name}</span>
       </div>
-      <div className="h-px w-full bg-[#E4E4E7]" />
-      <div className="flex items-center justify-between">
-        <span className="text-[13px] text-muted-foreground">Tổ chức</span>
-        <span className="text-[13px] font-semibold">
-          {invite.organization_name}
-        </span>
-      </div>
+      {invite.role === "customer" && (
+        <>
+          <div className="h-px w-full bg-[#E4E4E7]" />
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] text-muted-foreground">Tổ chức</span>
+            <span className="text-[13px] font-semibold">
+              {invite.organization_name}
+            </span>
+          </div>
+        </>
+      )}
       <div className="h-px w-full bg-[#E4E4E7]" />
       <div className="flex items-center justify-between">
         <span className="text-[13px] text-muted-foreground">Vai trò</span>

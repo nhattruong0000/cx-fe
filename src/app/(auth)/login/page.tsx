@@ -60,7 +60,7 @@ export default function LoginPage() {
       const res = await authApi.login(data.email, data.password)
       setUser(res.user)
       setTokens(res.tokens)
-      router.push("/")
+      router.push("/dashboard")
     } catch (err: unknown) {
       const message =
         (err as { message?: string })?.message ||
