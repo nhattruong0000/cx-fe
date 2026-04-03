@@ -2,7 +2,6 @@ import type { User } from "./auth";
 
 export interface UpdateProfileRequest {
   full_name: string;
-  email: string;
   phone?: string;
 }
 
@@ -45,4 +44,5 @@ export interface SessionsResponse {
 
 export interface NotificationPreferencesResponse {
   preferences: NotificationPreference[];
+  weekly_digest: boolean;
 }

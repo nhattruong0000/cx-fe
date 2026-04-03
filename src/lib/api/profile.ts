@@ -10,21 +10,25 @@ import type {
 } from "@/types/profile";
 
 export function getProfile(): Promise<UpdateProfileResponse> {
-  return apiClient.get<UpdateProfileResponse>("/api/v1/profile");
+  return apiClient.get<UpdateProfileResponse>("/api/v1/auth/profile");
 }
 
 export function updateProfile(
   data: UpdateProfileRequest
 ): Promise<UpdateProfileResponse> {
-  return apiClient.patch<UpdateProfileResponse>("/api/v1/profile", data);
+  return apiClient.patch<UpdateProfileResponse>("/api/v1/auth/profile", data);
 }
 
 export function changePassword(
   data: ChangePasswordRequest
 ): Promise<{ message: string }> {
-  return apiClient.post<{ message: string }>(
-    "/api/v1/profile/password",
-    data
+  return apiClient.patch<{ message: string }>(
+    "/api/v1/auth/password",
+    {
+      current_password: data.current_password,
+      password: data.new_password,
+      password_confirmation: data.new_password_confirmation,
+    }
   );
 }
 
@@ -61,7 +65,7 @@ export function disable2FA(): Promise<{ message: string }> {
 
 export function getNotificationPreferences(): Promise<NotificationPreferencesResponse> {
   return apiClient.get<NotificationPreferencesResponse>(
-    "/api/v1/profile/notifications"
+    "/api/v1/notification_preferences"
   );
 }
 
@@ -69,8 +73,14 @@ export function updateNotificationPreference(
   key: string,
   enabled: boolean
 ): Promise<NotificationPreference> {
+  // Map FE preference keys to backend field names
+  const fieldMap: Record<string, string> = {
+    email_notifications: "email_enabled",
+    push_notifications: "push_enabled",
+  };
+  const field = fieldMap[key] || key;
   return apiClient.patch<NotificationPreference>(
-    `/api/v1/profile/notifications/${key}`,
-    { enabled }
+    "/api/v1/notification_preferences",
+    { [field]: enabled }
   );
 }

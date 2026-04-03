@@ -1,9 +1,11 @@
+import { useEffect } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   getNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
 } from "@/lib/api/notifications"
+import { getCableConsumer } from "@/lib/action-cable-client"
 import type { NotificationFilter } from "@/types/notification"
 
 const NOTIFICATIONS_KEY = "notifications"
@@ -17,8 +19,34 @@ export function useNotifications(
     queryKey: [NOTIFICATIONS_KEY, filter, page],
     queryFn: () => getNotifications(filter, page),
     staleTime: 60 * 1000,
-    refetchInterval: 5 * 60 * 1000,
   })
+}
+
+/** Subscribe to real-time notifications via ActionCable.
+ *  Invalidates notification queries when new notification arrives. */
+export function useNotificationSubscription() {
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    const consumer = getCableConsumer()
+    if (!consumer) return
+
+    const subscription = consumer.subscriptions.create(
+      "NotificationsChannel",
+      {
+        received(data: { type: string }) {
+          if (data.type === "new_notification") {
+            queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_KEY] })
+          }
+        },
+      }
+    )
+
+    return () => {
+      subscription.unsubscribe()
+      // Don't disconnect singleton consumer — other hooks may use it
+    }
+  }, [queryClient])
 }
 
 /** Mark a single notification as read */

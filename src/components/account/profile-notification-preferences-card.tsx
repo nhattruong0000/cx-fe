@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { toast } from "sonner";
 import {
   Card,
@@ -38,7 +37,6 @@ const DEFAULT_PREFERENCES: NotificationPreference[] = [
 export function ProfileNotificationPreferencesCard() {
   const { data, isLoading } = useNotificationPreferences();
   const updatePreference = useUpdateNotificationPreference();
-  const [weeklyDigest, setWeeklyDigest] = useState(false);
 
   const isError = !isLoading && !data?.preferences?.length;
 
@@ -94,8 +92,8 @@ export function ProfileNotificationPreferencesCard() {
             <div className="flex items-center gap-2 py-3">
               <Checkbox
                 id="weekly-digest"
-                checked={weeklyDigest}
-                onCheckedChange={(checked) => setWeeklyDigest(checked === true)}
+                checked={data?.weekly_digest ?? false}
+                onCheckedChange={(checked) => handleToggle("weekly_digest", checked === true)}
               />
               <label
                 htmlFor="weekly-digest"

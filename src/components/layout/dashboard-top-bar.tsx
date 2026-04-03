@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { NotificationPopup } from "@/components/layout/notification-popup";
-import { useNotifications } from "@/hooks/use-notifications";
+import { useNotifications, useNotificationSubscription } from "@/hooks/use-notifications";
 
 /** Maps pathname segments to breadcrumb labels */
 const BREADCRUMB_MAP: Record<string, string> = {
@@ -53,6 +53,7 @@ export function DashboardTopBar() {
   const [imgError, setImgError] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { data: notifData } = useNotifications("all", 1);
+  useNotificationSubscription();
 
   const initials = getUserInitials(user?.full_name);
   const showAvatar = user?.avatar_url && !imgError;
