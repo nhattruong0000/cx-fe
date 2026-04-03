@@ -73,12 +73,13 @@ export function updateNotificationPreference(
   key: string,
   enabled: boolean
 ): Promise<NotificationPreference> {
-  // Map FE preference keys to backend field names
   const fieldMap: Record<string, string> = {
     email_notifications: "email_enabled",
     push_notifications: "push_enabled",
+    weekly_digest: "weekly_digest",
   };
-  const field = fieldMap[key] || key;
+  const field = fieldMap[key];
+  if (!field) throw new Error(`Unknown preference key: ${key}`);
   return apiClient.patch<NotificationPreference>(
     "/api/v1/notification_preferences",
     { [field]: enabled }

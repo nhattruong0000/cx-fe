@@ -14,35 +14,15 @@ import {
   useNotificationPreferences,
   useUpdateNotificationPreference,
 } from "@/hooks/use-profile";
-import type { NotificationPreference } from "@/types/profile";
 
-/** Fallback rows shown when the API returns no preferences or 404 */
-const DEFAULT_PREFERENCES: NotificationPreference[] = [
-  {
-    key: "email_notifications",
-    label: "Thông báo email",
-    description: "Nhận cập nhật qua email về hoạt động tài khoản.",
-    type: "email",
-    enabled: true,
-  },
-  {
-    key: "push_notifications",
-    label: "Thông báo đẩy",
-    description: "Nhận thông báo đẩy tức thì trên thiết bị.",
-    type: "push",
-    enabled: false,
-  },
-];
+
 
 export function ProfileNotificationPreferencesCard() {
   const { data, isLoading } = useNotificationPreferences();
   const updatePreference = useUpdateNotificationPreference();
 
-  const isError = !isLoading && !data?.preferences?.length;
-
-  // Use API data when available; fall back to read-only defaults on error/empty
-  const preferences: NotificationPreference[] =
-    data?.preferences?.length ? data.preferences : DEFAULT_PREFERENCES;
+  const preferences = data?.preferences ?? [];
+  const isError = !isLoading && preferences.length === 0;
 
   function handleToggle(key: string, enabled: boolean) {
     updatePreference.mutate(

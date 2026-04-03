@@ -12,6 +12,7 @@ export interface Notification {
   /** ISO 8601 timestamp */
   timestamp: string
   isRead: boolean
+  metadata?: Record<string, unknown>
 }
 
 export interface NotificationsResponse {

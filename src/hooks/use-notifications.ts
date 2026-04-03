@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 import {
   getNotifications,
   markNotificationAsRead,
@@ -44,7 +45,6 @@ export function useNotificationSubscription() {
 
     return () => {
       subscription.unsubscribe()
-      // Don't disconnect singleton consumer — other hooks may use it
     }
   }, [queryClient])
 }
@@ -57,6 +57,9 @@ export function useMarkAsRead() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_KEY] })
     },
+    onError: () => {
+      toast.error("Không thể đánh dấu đã đọc")
+    },
   })
 }
 
@@ -67,6 +70,9 @@ export function useMarkAllAsRead() {
     mutationFn: markAllNotificationsAsRead,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_KEY] })
+    },
+    onError: () => {
+      toast.error("Không thể đánh dấu tất cả đã đọc")
     },
   })
 }
