@@ -83,6 +83,7 @@ const CUSTOMER_SECTIONS: NavSection[] = [
     label: "TÀI KHOẢN",
     items: [
       { label: "Profile", href: "/profile", icon: "user" },
+      { label: "Tổ chức", href: "/my-organization", icon: "building-2" },
       { label: "Security", href: "/security", icon: "shield", disabled: true },
       { label: "Notifications", href: "/notifications", icon: "bell", disabled: true },
     ],
