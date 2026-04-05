@@ -21,7 +21,7 @@ function syncTokenCookie(tokens: TokenPair | null) {
   if (typeof document === "undefined") return;
   const secure = location.protocol === "https:" ? "; Secure" : "";
   if (tokens?.access_token) {
-    document.cookie = `access_token=${tokens.access_token}; path=/; max-age=86400; SameSite=Lax${secure}`;
+    document.cookie = `access_token=${tokens.access_token}; path=/; max-age=900; SameSite=Lax${secure}`;
   } else {
     document.cookie = `access_token=; path=/; max-age=0; SameSite=Lax${secure}`;
   }

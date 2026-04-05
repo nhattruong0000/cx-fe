@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useDashboardSummary } from "@/hooks/use-dashboard-summary";
 import { AdminDashboard } from "./admin-dashboard";
 import { StaffDashboard } from "./staff-dashboard";
@@ -9,6 +11,14 @@ import { DashboardError } from "./dashboard-error";
 
 export default function DashboardPage() {
   const { data, isLoading, error } = useDashboardSummary();
+  const router = useRouter();
+
+  // Redirect to login on 401 instead of showing error with retry button
+  useEffect(() => {
+    if ((error as { status?: number })?.status === 401) {
+      router.replace("/login");
+    }
+  }, [error, router]);
 
   if (isLoading) return <DashboardSkeleton />;
   if (error || !data) return <DashboardError />;

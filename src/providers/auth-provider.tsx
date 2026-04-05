@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useCallback, type ReactNode } from "react";
 import { useAuthStore } from "@/stores/auth-store";
 import { getMe } from "@/lib/api/auth";
 import type { TokenPair } from "@/types/auth";
@@ -20,34 +20,40 @@ function readTokensFromStorage(): TokenPair | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { setUser, setTokens, setLoading, logout } = useAuthStore();
 
-  useEffect(() => {
-    async function validateSession() {
-      // Read tokens from Zustand store OR directly from sessionStorage.
-      // This avoids relying on Zustand's async hydration timing which causes
-      // race conditions on back-navigation from 404 pages.
-      const tokens =
-        useAuthStore.getState().tokens ?? readTokensFromStorage();
+  const validateSession = useCallback(async () => {
+    const tokens =
+      useAuthStore.getState().tokens ?? readTokensFromStorage();
 
-      if (!tokens?.access_token) {
-        setLoading(false);
-        return;
-      }
-
-      // Sync tokens to store + cookie (persist may not have hydrated yet)
-      setTokens(tokens);
-
-      try {
-        const res = await getMe();
-        setUser(res.user);
-      } catch {
-        logout();
-      } finally {
-        setLoading(false);
-      }
+    if (!tokens?.access_token) {
+      // Clear stale user from sessionStorage if tokens are missing
+      if (useAuthStore.getState().user) logout();
+      setLoading(false);
+      return;
     }
 
+    setTokens(tokens);
+
+    try {
+      const res = await getMe();
+      setUser(res.user);
+    } catch {
+      logout();
+    } finally {
+      setLoading(false);
+    }
+  }, [setUser, setTokens, setLoading, logout]);
+
+  // Validate on mount
+  useEffect(() => {
     validateSession();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [validateSession]);
+
+  // Re-validate when user returns to tab (e.g. after leaving overnight)
+  useEffect(() => {
+    const onFocus = () => validateSession();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [validateSession]);
 
   return <>{children}</>;
 }

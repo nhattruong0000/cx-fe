@@ -49,8 +49,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  // After hydration: no user yet → skeleton while AuthProvider validates or redirect happens
-  if (!user) {
+  // Wait for AuthProvider to finish validating session before rendering dashboard.
+  // Without this, stale user from sessionStorage renders the full UI briefly
+  // before AuthProvider detects an expired session and calls logout().
+  if (isLoading || !user) {
     return (
       <div className="flex h-screen">
         <div className="w-[260px] shrink-0 bg-[#F8FAFC]" />
