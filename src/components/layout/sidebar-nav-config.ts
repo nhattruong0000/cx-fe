@@ -19,6 +19,7 @@ const ADMIN_SECTIONS: NavSection[] = [
     items: [
       { label: "Bảng điều khiển", href: "/dashboard", icon: "house" },
       { label: "Người dùng", href: "/users", icon: "users" },
+      { label: "Lời mời", href: "/invitations", icon: "mail" },
       { label: "Nhóm quyền hạn", href: "/permission-groups", icon: "lock" },
       { label: "Tổ chức", href: "/organizations", icon: "building-2" },
       { label: "Cài đặt", href: "/settings", icon: "settings" },
