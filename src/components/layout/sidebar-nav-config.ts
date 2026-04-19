@@ -31,7 +31,7 @@ const DASHBOARD_PARENT_ADMIN: NavItem = {
   children: [
     { label: "Tổng quan", href: "/dashboard" },
     { label: "Kho & Dự báo", href: "/dashboard/inventory" },
-    { label: "Hệ thống", href: "/dashboard/system", disabled: true, adminOnly: true },
+    { label: "Hệ thống", href: "/dashboard/system", adminOnly: true },
   ],
 };
 
