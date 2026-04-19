@@ -1,11 +1,22 @@
 import type { UserRole } from "@/types/dashboard";
 
+export interface NavChild {
+  label: string;
+  href: string;
+  disabled?: boolean;
+  adminOnly?: boolean;
+  active?: boolean;
+}
+
 export interface NavItem {
   label: string;
   href: string;
   icon: string; // lucide icon name
   disabled?: boolean;
   badge?: string;
+  /** Optional collapsible children. When present, item acts as a parent group. */
+  children?: NavChild[];
+  active?: boolean;
 }
 
 export interface NavSection {
@@ -13,11 +24,32 @@ export interface NavSection {
   items: NavItem[];
 }
 
+const DASHBOARD_PARENT_ADMIN: NavItem = {
+  label: "Bảng điều khiển",
+  href: "/dashboard",
+  icon: "house",
+  children: [
+    { label: "Tổng quan", href: "/dashboard" },
+    { label: "Kho & Dự báo", href: "/dashboard/inventory" },
+    { label: "Hệ thống", href: "/dashboard/system", disabled: true, adminOnly: true },
+  ],
+};
+
+const DASHBOARD_PARENT_STAFF: NavItem = {
+  label: "Bảng điều khiển",
+  href: "/dashboard",
+  icon: "house",
+  children: [
+    { label: "Tổng quan", href: "/dashboard" },
+    { label: "Kho & Dự báo", href: "/dashboard/inventory" },
+  ],
+};
+
 const ADMIN_SECTIONS: NavSection[] = [
   {
     label: "QUẢN TRỊ",
     items: [
-      { label: "Bảng điều khiển", href: "/dashboard", icon: "house" },
+      DASHBOARD_PARENT_ADMIN,
       { label: "Người dùng", href: "/users", icon: "users" },
       { label: "Lời mời", href: "/invitations", icon: "mail" },
       { label: "Nhóm quyền hạn", href: "/permission-groups", icon: "lock" },
@@ -46,7 +78,7 @@ const STAFF_SECTIONS: NavSection[] = [
   {
     label: "ĐIỀU HƯỚNG",
     items: [
-      { label: "Bảng điều khiển", href: "/dashboard", icon: "house" },
+      DASHBOARD_PARENT_STAFF,
       { label: "Khảo sát của tôi", href: "/surveys", icon: "clipboard-list" },
       { label: "Yêu cầu hỗ trợ", href: "/support", icon: "headset" },
       { label: "Báo cáo", href: "/reports", icon: "file-text" },
@@ -97,14 +129,25 @@ const NAV_BY_ROLE: Record<string, NavSection[]> = {
   customer: CUSTOMER_SECTIONS,
 };
 
+function isActive(href: string, pathname: string, exact = false): boolean {
+  if (exact) return pathname === href;
+  return pathname === href || pathname.startsWith(href + "/");
+}
+
 /** Returns sidebar nav sections for a given role. Marks active item by pathname. */
 export function getSidebarNavConfig(role: UserRole, pathname: string): NavSection[] {
   const sections = NAV_BY_ROLE[role] ?? [];
   return sections.map((section) => ({
     ...section,
-    items: section.items.map((item) => ({
-      ...item,
-      active: pathname === item.href || pathname.startsWith(item.href + "/"),
-    })),
+    items: section.items.map((item) => {
+      if (item.children && item.children.length > 0) {
+        const children = item.children
+          .filter((c) => !c.adminOnly || role === "admin")
+          .map((c) => ({ ...c, active: isActive(c.href, pathname, c.href === "/dashboard") }));
+        const anyChildActive = children.some((c) => c.active);
+        return { ...item, children, active: anyChildActive };
+      }
+      return { ...item, active: isActive(item.href, pathname) };
+    }),
   }));
 }
