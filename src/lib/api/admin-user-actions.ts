@@ -3,6 +3,7 @@ import type {
   AdminUserDetail,
   AssignRoleRequest,
   SuspendUserRequest,
+  UpdateUserInfoRequest,
 } from "@/types/admin";
 
 export function getAdminUser(id: string): Promise<{ user: AdminUserDetail }> {
@@ -19,4 +20,11 @@ export function suspendUser(id: string, data: SuspendUserRequest) {
 
 export function unsuspendUser(id: string) {
   return apiClient.post(`/api/v1/admin/users/${id}/unsuspend`, {});
+}
+
+export function updateUserInfo(
+  id: string,
+  data: UpdateUserInfoRequest
+): Promise<{ user: AdminUserDetail }> {
+  return apiClient.patch(`/api/v1/admin/users/${id}`, data);
 }

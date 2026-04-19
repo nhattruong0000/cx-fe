@@ -4,6 +4,7 @@ import * as React from "react"
 import { useAdminUserDetail } from "@/hooks/use-admin-user-actions"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { formatRelativeTime } from "@/lib/format-relative-time"
 import { getUserInitials } from "@/lib/user-initials"
+import { EditUserInfoDialog } from "./edit-user-info-dialog"
 
 interface UserDetailDialogProps {
   userId: string | null
@@ -24,8 +26,10 @@ interface UserDetailDialogProps {
 export function UserDetailDialog({ userId, open, onClose }: UserDetailDialogProps) {
   const { data, isLoading } = useAdminUserDetail(open ? userId : null)
   const user = data?.user
+  const [editInfoOpen, setEditInfoOpen] = React.useState(false)
 
   return (
+    <>
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -70,9 +74,25 @@ export function UserDetailDialog({ userId, open, onClose }: UserDetailDialogProp
           </div>
         ) : null}
 
-        <DialogFooter showCloseButton />
+        <DialogFooter>
+          {user && (
+            <Button variant="outline" onClick={() => setEditInfoOpen(true)}>
+              Sửa thông tin
+            </Button>
+          )}
+          <Button variant="ghost" onClick={onClose}>Đóng</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    {user && (
+      <EditUserInfoDialog
+        user={{ id: user.id, full_name: user.full_name, email: user.email }}
+        open={editInfoOpen}
+        onClose={() => setEditInfoOpen(false)}
+      />
+    )}
+    </>
   )
 }
 

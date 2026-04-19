@@ -149,6 +149,44 @@ export interface AssignRoleRequest {
   role: string;
 }
 
+export interface UpdateUserInfoRequest {
+  full_name?: string;
+  email?: string;
+}
+
 export interface SuspendUserRequest {
   reason: string;
+}
+
+// ─── Invitation types ────────────────────────────────────────────────────────
+
+export type InvitationStatus = "pending" | "accepted" | "expired";
+
+export interface AdminInvitation {
+  id: string;
+  email: string;
+  role: string;
+  invited_by: string;
+  status: InvitationStatus;
+  created_at: string;
+  expires_at: string;
+}
+
+export interface AdminInvitationsApiResponse {
+  invitations: AdminInvitation[];
+  pagination: AdminUsersPagination;
+}
+
+export interface AdminInvitationsResponse {
+  invitations: AdminInvitation[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+export interface AdminInvitationsParams {
+  page?: number;
+  per_page?: number;
+  status?: string;
+  q?: string;
 }
