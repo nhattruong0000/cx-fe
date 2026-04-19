@@ -21,11 +21,6 @@ export interface Session {
   os: string;
 }
 
-export interface TwoFactorStatus {
-  enabled: boolean;
-  method?: string;
-}
-
 export interface NotificationPreference {
   key: string;
   label: string;

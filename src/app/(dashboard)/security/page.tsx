@@ -2,9 +2,8 @@
 
 import { SecurityActiveSessionsCard } from "@/components/account/security-active-sessions-card";
 import { SecurityPasswordCard } from "@/components/account/security-password-card";
-import { SecurityTwoFactorCard } from "@/components/account/security-two-factor-card";
 
-/** Security & Sessions page — 2FA, active sessions, and password management */
+/** Security & Sessions page — active sessions and password management */
 export default function SecurityPage() {
   return (
     <div className="space-y-6">
@@ -14,7 +13,6 @@ export default function SecurityPage() {
         </h1>
       </div>
 
-      <SecurityTwoFactorCard />
       <SecurityActiveSessionsCard />
       <SecurityPasswordCard />
     </div>

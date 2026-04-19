@@ -4,7 +4,6 @@ import type {
   UpdateProfileResponse,
   ChangePasswordRequest,
   SessionsResponse,
-  TwoFactorStatus,
   NotificationPreference,
   NotificationPreferencesResponse,
 } from "@/types/profile";
@@ -47,20 +46,6 @@ export function revokeAllOtherSessions(): Promise<{ message: string }> {
   return apiClient.delete<{ message: string }>(
     "/api/v1/profile/sessions"
   );
-}
-
-export function get2FAStatus(): Promise<TwoFactorStatus> {
-  return apiClient.get<TwoFactorStatus>("/api/v1/profile/2fa");
-}
-
-export function enable2FA(method: string): Promise<{ message: string }> {
-  return apiClient.post<{ message: string }>("/api/v1/profile/2fa", {
-    method,
-  });
-}
-
-export function disable2FA(): Promise<{ message: string }> {
-  return apiClient.delete<{ message: string }>("/api/v1/profile/2fa");
 }
 
 export function getNotificationPreferences(): Promise<NotificationPreferencesResponse> {

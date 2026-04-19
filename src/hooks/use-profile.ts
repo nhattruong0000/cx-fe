@@ -6,9 +6,6 @@ import {
   getSessions,
   revokeSession,
   revokeAllOtherSessions,
-  get2FAStatus,
-  enable2FA,
-  disable2FA,
   getNotificationPreferences,
   updateNotificationPreference,
 } from "@/lib/api/profile";
@@ -67,35 +64,6 @@ export function useRevokeAllOtherSessions() {
     mutationFn: revokeAllOtherSessions,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile-sessions"] });
-    },
-  });
-}
-
-export function use2FAStatus() {
-  return useQuery({
-    queryKey: ["2fa-status"],
-    queryFn: get2FAStatus,
-    staleTime: 60_000,
-    retry: 2,
-  });
-}
-
-export function useEnable2FA() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (method: string) => enable2FA(method),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["2fa-status"] });
-    },
-  });
-}
-
-export function useDisable2FA() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: disable2FA,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["2fa-status"] });
     },
   });
 }
