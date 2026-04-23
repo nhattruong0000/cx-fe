@@ -3,6 +3,7 @@ import type { UserRole } from "@/types/dashboard";
 export interface NavChild {
   label: string;
   href: string;
+  icon?: string; // lucide icon name (optional — used by collapsible groups)
   disabled?: boolean;
   adminOnly?: boolean;
   active?: boolean;
@@ -45,11 +46,25 @@ const DASHBOARD_PARENT_STAFF: NavItem = {
   ],
 };
 
+/** Kho & Mua hàng group — shared by admin and staff */
+const INVENTORY_NAV_ITEM: NavItem = {
+  label: "Kho & Mua hàng",
+  href: "/inventory",
+  icon: "warehouse",
+  children: [
+    { label: "Tồn kho", href: "/inventory", icon: "package" },
+    { label: "Nhà cung cấp", href: "/inventory/suppliers", icon: "truck" },
+    { label: "Đơn nhập (PO)", href: "/purchase-orders", icon: "file-text" },
+    { label: "Cảnh báo tồn", href: "/inventory/alerts", icon: "alert-triangle" },
+  ],
+};
+
 const ADMIN_SECTIONS: NavSection[] = [
   {
     label: "QUẢN TRỊ",
     items: [
       DASHBOARD_PARENT_ADMIN,
+      INVENTORY_NAV_ITEM,
       { label: "Người dùng", href: "/users", icon: "users" },
       { label: "Lời mời", href: "/invitations", icon: "mail" },
       { label: "Nhóm quyền hạn", href: "/permission-groups", icon: "lock" },
@@ -79,6 +94,7 @@ const STAFF_SECTIONS: NavSection[] = [
     label: "ĐIỀU HƯỚNG",
     items: [
       DASHBOARD_PARENT_STAFF,
+      INVENTORY_NAV_ITEM,
       { label: "Khảo sát của tôi", href: "/surveys", icon: "clipboard-list" },
       { label: "Yêu cầu hỗ trợ", href: "/support", icon: "headset" },
       { label: "Báo cáo", href: "/reports", icon: "file-text" },
@@ -141,11 +157,16 @@ export function getSidebarNavConfig(role: UserRole, pathname: string): NavSectio
     ...section,
     items: section.items.map((item) => {
       if (item.children && item.children.length > 0) {
-        const children = item.children
-          .filter((c) => !c.adminOnly || role === "admin")
-          .map((c) => ({ ...c, active: isActive(c.href, pathname, c.href === "/dashboard") }));
-        const anyChildActive = children.some((c) => c.active);
-        return { ...item, children, active: anyChildActive };
+        const filtered = item.children.filter((c) => !c.adminOnly || role === "admin");
+        // Only the child with the longest matching href should be active,
+        // otherwise parent routes (e.g. /inventory) also match sub-routes (e.g. /inventory/suppliers).
+        let bestHref = "";
+        for (const c of filtered) {
+          const matches = isActive(c.href, pathname, c.href === "/dashboard");
+          if (matches && c.href.length > bestHref.length) bestHref = c.href;
+        }
+        const children = filtered.map((c) => ({ ...c, active: c.href === bestHref }));
+        return { ...item, children, active: bestHref !== "" };
       }
       return { ...item, active: isActive(item.href, pathname) };
     }),

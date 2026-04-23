@@ -12,6 +12,10 @@ import {
   FileText,
   User,
   Bell,
+  Warehouse,
+  Package,
+  Truck,
+  AlertTriangle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -30,4 +34,8 @@ export const sidebarIconMap: Record<string, LucideIcon> = {
   "file-text": FileText,
   "user": User,
   "bell": Bell,
+  "warehouse": Warehouse,
+  "package": Package,
+  "truck": Truck,
+  "alert-triangle": AlertTriangle,
 };

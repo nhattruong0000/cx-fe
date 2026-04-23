@@ -47,8 +47,7 @@ export function UserSessionStats() {
   const { data, isLoading, error } = useOpsUserStats();
 
   const roleData = useMemo(() => {
-    if (!data) return [];
-    return Object.entries(data.role_distribution).map(([key, value]) => ({
+    return Object.entries(data?.role_distribution ?? {}).map(([key, value]) => ({
       key,
       name: ROLE_LABEL[key] ?? key,
       value,

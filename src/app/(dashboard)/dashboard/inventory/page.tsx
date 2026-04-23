@@ -3,13 +3,12 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
-import { CriticalAlertsBanner } from "./_components/critical-alerts-banner";
-import { InventoryFilters } from "./_components/inventory-filters";
-import { StockStatusGrid } from "./_components/stock-status-grid";
-import { AlertSummaryDonut } from "./_components/alert-summary-donut";
-import { ForecastHorizonsChart } from "./_components/forecast-horizons-chart";
-import { PoPipelineCard } from "./_components/po-pipeline-card";
-import { SupplierCadenceCard } from "./_components/supplier-cadence-card";
+import { DashboardHeader } from "./_components/summary/dashboard-header";
+import { DataStalenessBanner } from "./_components/summary/data-staleness-banner";
+import { HeroKpisRow } from "./_components/summary/hero-kpis-row";
+import { BreakdownRow } from "./_components/summary/breakdown-row";
+import { TopListsRow } from "./_components/summary/top-lists-row";
+import { DashboardFooter } from "./_components/summary/dashboard-footer";
 
 const ALLOWED_ROLES = new Set(["admin", "staff"]);
 
@@ -43,32 +42,24 @@ export default function InventoryDashboardPage() {
   }
 
   return (
-    <div className="min-h-full space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold text-[#09090B]">Kho & Dự báo</h1>
-        <p className="text-sm text-muted-foreground">
-          Giám sát tồn kho, cảnh báo và dự báo nhu cầu.
-        </p>
-      </div>
+    <div className="min-h-full space-y-6">
+      {/* Row 0: header */}
+      <DashboardHeader />
 
-      <CriticalAlertsBanner />
-      <InventoryFilters />
+      {/* Data staleness warning — shown when snapshot_at > 24h old (m5) */}
+      <DataStalenessBanner />
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <StockStatusGrid />
-        </div>
-        <div>
-          <AlertSummaryDonut />
-        </div>
-      </div>
+      {/* Row 1: 4 hero KPI cards */}
+      <HeroKpisRow />
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <ForecastHorizonsChart />
-        <PoPipelineCard />
-      </div>
+      {/* Row 2: alerts donut + stock health bar */}
+      <BreakdownRow />
 
-      {isAdmin && <SupplierCadenceCard />}
+      {/* Row 3: top-10 lists (risky SKUs | POs | suppliers[admin]) */}
+      <TopListsRow isAdmin={isAdmin} />
+
+      {/* Footer: last updated + refresh */}
+      <DashboardFooter />
     </div>
   );
 }

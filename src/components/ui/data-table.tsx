@@ -25,6 +25,12 @@ interface DataTableProps<TData> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   meta?: Record<string, any>
   className?: string
+  /** Optional row click handler — receives the row's original data object */
+  onRowClick?: (row: TData) => void
+  /** Optional function to get test ID for a row */
+  getRowTestId?: (row: TData) => string
+  /** Optional function to get data attributes for a row */
+  getRowDataAttrs?: (row: TData) => Record<string, string>
 }
 
 function DataTable<TData>({
@@ -36,6 +42,9 @@ function DataTable<TData>({
   filterSlot,
   meta,
   className,
+  onRowClick,
+  getRowTestId,
+  getRowDataAttrs,
 }: DataTableProps<TData>) {
   const table: ReactTable<TData> = useReactTable({
     data,
@@ -87,7 +96,13 @@ function DataTable<TData>({
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-[#E4E4E7] bg-white transition-colors hover:bg-[#F8FAFC] last:border-b-0"
+                  className={cn(
+                    "border-b border-[#E4E4E7] bg-white transition-colors hover:bg-[#F8FAFC] last:border-b-0",
+                    onRowClick && "cursor-pointer"
+                  )}
+                  onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+                  {...(getRowTestId && { "data-testid": getRowTestId(row.original) })}
+                  {...(getRowDataAttrs ? getRowDataAttrs(row.original) : {})}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-4 py-3 text-sm text-[#09090B]">

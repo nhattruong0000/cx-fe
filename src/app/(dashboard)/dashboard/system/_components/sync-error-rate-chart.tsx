@@ -30,21 +30,19 @@ export function SyncErrorRateChart() {
 
   const { failures, discards } = useMemo(() => {
     const errs = data?.errors;
-    const failures = errs
-      ? Object.entries(errs.consecutive_failures_by_job).map(([job, count]) => ({
-          job: job.replace(/^AmisSync|Job$/g, ""),
-          count,
-        }))
-      : [];
-    const discards = errs
-      ? Object.entries(errs.discards_24h_by_classification)
-          .filter(([, v]) => v > 0)
-          .map(([key, value]) => ({
-            key,
-            name: CLASSIFICATION_LABEL[key] ?? key,
-            value,
-          }))
-      : [];
+    const failures = Object.entries(errs?.consecutive_failures_by_job ?? {}).map(
+      ([job, count]) => ({
+        job: job.replace(/^AmisSync|Job$/g, ""),
+        count,
+      }),
+    );
+    const discards = Object.entries(errs?.discards_24h_by_classification ?? {})
+      .filter(([, v]) => v > 0)
+      .map(([key, value]) => ({
+        key,
+        name: CLASSIFICATION_LABEL[key] ?? key,
+        value,
+      }));
     return { failures, discards };
   }, [data]);
 

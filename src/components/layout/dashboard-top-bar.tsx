@@ -15,20 +15,7 @@ import {
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { NotificationPopup } from "@/components/layout/notification-popup";
 import { useNotifications, useNotificationSubscription } from "@/hooks/use-notifications";
-
-/** Maps pathname segments to breadcrumb labels */
-const BREADCRUMB_MAP: Record<string, string> = {
-  dashboard: "Bảng điều khiển",
-  users: "Người dùng",
-  profile: "Hồ sơ",
-  security: "Bảo mật",
-  notifications: "Thông báo",
-  invite: "Mời người dùng",
-  "permission-groups": "Nhóm quyền hạn",
-  organizations: "Tổ chức",
-  settings: "Cài đặt",
-  help: "Trung tâm trợ giúp",
-};
+import { getBreadcrumbLabel } from "@/lib/breadcrumb-labels";
 
 /** Maps pathname segments to their parent breadcrumb label */
 const PARENT_MAP: Record<string, string> = {
@@ -42,6 +29,12 @@ const PARENT_MAP: Record<string, string> = {
   profile: "Cài đặt",
   security: "Cài đặt",
   notifications: "Cài đặt",
+  // Inventory feature group — all under "Kho & Mua hàng"
+  inventory: "Kho & Mua hàng",
+  suppliers: "Tồn kho",
+  "purchase-orders": "Kho & Mua hàng",
+  alerts: "Tồn kho",
+  sku: "Tồn kho",
 };
 
 /** Top bar with breadcrumb + user area (no logo — logo is in sidebar) */
@@ -59,8 +52,15 @@ export function DashboardTopBar() {
   const showAvatar = user?.avatar_url && !imgError;
 
   // Derive breadcrumb from pathname
-  const segment = pathname.split("/").filter(Boolean).pop() ?? "dashboard";
-  const breadcrumb = BREADCRUMB_MAP[segment] ?? segment;
+  const rawSegment = pathname.split("/").filter(Boolean).pop() ?? "dashboard";
+  const segment = (() => {
+    try {
+      return decodeURIComponent(rawSegment);
+    } catch {
+      return rawSegment;
+    }
+  })();
+  const breadcrumb = getBreadcrumbLabel(segment);
   const parent = PARENT_MAP[segment] ?? "Quản trị";
 
   function handleLogout() {
