@@ -8,7 +8,7 @@ import { RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HelpTooltip } from "@/components/ui/help-tooltip";
 import { WeeklyHistoryChart } from "./weekly-history-chart";
-import { ForecastCiChart } from "./forecast-ci-chart";
+import { ForecastActionCard } from "./forecast-action-card";
 import { AlertCard } from "./alert-card";
 import { SupplyBreakdownCard } from "./supply-breakdown-card";
 import { SuggestedPoCard } from "./suggested-po-card";
@@ -35,7 +35,11 @@ function syncAge(syncedAt: string | null): string {
 export function EvidenceTabOverview({ evidence }: EvidenceTabOverviewProps) {
   const { on_hand, alert, forecasts, supply_breakdown, suggested_po, reliability, weekly_history, purchase_orders, lead_time } = evidence;
   const forecast30 = forecasts.find((f) => f.horizon_days === 30);
-  const dosDanger = alert.dos !== null && alert.dos < 7;
+  const dosValue = alert.dos;
+  /** dos < 1 → imminent stockout — highest severity tier */
+  const dosCritical = dosValue !== null && dosValue < 1;
+  /** 1 ≤ dos < 7 → warning tier */
+  const dosDanger = dosValue !== null && dosValue < 7;
 
   return (
     <div className="flex flex-col gap-6">
@@ -62,14 +66,14 @@ export function EvidenceTabOverview({ evidence }: EvidenceTabOverviewProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-1.5 text-xs text-muted-foreground">
               Nhu cầu mỗi ngày
-              <HelpTooltip>Nhu cầu trung bình mỗi ngày tính theo phương pháp trung bình trượt 30 ngày gần nhất.</HelpTooltip>
+              <HelpTooltip>Nhu cầu trung bình mỗi ngày, tính từ dự báo 30 ngày chia đều.</HelpTooltip>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold text-foreground">
               {alert.demand_daily?.toLocaleString("vi-VN", { maximumFractionDigits: 1 }) ?? "—"}
             </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">Trung bình trượt · 30 ngày</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">TB dự báo 30 ngày</p>
           </CardContent>
         </Card>
 
@@ -78,15 +82,29 @@ export function EvidenceTabOverview({ evidence }: EvidenceTabOverviewProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-1.5 text-xs text-muted-foreground">
               Số ngày tồn còn lại
-              <HelpTooltip>Ước tính số ngày hàng còn đủ bán dựa trên tốc độ tiêu thụ hiện tại. Ngưỡng cảnh báo: dưới 7 ngày.</HelpTooltip>
+              <HelpTooltip>
+                Ước tính số ngày hàng còn đủ bán = tồn kho hiện tại / nhu cầu dự báo.
+                {dosValue === null ? " Dự báo quá cũ, không tính được DoS." : null}
+                {alert.dos_at_detection != null && ` Giá trị lúc phát hiện alert: ${alert.dos_at_detection.toFixed(2)}.`}
+                {alert.demand_stale_days != null && alert.demand_stale_days > 0 && ` Dự báo cũ ${alert.demand_stale_days} ngày.`}
+              </HelpTooltip>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className={`text-2xl font-bold ${dosDanger ? "text-destructive" : "text-foreground"}`}>
-              {alert.dos?.toLocaleString("vi-VN") ?? "—"}
+            <p
+              data-testid="dos-value"
+              data-dos-tier={dosCritical ? "critical" : dosDanger ? "danger" : "normal"}
+              className={`text-2xl font-bold ${dosCritical || dosDanger ? "text-destructive" : "text-foreground"}`}
+            >
+              {dosValue?.toLocaleString("vi-VN", { maximumFractionDigits: 2 }) ?? "—"}
             </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {dosDanger ? "Dưới ngưỡng 7 ngày — cần đặt hàng" : "Ngưỡng cảnh báo: 7 ngày"}
+            <p
+              data-testid="dos-label"
+              className={`mt-0.5 text-xs ${dosCritical ? "font-semibold text-destructive" : "text-muted-foreground"}`}
+            >
+              {dosCritical ? "Sắp hết hàng — đặt PO khẩn"
+                : dosDanger ? "Dưới ngưỡng 7 ngày — cần đặt hàng"
+                : "Ngưỡng cảnh báo: 7 ngày"}
             </p>
           </CardContent>
         </Card>
@@ -100,10 +118,15 @@ export function EvidenceTabOverview({ evidence }: EvidenceTabOverviewProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-foreground">
-              {forecast30?.qty_forecast?.toLocaleString("vi-VN") ?? "—"}
+            <p data-testid="forecast-30d-value" className="text-2xl font-bold text-foreground">
+              {forecast30?.qty_forecast != null ? Math.round(forecast30.qty_forecast).toLocaleString("vi-VN") : "—"}
             </p>
-            {forecast30?.ci_low != null && forecast30?.ci_high != null && (
+            {forecast30?.qty_forecast != null && (forecast30.stale_days ?? 0) > 1 && (
+              <p data-testid="forecast-stale-badge" className="mt-0.5 text-xs text-amber-600">
+                Dự báo cũ {forecast30.stale_days} ngày
+              </p>
+            )}
+            {forecast30?.ci_low != null && forecast30?.ci_high != null && (forecast30.stale_days ?? 0) <= 1 && (
               <p className="mt-0.5 text-xs text-info">
                 Dao động ±{Math.round((forecast30.ci_high - forecast30.ci_low) / 2).toLocaleString("vi-VN")}
               </p>
@@ -125,17 +148,15 @@ export function EvidenceTabOverview({ evidence }: EvidenceTabOverviewProps) {
             <WeeklyHistoryChart data={weekly_history} />
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              Dự báo theo khoảng thời gian
-              <HelpTooltip>Ba mức dự báo 7, 30 và 90 ngày với khoảng dao động kỳ vọng.</HelpTooltip>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ForecastCiChart forecasts={forecasts} />
-          </CardContent>
-        </Card>
+        <ForecastActionCard
+          itemCode={evidence.item_code}
+          stockCodes={on_hand.by_stock.map((s) => s.stock_code)}
+          alert={alert}
+          forecasts={forecasts}
+          leadTime={lead_time}
+          suggestedPo={suggested_po}
+          reliability={reliability}
+        />
       </div>
 
       {/* Row 3 — Alert / Supply / Suggested PO */}

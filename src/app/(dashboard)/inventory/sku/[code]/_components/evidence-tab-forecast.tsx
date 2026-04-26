@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { HelpTooltip } from "@/components/ui/help-tooltip";
 import { WeeklyHistoryChart } from "./weekly-history-chart";
-import { ForecastCiChart } from "./forecast-ci-chart";
+import { ForecastActionCard } from "./forecast-action-card";
 import type { InventoryEvidenceBundle } from "@/types/inventory-evidence";
 
 interface EvidenceTabForecastProps {
@@ -32,7 +32,7 @@ const METHOD_LABEL: Record<string, { label: string; desc: string }> = {
 };
 
 export function EvidenceTabForecast({ evidence }: EvidenceTabForecastProps) {
-  const { forecasts, weekly_history } = evidence;
+  const { forecasts, weekly_history, alert, lead_time, suggested_po, reliability, on_hand } = evidence;
   const primaryForecast = forecasts[0];
   const method = primaryForecast?.method ?? "moving_average";
   const methodCfg = METHOD_LABEL[method] ?? { label: method, desc: "" };
@@ -62,16 +62,17 @@ export function EvidenceTabForecast({ evidence }: EvidenceTabForecastProps) {
         </CardContent>
       </Card>
 
-      {/* Forecast CI cards — all horizons */}
+      {/* Forecast Action Card + Detail table */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Dự báo theo khoảng thời gian</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ForecastCiChart forecasts={forecasts} />
-          </CardContent>
-        </Card>
+        <ForecastActionCard
+          itemCode={evidence.item_code}
+          stockCodes={on_hand.by_stock.map((s) => s.stock_code)}
+          alert={alert}
+          forecasts={forecasts}
+          leadTime={lead_time}
+          suggestedPo={suggested_po}
+          reliability={reliability}
+        />
 
         {/* Detailed forecast table */}
         <Card>
@@ -93,13 +94,13 @@ export function EvidenceTabForecast({ evidence }: EvidenceTabForecastProps) {
                 >
                   <span className="font-medium text-foreground">{f.horizon_days} ngày</span>
                   <span className="text-right font-semibold text-foreground">
-                    {f.qty_forecast?.toLocaleString("vi-VN") ?? "—"}
+                    {f.qty_forecast != null ? Math.round(f.qty_forecast).toLocaleString("vi-VN") : "—"}
                   </span>
                   <span className="text-right text-muted-foreground">
-                    {f.ci_low?.toLocaleString("vi-VN") ?? "—"}
+                    {f.ci_low != null ? Math.round(f.ci_low).toLocaleString("vi-VN") : "—"}
                   </span>
                   <span className="text-right text-muted-foreground">
-                    {f.ci_high?.toLocaleString("vi-VN") ?? "—"}
+                    {f.ci_high != null ? Math.round(f.ci_high).toLocaleString("vi-VN") : "—"}
                   </span>
                 </div>
               ))}

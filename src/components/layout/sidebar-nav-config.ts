@@ -65,6 +65,7 @@ const ADMIN_SECTIONS: NavSection[] = [
     items: [
       DASHBOARD_PARENT_ADMIN,
       INVENTORY_NAV_ITEM,
+      { label: "Forecast Health", href: "/forecast-health", icon: "gauge" },
       { label: "Người dùng", href: "/users", icon: "users" },
       { label: "Lời mời", href: "/invitations", icon: "mail" },
       { label: "Nhóm quyền hạn", href: "/permission-groups", icon: "lock" },

@@ -14,6 +14,7 @@ import type {
   SupplierListItem,
   SupplierSkuItem,
   SupplierSkusParams,
+  SupplierUpdateResponse,
   SuppliersListParams,
 } from "@/types/inventory";
 import type {
@@ -54,8 +55,10 @@ export function getDashboardSummary(
 ): Promise<InventoryDashboardSummary> {
   const query: Record<string, unknown> = {};
   if (params.branch_id) query.branch_id = params.branch_id;
+  // Migrated V1 → V2 (Phase 2 FE migration). V2 returns same shape via shared
+  // DashboardSummaryQuery; FE consumers don't need shape changes.
   return apiClient.get<InventoryDashboardSummary>(
-    `/api/v1/inventory/dashboard-summary${buildQuery(query)}`
+    `/api/v2/inventory/dashboard-summary${buildQuery(query)}`
   );
 }
 
@@ -92,6 +95,18 @@ export function fetchSupplierDetail(id: string): Promise<SupplierDetail> {
   );
 }
 
+/** PATCH /api/v1/inventory/suppliers/:id — upsert vendor lead_time_days override.
+ *  Backend enforces permission `inventory:vendor_lead_time_manage`; 403 otherwise. */
+export function updateSupplierLeadTime(
+  id: string,
+  leadTimeDays: number
+): Promise<SupplierUpdateResponse> {
+  return apiClient.patch<SupplierUpdateResponse>(
+    `/api/v1/inventory/suppliers/${encodeURIComponent(id)}`,
+    { supplier: { lead_time_days: leadTimeDays } }
+  );
+}
+
 export function fetchSupplierSkus(
   id: string,
   params: SupplierSkusParams = {}
@@ -104,16 +119,79 @@ export function fetchSupplierSkus(
 // ─── Per-SKU forecast ─────────────────────────────────────────────────────────
 
 /** Fetch forecast data for a single SKU code.
- *  Uses existing GET /api/v1/inventory/items/:code/forecast endpoint.
- *  horizons: array of [7, 30, 90] — omit to fetch all. */
+ *  Migrated V1 → V2 (Sub-A Phase 2). V2 returns native v2 shape (daily_rate, ROP,
+ *  classification, ...). FE-side adapter `expandV2ToLegacy3Horizon` synthesizes
+ *  legacy 3-horizon ForecastPoint[] for backward compat with supplier dialog.
+ *  When the supplier dialog is later refactored to use ForecastActionCard,
+ *  this shim can be dropped.
+ *
+ *  horizons param accepted for compat but ignored — BE V2 returns up to 30 latest. */
 export function fetchSkuForecast(
   code: string,
   horizons?: number[]
 ): Promise<ForecastResponse> {
-  const q = horizons?.length ? `?horizons=${horizons.join(",")}` : "";
-  return apiClient.get<ForecastResponse>(
-    `/api/v1/inventory/items/${encodeURIComponent(code)}/forecast${q}`
-  );
+  void horizons;
+  return apiClient
+    .get<{ item_code: string; data: V2ForecastRow[] }>(
+      `/api/v2/inventory/items/${encodeURIComponent(code)}/forecast`
+    )
+    .then((res) => ({
+      item_code: res.item_code,
+      data: expandV2ToLegacy3Horizon(res.item_code, res.data),
+    }));
+}
+
+// V2 forecast row shape returned by /api/v2/inventory/items/:code/forecast
+// (matches Api::V2::InventoryForecastSerializer WHITELISTED_KEYS).
+type V2ForecastRow = {
+  item_code: string;
+  stock_code: string;
+  branch_id: string;
+  forecast_date: string;
+  daily_rate: number | null;
+  weekly_demand: number | null;
+  rop: number | null;
+  safety_stock: number | null;
+  reorder_qty_suggestion: number | null;
+  lead_time_p50_days: number | null;
+  lead_time_p90_days: number | null;
+  classification: string | null;
+  method: string | null;
+  window_days: number | null;
+  data_quality: string | null;
+  days_with_data: number | null;
+  confidence: number | null;
+  confidence_source: string | null;
+};
+
+const LEGACY_HORIZONS = [7, 30, 90] as const;
+
+// Synthesize 3-horizon ForecastPoint[] from 1 v2 row (mirrors BE LegacyResponseAdapter).
+// Used by supplier dialog (forecast-evidence-utils) until that dialog is refactored
+// to consume v2 fields directly.
+function expandV2ToLegacy3Horizon(itemCode: string, rows: V2ForecastRow[]) {
+  const latest = rows[0];
+  if (!latest) return [];
+  const dailyRate = latest.daily_rate ?? 0;
+  const isLowConfidence = latest.confidence == null || latest.confidence < 0.5;
+  return LEGACY_HORIZONS.map((h) => ({
+    id: `${latest.item_code}-${latest.forecast_date}-${h}`,
+    item_code: itemCode,
+    stock_code: latest.stock_code,
+    branch_id: latest.branch_id,
+    forecast_date: latest.forecast_date,
+    horizon_days: h,
+    qty_forecast: Math.round(dailyRate * h),
+    qty_lower: latest.confidence != null
+      ? Math.round(dailyRate * h * (1 - (1 - latest.confidence) * 0.5))
+      : null,
+    qty_upper: latest.confidence != null
+      ? Math.round(dailyRate * h * (1 + (1 - latest.confidence) * 0.5))
+      : null,
+    method: latest.method ?? "rolling_avg",
+    low_confidence: isLowConfidence,
+    created_at: latest.forecast_date,
+  }));
 }
 
 // ─── Purchase Orders list ─────────────────────────────────────────────────────
@@ -129,12 +207,14 @@ export function fetchPurchaseOrders(
 // ─── Per-SKU evidence bundle ──────────────────────────────────────────────────
 
 /** Fetch full evidence bundle for a single SKU code.
- *  GET /api/v1/inventory/items/:code/evidence?branch_id=... */
+ *  Migrated V1 → V2 (Sub-A Phase 2). V2 controller delegates to the same
+ *  EvidenceBundleQuery + EvidenceBundleSerializer, so response shape is
+ *  identical. Switch enables Phase 3 BE adapter drop. */
 export function fetchSkuEvidence(
   code: string,
   params: EvidenceParams = {}
 ): Promise<InventoryEvidenceBundle> {
   return apiClient.get<InventoryEvidenceBundle>(
-    `/api/v1/inventory/items/${encodeURIComponent(code)}/evidence${buildQuery(params as Record<string, unknown>)}`
+    `/api/v2/inventory/items/${encodeURIComponent(code)}/evidence${buildQuery(params as Record<string, unknown>)}`
   );
 }
