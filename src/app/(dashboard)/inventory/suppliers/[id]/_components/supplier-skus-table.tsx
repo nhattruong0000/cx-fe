@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useSupplierSkus } from "@/hooks/use-supplier-skus"
+// SupplierSkuItem is now V2 shape (daily_rate/rop/classification/dus)
 import type { StockStatus, SupplierSkuItem } from "@/types/inventory"
 import { supplierSkusColumns } from "./supplier-skus-columns"
 
@@ -165,7 +166,7 @@ export function SupplierSkusTable({ supplierId, onRowClick }: SupplierSkusTableP
               </TooltipTrigger>
               <TooltipContent className="max-w-[280px] text-xs leading-relaxed">
                 Danh sách tất cả mặt hàng đã từng nhập từ nhà cung cấp này, kèm tồn kho hiện
-                tại và dự báo nhu cầu 30/90 ngày.
+                tại, tốc độ tiêu thụ (daily rate), điểm đặt hàng lại (ROP) và số ngày tồn (DUS).
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

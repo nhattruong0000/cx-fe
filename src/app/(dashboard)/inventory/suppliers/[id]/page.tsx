@@ -8,6 +8,7 @@ import { ChevronRight } from "lucide-react"
 import { useSupplierDetail } from "@/hooks/use-supplier-detail"
 import type { StockStatus, SupplierSkuItem } from "@/types/inventory"
 import { SupplierHeaderCard } from "./_components/supplier-header-card"
+import { SupplierLeadTimeOverrideCard } from "./_components/supplier-lead-time-override-card"
 import { SupplierMetricsGrid } from "./_components/supplier-metrics-grid"
 import { SupplierRiskBreakdown } from "./_components/supplier-risk-breakdown"
 import { SupplierSkusTable } from "./_components/supplier-skus-table"
@@ -17,7 +18,6 @@ import { SkuForecastEvidenceDialog } from "./_components/sku-forecast-evidence-d
 interface SelectedSkuContext {
   skuCode: string
   skuName?: string
-  onHand?: number
   stockStatus?: StockStatus
 }
 
@@ -91,6 +91,9 @@ export default function InventorySupplierDetailPage() {
       {/* Header card: code + name + status + contact + meta */}
       <SupplierHeaderCard detail={detail} />
 
+      {/* Declared lead time override (permission-gated inline edit) */}
+      <SupplierLeadTimeOverrideCard detail={detail} />
+
       {/* 4 KPI metric cards */}
       <SupplierMetricsGrid metrics={detail.metrics} />
 
@@ -102,7 +105,6 @@ export default function InventorySupplierDetailPage() {
           setSelectedSku({
             skuCode: sku.sku_code,
             skuName: sku.name,
-            onHand: sku.on_hand,
             stockStatus: "critical",
           })
         }
@@ -115,7 +117,6 @@ export default function InventorySupplierDetailPage() {
           setSelectedSku({
             skuCode: row.sku_code,
             skuName: row.name,
-            onHand: row.on_hand,
             stockStatus: row.status,
           })
         }
@@ -125,9 +126,7 @@ export default function InventorySupplierDetailPage() {
       <SkuForecastEvidenceDialog
         skuCode={selectedSku?.skuCode ?? null}
         skuName={selectedSku?.skuName}
-        onHand={selectedSku?.onHand}
         stockStatus={selectedSku?.stockStatus}
-        leadTimeP90={detail.lead_time_p90_days}
         onClose={() => setSelectedSku(null)}
       />
     </div>

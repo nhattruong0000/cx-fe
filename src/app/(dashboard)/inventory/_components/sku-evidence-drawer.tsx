@@ -158,11 +158,11 @@ export function SkuEvidenceDrawer({ code, open, onOpenChange }: SkuEvidenceDrawe
               </div>
               <Divider />
 
-              {/* Section 2 — Forecast 30d */}
+              {/* Section 2 — Forecast 30d (renders daily_rate + DUS from alert section) */}
               {forecast30d && (
                 <>
                   <div data-testid="sku-evidence-drawer-section-dự-báo-30-ngày">
-                    <SkuEvidenceDrawerForecast forecast={forecast30d} />
+                    <SkuEvidenceDrawerForecast forecast={forecast30d} alert={data.alert} />
                   </div>
                   <Divider />
                 </>

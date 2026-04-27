@@ -93,14 +93,16 @@ export interface StockOnHandByStock {
   qty: number;
 }
 
-export interface StockLatestForecast {
-  horizon_days: number;
+/** V2 latest forecast row inside StockStatusResponseV2.latest_forecasts (array length 1). */
+export interface StockLatestForecastV2 {
+  daily_rate: number | null;
+  rop: number | null;
+  safety_stock: number | null;
+  classification: string | null;
+  method: string | null;
+  confidence: number | null;
   forecast_date: string;
-  qty_forecast: number;
-  qty_lower: number | null;
-  qty_upper: number | null;
-  method: string;
-  low_confidence: boolean;
+  reorder_qty_suggestion: number | null;
 }
 
 export interface StockPurchaseOrder {
@@ -133,48 +135,31 @@ export interface StockRecentDemand {
   avg_daily_qty?: number;
 }
 
-export interface StockStatusResponse {
+/** V2 stock status response from GET /api/v2/inventory/items/:code/stock_status */
+export interface StockStatusResponseV2 {
   item_code: string;
   branch_id: string | string[];
   on_hand_by_stock: StockOnHandByStock[];
   total_on_hand: number;
-  latest_forecasts: StockLatestForecast[];
+  /** Array of length 1 — V2 returns single latest forecast with native v2 fields */
+  latest_forecasts: StockLatestForecastV2[];
   open_alerts_count: number;
   recent_demand: StockRecentDemand | null;
   supply_breakdown: StockSupplyBreakdown;
   purchase_orders: StockPurchaseOrder[];
   inward_cadence?: StockInwardCadence;
+  dus: number | null;
+  status_band: "ok" | "reorder" | "critical" | null;
+  projected_qty: number | null;
   generated_at: string;
 }
+
+/** @deprecated Use StockStatusResponseV2 — kept temporarily for any lingering callers */
+export type StockStatusResponse = StockStatusResponseV2;
 
 export interface StockStatusParams {
   branch_id?: string | string[];
   diagnostics?: boolean;
-}
-
-export interface ForecastPoint {
-  id: string;
-  item_code: string;
-  stock_code: string | null;
-  branch_id: string;
-  forecast_date: string;
-  horizon_days: number;
-  qty_forecast: number;
-  qty_lower: number | null;
-  qty_upper: number | null;
-  method: string;
-  low_confidence: boolean;
-  created_at: string;
-}
-
-export interface ForecastResponse {
-  item_code: string;
-  data: ForecastPoint[];
-}
-
-export interface ForecastParams {
-  horizons?: Array<7 | 30 | 90>;
-  branch_id?: string;
 }
 
 // ─── Cursor-paginated list types ──────────────────────────────────────────────
@@ -260,11 +245,13 @@ export interface SupplierRiskCounts {
   critical: number;
 }
 
+/** Top-5 critical SKU row from supplier detail endpoint (V2 field: dus instead of forecast_30d) */
 export interface SupplierTopCriticalSku {
   sku_code: string;
   name: string;
   on_hand: number;
-  forecast_30d: number | null;
+  /** Days of supply — null when daily_rate=0. Sort ASC (lowest = most critical). */
+  dus: number | null;
 }
 
 /** Full detail payload from GET /api/v1/inventory/suppliers/:id */
@@ -277,6 +264,8 @@ export interface SupplierDetail {
   address: string | null;
   lead_time_p50_days: number | null;
   lead_time_p90_days: number | null;
+  /** User-declared vendor lead time, null if unset. Wins over measured values downstream. */
+  lead_time_override_days: number | null;
   cadence_days: number | null;
   status: SupplierStatus;
   last_po_date: string | null;
@@ -285,7 +274,15 @@ export interface SupplierDetail {
   top_5_critical: SupplierTopCriticalSku[];
 }
 
-/** Row returned by GET /api/v1/inventory/suppliers/:id/skus */
+/** Response payload from PATCH /api/v1/inventory/suppliers/:id */
+export interface SupplierUpdateResponse {
+  account_object_id: string;
+  account_object_code: string;
+  lead_time_days: number;
+  updated_at: string;
+}
+
+/** Row returned by GET /api/v2/inventory/suppliers/:id/skus */
 export interface SupplierSkuItem {
   sku_code: string;
   name: string;
@@ -293,10 +290,20 @@ export interface SupplierSkuItem {
   branch_name: string;
   on_hand: number;
   status: StockStatus;
-  forecast_30d: number | null;
-  forecast_90d: number | null;
+  daily_rate: number | null;
+  rop: number | null;
+  safety_stock: number | null;
+  classification: string | null;
+  confidence: number | null;
+  lead_time_p50_days: number | null;
+  reorder_qty_suggestion: number | null;
+  /** Days of supply — null when daily_rate=0/null */
+  dus: number | null;
   updated_at: string;
 }
+
+/** @deprecated alias — same as SupplierSkuItem after V2 migration */
+export type SupplierSkuItemV2 = SupplierSkuItem;
 
 export interface SupplierSkusParams {
   q?: string;

@@ -11,6 +11,16 @@ import {
 } from "@/components/ui/tooltip"
 import type { SupplierRiskCounts, SupplierTopCriticalSku } from "@/types/inventory"
 
+// ─── DUS color band ────────────────────────────────────────────────────────────
+
+/** Returns Tailwind color classes for DUS value: red <7, yellow 7-14, green ≥14 */
+function dusColorClass(dus: number | null): string {
+  if (dus === null) return "text-muted-foreground"
+  if (dus < 7) return "font-semibold text-red-600"
+  if (dus < 14) return "font-semibold text-yellow-600"
+  return "font-semibold text-green-600"
+}
+
 interface RiskPillProps {
   count: number
   label: string
@@ -35,12 +45,23 @@ interface SupplierRiskBreakdownProps {
   onSkuClick: (sku: SupplierTopCriticalSku) => void
 }
 
-/** Risk breakdown card: pill row + top-5 critical SKU list */
+/** Risk breakdown card: pill row + top-5 critical SKU list.
+ *  Top-5 sorted by dus ASC (lowest DUS = most critical) — sort done by BE service.
+ *  Renders DUS value with color band (red <7 / yellow 7-14 / green ≥14).
+ */
 export function SupplierRiskBreakdown({
   riskCounts,
   topCritical,
   onSkuClick,
 }: SupplierRiskBreakdownProps) {
+  // Sort client-side by dus ASC as defensive guard (BE already sorts; this handles any ordering)
+  const sortedCritical = [...topCritical].sort((a, b) => {
+    // Nulls go last (treat null as Infinity)
+    const da = a.dus ?? Infinity
+    const db = b.dus ?? Infinity
+    return da - db
+  })
+
   return (
     <Card>
       <CardContent className="space-y-5">
@@ -82,7 +103,7 @@ export function SupplierRiskBreakdown({
         </div>
 
         {/* Top 5 critical list */}
-        {topCritical.length > 0 ? (
+        {sortedCritical.length > 0 ? (
           <div className="space-y-3">
             <div className="h-px w-full bg-border" />
 
@@ -100,8 +121,8 @@ export function SupplierRiskBreakdown({
                     <HelpCircle className="size-4" />
                   </TooltipTrigger>
                   <TooltipContent className="max-w-[280px] text-xs leading-relaxed">
-                    5 mặt hàng đang nguy cấp nhất, sắp xếp theo nhu cầu 30 ngày tới. Bấm vào
-                    dòng để xem chi tiết bằng chứng dự báo.
+                    5 mặt hàng nguy cấp nhất, sắp xếp theo số ngày tồn (DUS) tăng dần — DUS càng
+                    thấp càng cần đặt hàng gấp. Bấm vào dòng để xem chi tiết dự báo.
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -109,7 +130,7 @@ export function SupplierRiskBreakdown({
 
             {/* Compact list */}
             <ul className="divide-y divide-border">
-              {topCritical.map((sku) => (
+              {sortedCritical.map((sku) => (
                 <li key={sku.sku_code}>
                   <button
                     type="button"
@@ -135,10 +156,10 @@ export function SupplierRiskBreakdown({
                         </span>
                       </div>
                       <div>
-                        <span className="font-medium">Nhu cầu 30 ngày:</span>{" "}
-                        <span className="tabular-nums text-foreground">
-                          {sku.forecast_30d != null
-                            ? sku.forecast_30d.toLocaleString("vi-VN")
+                        <span className="font-medium">DUS:</span>{" "}
+                        <span className={`tabular-nums ${dusColorClass(sku.dus)}`}>
+                          {sku.dus !== null
+                            ? `${sku.dus.toLocaleString("vi-VN", { maximumFractionDigits: 1 })} ngày`
                             : "—"}
                         </span>
                       </div>

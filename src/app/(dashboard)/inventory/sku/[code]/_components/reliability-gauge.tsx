@@ -43,12 +43,16 @@ function resolveGateDecision(reliability: EvidenceReliabilityScore): GateDecisio
  * legacy flat fields (confidence / lt_quality / oh_quality).
  */
 function resolveComponents(reliability: EvidenceReliabilityScore): ReliabilityComponents {
-  if (reliability.components) return reliability.components;
+  if (reliability.components) {
+    return {
+      confidence: reliability.components.confidence,
+      lt_quality: reliability.components.lt_quality,
+    };
+  }
   // Legacy shape fallback
   const conf = typeof reliability.confidence === "number" ? reliability.confidence : 1.0;
   const lt = reliability.lt_quality != null ? Number(reliability.lt_quality) : 1.0;
-  const oh = reliability.oh_quality != null ? Number(reliability.oh_quality) : 1.0;
-  return { confidence: conf, lt_quality: isNaN(lt) ? 1.0 : lt, on_hand: isNaN(oh) ? 1.0 : oh };
+  return { confidence: conf, lt_quality: isNaN(lt) ? 1.0 : lt };
 }
 
 /**
@@ -64,7 +68,11 @@ export function ReliabilityGauge({ reliability }: ReliabilityGaugeProps) {
   const decision = resolveGateDecision(reliability);
   const components = resolveComponents(reliability);
   const displayScore = resolveDisplayScore(reliability);
-  const bottleneck = (reliability.bottleneck_component as BottleneckComponent | null) ?? null;
+  // Graceful fallback: legacy data may carry bottleneck_component="on_hand" —
+  // treat as null so no row is highlighted instead of crashing.
+  const rawBottleneck = reliability.bottleneck_component;
+  const bottleneck: BottleneckComponent | null =
+    rawBottleneck === "confidence" || rawBottleneck === "lt_quality" ? rawBottleneck : null;
   const reasons = buildDecisionReasons(components);
 
   return (
@@ -76,7 +84,7 @@ export function ReliabilityGauge({ reliability }: ReliabilityGaugeProps) {
             <strong>Quyết định dự báo</strong> là tín hiệu chính — có thể "Loại bỏ" dù điểm cao
             vì còn xét thêm lịch sử bán, độ tin cậy mô hình và các điều kiện vòng đời.
             <br />
-            <strong>Điểm chất lượng</strong> là ngữ cảnh bổ sung (0.5·tin cậy + 0.3·giao hàng + 0.2·tồn kho).
+            <strong>Điểm chất lượng</strong> là ngữ cảnh bổ sung (0.6·tin cậy + 0.4·giao hàng).
           </HelpTooltip>
         </CardTitle>
       </CardHeader>

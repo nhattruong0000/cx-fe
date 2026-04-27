@@ -23,16 +23,14 @@ const DECISION_CFG: Record<
 };
 
 /** Thresholds aligned with AlertReliabilityCalculator (BE). */
-const COMPONENT_THRESHOLDS: Record<BottleneckComponent, number> = {
+export const COMPONENT_THRESHOLDS: Record<BottleneckComponent, number> = {
   confidence: 0.5,
   lt_quality: 0.5,
-  on_hand:    0.3,
 };
 
 const COMPONENT_LABEL: Record<BottleneckComponent, string> = {
   confidence: "Độ tin cậy mô hình dự báo",
   lt_quality: "Chất lượng dữ liệu giao hàng",
-  on_hand:    "Dữ liệu tồn kho",
 };
 
 // ─── Props ────────────────────────────────────────────────────────────────────

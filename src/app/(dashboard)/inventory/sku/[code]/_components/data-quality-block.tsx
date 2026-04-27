@@ -2,19 +2,18 @@
 
 /**
  * DataQualityBlock — secondary signal card for data quality score.
- * Shows display_score gauge, bottleneck highlight, and 3-component breakdown.
+ * Shows display_score gauge, bottleneck highlight, and 2-component breakdown.
  * Intentionally secondary to DecisionBlock — score is context, not the verdict.
  */
 
-import { HelpTooltip } from "@/components/ui/help-tooltip";
 import type { BottleneckComponent, ReliabilityComponents } from "@/types/inventory-evidence";
+import { COMPONENT_THRESHOLDS } from "./decision-block";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const COMPONENT_LABEL: Record<BottleneckComponent | string, string> = {
-  confidence: "Độ tin cậy mô hình dự báo",
-  lt_quality: "Chất lượng dữ liệu giao hàng",
-  on_hand:    "Dữ liệu tồn kho",
+const COMPONENT_LABEL: Record<BottleneckComponent, string> = {
+  confidence: "Độ tin cậy mô hình dự báo · 60%",
+  lt_quality: "Chất lượng dữ liệu giao hàng · 40%",
 };
 
 /** Score zone thresholds (display_score is 0–1). */
@@ -60,24 +59,13 @@ export function DataQualityBlock({ displayScore, bottleneck, components }: DataQ
   const componentRows: Array<{ key: BottleneckComponent; value: number }> = [
     { key: "confidence", value: components.confidence },
     { key: "lt_quality",  value: components.lt_quality },
-    { key: "on_hand",     value: components.on_hand },
   ];
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-2">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-          Điểm chất lượng dữ liệu
-        </p>
-        <HelpTooltip>
-          <p className="text-xs">
-            <strong>0.5 × Độ tin cậy</strong> + <strong>0.3 × Giao hàng</strong> + <strong>0.2 × Tồn kho</strong>
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Điểm này đo chất lượng dữ liệu đầu vào. Quyết định dự báo ở trên là tín hiệu chính xác hơn.
-          </p>
-        </HelpTooltip>
-      </div>
+      <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        Điểm chất lượng dữ liệu
+      </p>
 
       {/* Score display */}
       <div className="flex items-end gap-2">
@@ -116,7 +104,10 @@ export function DataQualityBlock({ displayScore, bottleneck, components }: DataQ
         <p className="mb-2 text-xs font-medium text-muted-foreground">Thành phần điểm</p>
         <div className="flex flex-col gap-1.5">
           {componentRows.map(({ key, value }) => {
-            const isBottleneck = key === bottleneck;
+            // Only highlight bottleneck when it actually fails the threshold.
+            // When all components pass (e.g. gate_decision=accept), the "min"
+            // is noise — don't paint it red.
+            const isBottleneck = key === bottleneck && value < COMPONENT_THRESHOLDS[key];
             return (
               <div
                 key={key}
@@ -127,7 +118,7 @@ export function DataQualityBlock({ displayScore, bottleneck, components }: DataQ
                 }`}
               >
                 <span className={isBottleneck ? "font-medium text-destructive" : "text-muted-foreground"}>
-                  {COMPONENT_LABEL[key] ?? key}
+                  {COMPONENT_LABEL[key]}
                   {isBottleneck && (
                     <span className="ml-1.5 rounded-full bg-destructive/10 px-1.5 py-0.5 text-[10px] text-destructive">
                       bottleneck

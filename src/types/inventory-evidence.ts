@@ -39,6 +39,8 @@ export interface EvidenceForecast {
   confidence: number | null;
   ci_low: number | null;
   ci_high: number | null;
+  /** Days since forecast_date. Used to render stale warning badge. */
+  stale_days: number;
 }
 
 export interface EvidenceLeadTimeVendor {
@@ -59,16 +61,28 @@ export interface EvidenceLeadTimeProfile {
   p50: number | null;
   p90: number | null;
   sample: number;
+  /** "override" (user-declared) | "item_vendor" | "vendor" | "category" | "default" */
   source: string;
+  /** Inferred primary supplier (vendor with most events). Used to link to supplier detail. */
+  primary_vendor_code: string | null;
+  /** Raw override value in days, null when no override is set. */
+  override: number | null;
   per_vendor: EvidenceLeadTimeVendor[];
   recent_events: EvidenceLeadTimeEvent[];
 }
 
 export interface EvidenceAlertSection {
   severity: string | null;
+  /** Realtime DoS computed from amis_on_hand / demand_daily (null when demand stale >7d) */
   dos: number | null;
-  gate_reasons: string[];
+  /** Original DoS persisted at alert detection time — audit trail */
+  dos_at_detection: number | null;
+  /** ISO timestamp when the alert was first detected */
+  detected_at: string | null;
   demand_daily: number | null;
+  /** Days since the 30d forecast was generated. >7 means demand figure may be stale. */
+  demand_stale_days: number | null;
+  gate_reasons: string[];
 }
 
 export interface EvidenceSupplyBreakdown {
@@ -95,13 +109,12 @@ export interface EvidencePurchaseOrdersBundle {
 }
 
 export type GateDecision = "accept" | "downgrade" | "drop" | "paused" | "needs_review";
-export type BottleneckComponent = "confidence" | "lt_quality" | "on_hand";
+export type BottleneckComponent = "confidence" | "lt_quality";
 export type ForecastStrategy = "manual" | "category_analog" | "blend" | "full";
 
 export interface ReliabilityComponents {
   confidence: number;
   lt_quality: number;
-  on_hand: number;
 }
 
 export interface EvidenceReliabilityScore {
