@@ -1,6 +1,50 @@
 # Project Changelog
 
+## [2026-04-27] Forecast V2 Migration (commit 0a3d03c)
+
+- Migrate FE consumers from V1 → V2 inventory endpoints (stock_status, dashboard-summary, suppliers/:id/skus, items/:code/forecast, items/:code/evidence)
+- Drop legacy utils/components: `expandV2ToLegacy3Horizon`, `ForecastCiChart`, `forecast-evidence-utils.ts`, `use-forecast-status.ts`, `v1-forecast-adapter.ts`
+- Replace 3-horizon UI with `ForecastActionCard` (daily_rate, dus, status_band)
+- Switch supplier SKUs columns: `forecast_30d/90d` → `daily_rate, rop, dus, classification`
+- Sort top-5 critical by `dus ASC` (was `forecast_30d DESC`)
+- Refactor `sku-forecast-evidence-dialog` around evidence bundle (no more CI chart)
+- Drop legacy types: `StockLatestForecast`, `ForecastPoint`, `ForecastResponse`; new types in `src/types/inventory.ts`
+- Reference: `plans/260427-0903-forecast-v2-full-migration-cleanup/`
+
 ## [Unreleased]
+
+### Refactor — 2026-04-21: Inventory Dashboard Summary-Only Redesign
+
+Rewritten `/dashboard/inventory` from 7-section workspace (critical alerts, stock grid, alert donut, forecast, PO pipeline, supplier cadence, SKU detail) to single-glance summary page (3 rows, 9 cards).
+
+**Frontend Changes (cx-fe)**
+- `/dashboard/inventory` → 3-row layout: 4 Hero KPIs (row 1), 2 breakdown charts—alerts by type + top suppliers (row 2), 3 Top-10 lists—low stock, overstock, alerts (row 3)
+- New component tree under `src/components/_components/summary/`: InventorySummaryKPI, InventorySummaryChart, InventorySummaryTopList
+- New API contract: `GET /api/v1/inventory/dashboard-summary` (FE ready, backend TBD) [DEPRECATED 2026-04-27 — V2 active]
+- New routes (stubbed): `/inventory/alerts`, `/inventory/sku/[code]`, `/inventory/suppliers/[id]`, `/purchase-orders`
+- Vitest unit test framework added for component testing
+- 11 legacy inventory workspace files deleted (sections, detail views, SKU modal)
+
+**Architecture decisions**
+- Summary page designed for quick glance; drill-down via new routes when ready
+- Card layout uses shared `ChartCard` + custom list components for consistency
+
+### Added — 2026-04-19: Domain-Specific Dashboards (Inventory + System)
+
+Split the single `/dashboard` overview into a collapsible sidebar section with 3 children: Tổng quan, Kho & Dự báo, Hệ thống.
+
+**Frontend (cx-fe)**
+- `/dashboard/system` (admin only) — AMIS sync status, per-entity sync table, proxy pool health, error rate, user stats
+- Sidebar `Dashboard` restructured as collapsible parent (Tổng quan | Kho & Dự báo | Hệ thống)
+
+**Backend (cx-api)**
+- `GET /api/v1/ops/sync_status` (admin) — AMIS sync state + proxy pool + circuit-breaker; 30s cache; never exposes raw token
+- `GET /api/v1/ops/user_stats` (admin) — total, active_last_24h, pending invites, suspended, role distribution
+- `GET /api/v1/inventory/items/stock_status` — batch variant, max 100 `item_codes`, per-row error isolation
+
+**Architecture decisions**
+- `Ops::BaseController` centralizes `role_admin?` 403 gate; client-side role check is defense-in-depth, not primary gate
+- Batch stock_status reuses `Inventory::StockStatusQuery` per item_code to keep single-item parity
 
 ### Added — 2026-04-03: Real-Time Notifications Fullstack (COMPLETE)
 

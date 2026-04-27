@@ -152,8 +152,54 @@ Discriminated union on `role` field:
 - `StaffDashboardSummary` — stats, 2 charts, surveys list, tickets list
 - `CustomerDashboardSummary` — stats, user name, organization info, team members, surveys
 
+### Inventory & Procurement (NEW)
+
+Routes:
+- `/inventory` — SKU stock list with search + status filter chips (ok / warn / critical) + load-more pagination
+- `/inventory/suppliers` — Supplier list with search + cursor pagination + load-more
+- `/inventory/suppliers/[id]` — Supplier detail: header card + 4 KPI metrics + risk breakdown + paginated SKU table + forecast evidence modal
+- `/purchase-orders` — PO list with status/supplier/date filters + cursor pagination + load-more
+- `/inventory/alerts` — Stock alert stubs (route exists, content TBD)
+
+BE endpoints consumed:
+- `GET /api/v1/inventory/stock` — cursor-paginated SKU stock rows; params: `q`, `status`, `limit`, `cursor`
+- `GET /api/v1/inventory/suppliers` — cursor-paginated supplier rows; params: `q`, `limit`, `cursor`
+- `GET /api/v1/inventory/suppliers/:id` — supplier detail: header fields + aggregated metrics + risk counts + top-5 critical SKUs
+- `GET /api/v2/inventory/suppliers/:id/skus` — cursor-paginated SKUs for supplier; params: `q`, `status`, `limit`, `cursor`
+- `GET /api/v1/inventory/purchase-orders` — cursor-paginated PO rows; params: `status`, `supplier_id`, `from_date`, `to_date`, `limit`, `cursor`
+
+Key files:
+- `app/(dashboard)/inventory/page.tsx` + `_components/sku-list-toolbar.tsx`, `sku-list-table.tsx`
+- `app/(dashboard)/inventory/suppliers/page.tsx` + `_components/suppliers-list-toolbar.tsx`, `suppliers-list-table.tsx`, `suppliers-list-columns.tsx`
+- `app/(dashboard)/inventory/suppliers/[id]/page.tsx` — detail page orchestrator
+- `app/(dashboard)/inventory/suppliers/[id]/_components/supplier-header-card.tsx`
+- `app/(dashboard)/inventory/suppliers/[id]/_components/supplier-metrics-grid.tsx`
+- `app/(dashboard)/inventory/suppliers/[id]/_components/supplier-risk-breakdown.tsx`
+- `app/(dashboard)/inventory/suppliers/[id]/_components/supplier-skus-table.tsx`, `supplier-skus-columns.tsx`
+- `app/(dashboard)/inventory/suppliers/[id]/_components/sku-forecast-evidence-dialog.tsx`, `forecast-action-card.tsx`
+- `app/(dashboard)/purchase-orders/page.tsx` + `_components/po-list-toolbar.tsx`, `po-list-table.tsx`, `po-list-columns.tsx`, `po-status-badge.tsx`
+- `hooks/use-inventory-stock.ts`, `hooks/use-inventory-suppliers.ts`, `hooks/use-inventory-purchase-orders.ts`
+- `hooks/use-supplier-detail.ts`, `hooks/use-supplier-skus.ts`, `hooks/use-sku-forecast.ts`
+- `lib/api/inventory.ts`
+- `types/inventory.ts`
+
+Sidebar nav:
+- `components/layout/sidebar-nav-config.ts` — "Kho & Mua hàng" parent group added to admin + staff nav
+- `components/layout/sidebar-icon-map.ts` — added: warehouse, package, truck, alert-triangle icons
+
 ### Utilities
 - `dashboard-chart-colors.ts`: Color palette constants for Recharts
 - `dashboard-icon-map.ts`: Maps icon name strings → Lucide React components
 - `dashboard-table-utils.ts`: Formatters for table cell rendering
 - `format-relative-time.ts`: ISO timestamp → "2 hours ago" strings
+
+---
+**V2 Inventory Endpoints (active 2026-04-27):**
+- `GET /api/v2/inventory/items/:code/stock_status` (single) + batch `/api/v2/inventory/items/stock_status`
+- `GET /api/v2/inventory/items/:code/forecast` (returns `daily_rate`, `rop`, `safety_stock`, `confidence`, `method`)
+- `GET /api/v2/inventory/items/:code/evidence`
+- `GET /api/v2/inventory/dashboard-summary`
+- `GET /api/v2/inventory/suppliers/:id/skus` (replaces V1; cursor pagination)
+- `GET /api/v2/inventory/forecast-health`
+
+Types in `src/types/inventory.ts`: `StockStatusResponseV2`, `StockLatestForecastV2`, `SupplierSkuItem` (V2 native fields: `daily_rate`, `rop`, `dus`, `classification`, `confidence`).

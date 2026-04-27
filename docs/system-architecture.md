@@ -1,6 +1,6 @@
 # System Architecture
 
-Last updated: 2026-04-03
+Last updated: 2026-04-19
 
 ## Overview
 
@@ -12,8 +12,10 @@ Next.js 15 App Router SPA with mock API layer. Rails API built in parallel; togg
 app/
 ├── (auth)/        # Public: /login, /forgot-password, /invite, /reset-password
 └── (dashboard)/   # Protected by middleware: all routes below
-    ├── /dashboard          # Role-based dashboard entry
-    ├── /notifications      # Notification center with tabs/filtering (NEW)
+    ├── /dashboard          # Role-based overview (Tổng quan)
+    │   ├── /inventory      # Inventory & Forecast (admin + staff)
+    │   └── /system         # System / Ops health (admin only)
+    ├── /notifications      # Notification center with tabs/filtering
     ├── /profile            # User account settings
     ├── /security           # Sessions & 2FA management
     ├── /admin/users        # User management (admin only)
@@ -169,6 +171,48 @@ src/components/
 └── ui/
     └── popover.tsx (new: base-ui Popover wrapper)
 ```
+
+## Domain Dashboards (NEW — 2026-04-19)
+
+Sidebar Dashboard entry is a collapsible parent with 3 children:
+
+```
+Dashboard (parent, collapsible)
+  ├── Tổng quan         → /dashboard          (role-based overview)
+  ├── Kho & Dự báo     → /dashboard/inventory (admin + staff)
+  └── Hệ thống         → /dashboard/system   (admin only)
+```
+
+### Inventory Dashboard (`/dashboard/inventory`) — Redesigned 2026-04-21
+
+Summary-only glance page (3 rows, 9 cards):
+- Row 1: 4 Hero KPIs (total stock value, reorder count, low stock items, overstock items)
+- Row 2: 2 breakdown charts — alerts by type (donut) + top suppliers (bar chart)
+- Row 3: 3 Top-10 lists — low stock items, overstock items, active alerts
+
+Components:
+- `InventorySummaryKPI` — KPI card wrapper
+- `InventorySummaryChart` — Recharts wrapper (LineChart/BarChart/PieChart)
+- `InventorySummaryTopList` — Paginated list (10 items, links to detail routes)
+
+API contract: `GET /api/v2/inventory/dashboard-summary` (active 2026-04-27)
+
+Drill-down routes:
+- `/inventory/alerts` — full alert list + filters (stubbed)
+- `/inventory/sku/[code]` — SKU detail page (stubbed)
+- `/inventory/suppliers/[id]` — **implemented**: header card + 4 KPI metrics (sku_count, po_count_90d, revenue_90d, expected_need_30d) + risk breakdown pills (ok/warn/critical) + cursor-paginated SKU table + forecast evidence panel (ForecastActionCard with daily_rate, dus, status_band, method, confidence; legacy 3-horizon bars removed). BE: `GET /api/v1/inventory/suppliers/:id` (KEPT) + `GET /api/v2/inventory/suppliers/:id/skus` (V2). Forecast: `GET /api/v2/inventory/items/:code/forecast`.
+- `/purchase-orders` — PO tracking
+
+### System Dashboard (`/dashboard/system`) — admin only
+
+Consumes Ops endpoints:
+- AMIS sync status card (last success per entity, staleness)
+- Per-entity sync table
+- Proxy pool health
+- Error rate / circuit-breaker state
+- User stats (total, active_last_24h, pending invites, role distribution)
+
+Client gate: `role === "admin"` check in layout; server enforces 403 on Ops endpoints.
 
 ## Security
 
