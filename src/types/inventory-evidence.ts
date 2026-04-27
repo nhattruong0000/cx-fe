@@ -1,7 +1,7 @@
 /**
  * TypeScript types mirroring the EvidenceBundleSerializer whitelist.
  * Keys are snake_case to match BE response — no camelCase transform in this project.
- * Endpoint: GET /api/v1/inventory/items/:code/evidence
+ * Endpoint: GET /api/v2/inventory/items/:code/evidence
  */
 
 // ─── Sub-types ────────────────────────────────────────────────────────────────
@@ -157,7 +157,7 @@ export interface EvidenceSuggestedPo {
 
 export type InventoryStockStatus = "critical" | "warn" | "ok";
 
-/** Full evidence bundle returned by GET /api/v1/inventory/items/:code/evidence */
+/** Full evidence bundle returned by GET /api/v2/inventory/items/:code/evidence */
 export interface InventoryEvidenceBundle {
   item_code: string;
   generated_at: string;

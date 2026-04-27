@@ -3,7 +3,7 @@ import { fetchSkuEvidence } from "@/lib/api/inventory";
 import type { EvidenceParams } from "@/types/inventory-evidence";
 
 /**
- * Query hook for GET /api/v1/inventory/items/:code/evidence.
+ * Query hook for GET /api/v2/inventory/items/:code/evidence.
  * Query key: ['inventory', 'items', code, 'evidence', params]
  *
  * staleTime 30s — avoids re-fetch when reopening drawer for the same SKU

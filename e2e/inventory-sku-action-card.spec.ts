@@ -84,13 +84,6 @@ const MOCK_EVIDENCE = {
 
 test.describe("/inventory/sku/[code] — Action Card replacement", () => {
   test.beforeEach(async ({ page }) => {
-    await page.route(`**/api/v1/inventory/items/${ITEM_CODE}/evidence**`, (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(MOCK_EVIDENCE),
-      }),
-    )
     await page.route(`**/api/v2/inventory/items/${ITEM_CODE}/evidence**`, (route) =>
       route.fulfill({
         status: 200,
