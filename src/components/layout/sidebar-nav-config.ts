@@ -25,48 +25,11 @@ export interface NavSection {
   items: NavItem[];
 }
 
-const DASHBOARD_PARENT_ADMIN: NavItem = {
-  label: "Bảng điều khiển",
-  href: "/dashboard",
-  icon: "house",
-  children: [
-    { label: "Tổng quan", href: "/dashboard" },
-    { label: "Kho & Dự báo", href: "/dashboard/inventory" },
-    { label: "Hệ thống", href: "/dashboard/system", adminOnly: true },
-  ],
-};
-
-const DASHBOARD_PARENT_STAFF: NavItem = {
-  label: "Bảng điều khiển",
-  href: "/dashboard",
-  icon: "house",
-  children: [
-    { label: "Tổng quan", href: "/dashboard" },
-    { label: "Kho & Dự báo", href: "/dashboard/inventory" },
-  ],
-};
-
-/** Kho & Mua hàng group — shared by admin and staff */
-const INVENTORY_NAV_ITEM: NavItem = {
-  label: "Kho & Mua hàng",
-  href: "/inventory",
-  icon: "warehouse",
-  children: [
-    { label: "Tồn kho", href: "/inventory", icon: "package" },
-    { label: "Nhà cung cấp", href: "/inventory/suppliers", icon: "truck" },
-    { label: "Đơn nhập (PO)", href: "/purchase-orders", icon: "file-text" },
-    { label: "Cảnh báo tồn", href: "/inventory/alerts", icon: "alert-triangle" },
-  ],
-};
-
 const ADMIN_SECTIONS: NavSection[] = [
   {
     label: "QUẢN TRỊ",
     items: [
-      DASHBOARD_PARENT_ADMIN,
-      INVENTORY_NAV_ITEM,
-      { label: "Forecast Health", href: "/forecast-health", icon: "gauge" },
-      { label: "Dự báo tổng hợp", href: "/aggregate-forecasts", icon: "trending-up" },
+      { label: "Bảng điều khiển", href: "/dashboard", icon: "house" },
       { label: "Người dùng", href: "/users", icon: "users" },
       { label: "Lời mời", href: "/invitations", icon: "mail" },
       { label: "Nhóm quyền hạn", href: "/permission-groups", icon: "lock" },
@@ -95,8 +58,7 @@ const STAFF_SECTIONS: NavSection[] = [
   {
     label: "ĐIỀU HƯỚNG",
     items: [
-      DASHBOARD_PARENT_STAFF,
-      INVENTORY_NAV_ITEM,
+      { label: "Bảng điều khiển", href: "/dashboard", icon: "house" },
       { label: "Khảo sát của tôi", href: "/surveys", icon: "clipboard-list" },
       { label: "Yêu cầu hỗ trợ", href: "/support", icon: "headset" },
       { label: "Báo cáo", href: "/reports", icon: "file-text" },
@@ -160,8 +122,6 @@ export function getSidebarNavConfig(role: UserRole, pathname: string): NavSectio
     items: section.items.map((item) => {
       if (item.children && item.children.length > 0) {
         const filtered = item.children.filter((c) => !c.adminOnly || role === "admin");
-        // Only the child with the longest matching href should be active,
-        // otherwise parent routes (e.g. /inventory) also match sub-routes (e.g. /inventory/suppliers).
         let bestHref = "";
         for (const c of filtered) {
           const matches = isActive(c.href, pathname, c.href === "/dashboard");

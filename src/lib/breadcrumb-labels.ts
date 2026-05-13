@@ -15,12 +15,6 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   organizations: "Tổ chức",
   settings: "Cài đặt",
   help: "Trung tâm trợ giúp",
-  // Inventory feature group
-  inventory: "Tồn kho",
-  suppliers: "Nhà cung cấp",
-  "purchase-orders": "Đơn nhập (PO)",
-  alerts: "Cảnh báo tồn",
-  sku: "SKU",
 };
 
 /**
