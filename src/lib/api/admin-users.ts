@@ -10,6 +10,9 @@ import type {
   AdminOrganizationsResponse,
   CreateGroupRequest,
   UpdateGroupRequest,
+  AdminInvitationsResponse,
+  AdminInvitationsApiResponse,
+  AdminInvitationsParams,
 } from "@/types/admin";
 
 export async function getAdminUsers(
@@ -81,4 +84,36 @@ export async function deletePermissionGroup(
   return apiClient.delete<{ message: string }>(
     `/api/v1/admin/permission-groups/${id}`
   );
+}
+
+// ─── Invitation API calls ──────────────────────────────────────────────────
+
+export async function getAdminInvitations(
+  params: AdminInvitationsParams = {}
+): Promise<AdminInvitationsResponse> {
+  const query = new URLSearchParams();
+  if (params.page !== undefined) query.set("page", String(params.page));
+  if (params.per_page !== undefined) query.set("per_page", String(params.per_page));
+  if (params.status) query.set("status", params.status);
+  if (params.q) query.set("q", params.q);
+
+  const qs = query.toString();
+  const raw = await apiClient.get<AdminInvitationsApiResponse>(
+    `/api/v1/admin/invitations${qs ? `?${qs}` : ""}`
+  );
+
+  return {
+    invitations: raw.invitations,
+    total: raw.pagination.total_count,
+    page: raw.pagination.current_page,
+    page_size: params.per_page ?? 25,
+  };
+}
+
+export function resendInvitation(id: string): Promise<{ message: string }> {
+  return apiClient.post<{ message: string }>(`/api/v1/admin/invitations/${id}/resend`);
+}
+
+export function deleteInvitation(id: string): Promise<{ message: string }> {
+  return apiClient.delete<{ message: string }>(`/api/v1/admin/invitations/${id}`);
 }

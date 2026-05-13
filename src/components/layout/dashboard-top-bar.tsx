@@ -29,12 +29,6 @@ const PARENT_MAP: Record<string, string> = {
   profile: "Cài đặt",
   security: "Cài đặt",
   notifications: "Cài đặt",
-  // Inventory feature group — all under "Kho & Mua hàng"
-  inventory: "Kho & Mua hàng",
-  suppliers: "Tồn kho",
-  "purchase-orders": "Kho & Mua hàng",
-  alerts: "Tồn kho",
-  sku: "Tồn kho",
 };
 
 /** Top bar with breadcrumb + user area (no logo — logo is in sidebar) */
