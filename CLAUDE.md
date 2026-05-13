@@ -15,6 +15,7 @@ Your role is to analyze user requirements, delegate tasks to appropriate sub-age
 - Design-to-code rules: `./.claude/rules/design-to-code-rules.md`
 - UI component QA rules: `./.claude/rules/ui-component-qa-rules.md`
 - Design system compliance: `./.claude/rules/design-system-compliance.md`
+- Frontend testing rules: `./.claude/rules/frontend-testing-rules.md`
 - And other workflows: `./.claude/rules/*`
 
 **IMPORTANT:** Analyze the skills catalog and activate the skills that are needed for the task during the process.

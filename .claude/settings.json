@@ -10,7 +10,10 @@
     "padding": 0
   },
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
+    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
+    "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1",
+    "CLAUDE_CODE_NO_FLICKER": "1"
   },
   "hooks": {
     "SessionStart": [
@@ -20,10 +23,16 @@
           {
             "type": "command",
             "command": "node .claude/hooks/session-init.cjs"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume",
+        "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/session-state.cjs"
+            "command": "node .claude/hooks/usage-quota-cache-refresh.cjs",
+            "timeout": 8
           }
         ]
       }
@@ -71,7 +80,11 @@
           },
           {
             "type": "command",
-            "command": "node .claude/hooks/usage-context-awareness.cjs",
+            "command": "node .claude/hooks/simplify-gate.cjs"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/usage-quota-cache-refresh.cjs",
             "timeout": 30
           }
         ]
@@ -113,12 +126,17 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Edit|Write|MultiEdit",
+        "matcher": "Task|TaskCreate|TaskUpdate|TodoWrite",
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/post-edit-simplify-reminder.cjs"
-          },
+            "command": "node .claude/hooks/session-state.cjs"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
           {
             "type": "command",
             "command": "node .claude/hooks/plan-format-kanban.cjs"
@@ -130,7 +148,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/usage-context-awareness.cjs",
+            "command": "node .claude/hooks/usage-quota-cache-refresh.cjs",
             "timeout": 10
           }
         ]

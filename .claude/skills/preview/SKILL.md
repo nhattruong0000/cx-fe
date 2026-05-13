@@ -1,6 +1,8 @@
 ---
 name: ck:preview
-description: "View files/directories OR generate visual explanations, slides, diagrams (Markdown or self-contained HTML)."
+description: "View files or generate visual explanations, slides, and diagrams. Use for code walkthroughs, architecture visualization, HTML/Markdown presentations."
+category: utilities
+keywords: [preview, visual, slides, diagrams, HTML]
 argument-hint: "[path] OR [--html] --explain|--slides|--diagram|--ascii [topic] OR --html --diff|--plan-review|--recap"
 metadata:
   author: claudekit
@@ -105,6 +107,7 @@ Adding `--html` to any generation flag switches output from Markdown to a self-c
 **Output:** Single `.html` file with all CSS/JS inline. Opens directly in browser — no server needed.
 **Location:** `{plan_dir}/visuals/{slug}.html` (same plan-aware logic as markdown mode)
 **Browser open:** `open` (macOS) / `xdg-open` (Linux) / `start` (Windows)
+**MANDATORY — Theme Toggle:** Every HTML page MUST include a light/dark theme toggle button. See `html-css-patterns.md` → "Theme Toggle Button" for the exact CSS, HTML, and JS to include. Pages without the toggle are considered incomplete.
 
 ### Reference Loading (HTML mode)
 

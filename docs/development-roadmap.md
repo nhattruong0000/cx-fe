@@ -1,6 +1,6 @@
 # Development Roadmap
 
-Last updated: 2026-03-31
+Last updated: 2026-04-19
 
 ## Status Legend
 
@@ -34,6 +34,7 @@ Last updated: 2026-03-31
 
 ## Phase 3 — Core Modules (Planned)
 
+- [x] Domain-specific dashboards (Inventory + System) — shipped 2026-04-19
 - [ ] Survey & Feedback module (CSAT/CES/NPS management)
 - [ ] Live Chat / Ticket inbox
 - [ ] Analytics dashboard (NPS trend, CSAT by channel, loyalty overview)
